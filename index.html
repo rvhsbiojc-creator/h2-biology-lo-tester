@@ -20,7 +20,10 @@
     .lo-question-display { font-size: 20px; font-weight: bold; line-height: 1.4; margin: 10px 0 8px 0; }
     .subtle { color: #666; font-size: 14px; }
     .success-text { font-weight: bold; }
-    .hint-line { margin: 6px 0; }
+    .hint-line { margin: 8px 0; }
+    .student-bullet { margin: 10px 0; line-height: 1.5; }
+    .bullet-status { margin-left: 8px; font-style: italic; color: #666; }
+    .missing-blank { text-decoration: underline; text-underline-offset: 3px; }
   </style>
 </head>
 
@@ -198,24 +201,40 @@ async function submitAnswer() {
   const data = await res.json();
 
   if (currentMode === "self") {
-    renderSelfFeedback(responsePayload, data);
+    renderSelfFeedback(data);
     if (!data.correct) selfAttemptNo++;
   } else {
     renderGeneralFeedback(responsePayload, data);
   }
 }
 
-function renderSelfFeedback(response, data) {
-  const highlighted = highlight(response, data.highlights || []);
+function renderSelfFeedback(data) {
   const issues = renderIssues(data.issueTypes || []);
+
+  let bulletFeedback = "";
+  data.bulletResults.forEach((b, i) => {
+    const highlighted = highlight(b.responseText, b.highlights || []);
+    const blanks = (b.missingBlanks || []).map(blank => `<span class="missing-blank">${escapeHtml(blank)}</span>`).join(" ");
+    const bulletIssues = b.issueTypes && b.issueTypes.length > 0
+      ? ` - ${b.issueTypes.map(escapeHtml).join(" with ")}`
+      : "";
+
+    bulletFeedback += `
+      <div class="student-bullet">
+        <strong>Bullet ${i + 1}:</strong><br>
+        • ${highlighted}${blanks ? " " + blanks : ""}
+        <span class="bullet-status">${bulletIssues}</span>
+      </div>
+    `;
+  });
 
   let hints = "";
   if (!data.correct && data.hintOutput) {
     hints += `<div class="section-box"><div class="section-title">Answer Structure Hint</div>`;
     data.hintOutput.forEach((h, i) => {
-      if (h.hint) hints += `<div class="hint-line">Bullet ${i + 1}: ${escapeHtml(h.hint)}</div>`;
+      hints += `<div class="hint-line"><strong>Bullet ${i + 1}:</strong> ${escapeHtml(h.hint || "No hint needed for this bullet.")}</div>`;
     });
-    hints += `<div class="subtle">Rewrite your full answer before submitting again.</div></div>`;
+    hints += `</div>`;
   }
 
   let successOptions = "";
@@ -234,7 +253,7 @@ function renderSelfFeedback(response, data) {
     <div class="section-box">
       <div class="section-title">Feedback on your submission</div>
       ${issues}
-      <div>${highlighted}</div>
+      ${bulletFeedback}
     </div>
 
     ${hints}
