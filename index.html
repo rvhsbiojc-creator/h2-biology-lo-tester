@@ -80,6 +80,16 @@
     .lo-choice {
       margin-bottom: 8px;
     }
+
+    .issue-tag {
+      display: inline-block;
+      background: #ffe6ee;
+      border: 1px solid #f3aac0;
+      padding: 4px 8px;
+      border-radius: 8px;
+      margin: 4px 4px 4px 0;
+      font-size: 14px;
+    }
   </style>
 </head>
 
@@ -207,8 +217,6 @@ async function loadTopic(topicId, topicName) {
   if (currentMode === "builder") {
     showLOChoiceList();
   } else {
-    // For Self-Review and Remediation, no student LO choice for now.
-    // Current prototype loads the first LO.
     loadSelectedLO(0);
   }
 }
@@ -280,6 +288,15 @@ async function submitAnswer() {
 function renderBuilderFeedback(response, data) {
   let highlightedResponse = highlightIncorrect(response, data.highlights || []);
 
+  let issueHtml = "";
+  if (data.issueTypes && data.issueTypes.length > 0) {
+    issueHtml += `<div>`;
+    data.issueTypes.forEach(issue => {
+      issueHtml += `<span class="issue-tag">${escapeHtml(issue)}</span>`;
+    });
+    issueHtml += `</div>`;
+  }
+
   let builderHtml = "";
 
   if (data.builderOutput) {
@@ -299,13 +316,14 @@ function renderBuilderFeedback(response, data) {
   document.getElementById("feedback").style.display = "block";
   document.getElementById("feedback").innerHTML = `
     <h4>Feedback on your submission</h4>
+    ${issueHtml}
     <div>${highlightedResponse}</div>
 
-    <h4>LO Builder</h4>
+    <h4>Model Answer Suggestion</h4>
     ${builderHtml}
 
     <h4>Next step</h4>
-    <div>${data.correct ? "Correct." : "Please fill in the blanks and retry."}</div>
+    <div>${escapeHtml(data.message)}</div>
 
     ${commonQuestionsHtml}
   `;
@@ -314,9 +332,19 @@ function renderBuilderFeedback(response, data) {
 function renderNormalFeedback(response, data) {
   let highlightedResponse = highlightIncorrect(response, data.highlights || []);
 
+  let issueHtml = "";
+  if (data.issueTypes && data.issueTypes.length > 0) {
+    issueHtml += `<div>`;
+    data.issueTypes.forEach(issue => {
+      issueHtml += `<span class="issue-tag">${escapeHtml(issue)}</span>`;
+    });
+    issueHtml += `</div>`;
+  }
+
   document.getElementById("feedback").style.display = "block";
   document.getElementById("feedback").innerHTML = `
     <h4>Feedback on your submission</h4>
+    ${issueHtml}
     <div>${highlightedResponse}</div>
 
     <h4>Next step</h4>
