@@ -6,7 +6,7 @@
     body {
       font-family: Arial, sans-serif;
       padding: 24px;
-      max-width: 900px;
+      max-width: 950px;
       margin: auto;
       background: #fafafa;
     }
@@ -27,15 +27,23 @@
       border: 1px solid #aaa;
       cursor: pointer;
       background: white;
+      text-align: left;
     }
 
     button:hover {
       background: #f0f0f0;
     }
 
+    .wide-button {
+      width: 100%;
+      max-width: 850px;
+      display: block;
+      line-height: 1.4;
+    }
+
     textarea {
       width: 95%;
-      max-width: 800px;
+      max-width: 850px;
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #bbb;
@@ -54,6 +62,23 @@
     .small-note {
       color: #666;
       font-size: 14px;
+    }
+
+    .label {
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .context-box {
+      background: #f7f7f7;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 14px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .lo-choice {
+      margin-bottom: 8px;
     }
   </style>
 </head>
@@ -81,11 +106,34 @@
   <div id="topicList"></div>
 </div>
 
+<div id="loChoiceSection" class="card" style="display:none;">
+  <div class="context-box">
+    <div class="label">Topic</div>
+    <div id="choiceTopicName"></div>
+
+    <div class="label">Mode</div>
+    <div id="choiceModeName"></div>
+  </div>
+
+  <h3>Select LO Question</h3>
+  <div id="loChoiceList"></div>
+</div>
+
 <div id="loSection" class="card" style="display:none;">
-  <h3 id="loQuestion"></h3>
+  <div class="context-box">
+    <div class="label">Topic</div>
+    <div id="currentTopicName"></div>
+
+    <div class="label">Mode</div>
+    <div id="currentModeName"></div>
+  </div>
+
+  <h3>LO Question</h3>
+  <div id="loQuestion"></div>
+
   <p id="modeInstruction" class="small-note"></p>
 
-  <textarea id="response" rows="5" placeholder="Type your answer here"></textarea><br>
+  <textarea id="response" rows="6" placeholder="Type your answer here"></textarea><br>
   <button onclick="submitAnswer()">Submit</button>
 
   <div id="feedback" class="card" style="display:none;"></div>
@@ -97,6 +145,9 @@ const BASE_URL = "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9
 let studentEmail = "";
 let currentLO = "";
 let currentMode = "";
+let currentTopicId = "";
+let currentTopicName = "";
+let currentLOs = [];
 
 async function login() {
   const email = document.getElementById("email").value.trim();
@@ -131,40 +182,83 @@ async function loadTopics() {
     const topicId = t.Topic_ID || t.topicId;
     const topicName = t.Topic_Name || t.topicName;
 
-    html += `<button onclick="loadLO('${topicId}')">${topicName}</button><br>`;
+    html += `<button onclick="loadTopic('${escapeJs(topicId)}', '${escapeJs(topicName)}')" class="wide-button">${topicName}</button>`;
   });
 
   document.getElementById("topicList").innerHTML = html;
 }
 
-async function loadLO(topicId) {
+async function loadTopic(topicId, topicName) {
+  currentTopicId = topicId;
+  currentTopicName = topicName;
+
   const res = await fetch(`${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(topicId)}`);
   const data = await res.json();
 
-  const lo = data.los[0];
+  currentLOs = data.los || [];
 
-  if (!lo) {
+  if (currentLOs.length === 0) {
     alert("No LO found for this topic yet.");
     return;
   }
 
+  document.getElementById("topics").style.display = "none";
+
+  if (currentMode === "builder") {
+    showLOChoiceList();
+  } else {
+    // For Self-Review and Remediation, no student LO choice for now.
+    // Current prototype loads the first LO.
+    loadSelectedLO(0);
+  }
+}
+
+function showLOChoiceList() {
+  document.getElementById("loChoiceSection").style.display = "block";
+  document.getElementById("choiceTopicName").innerText = currentTopicName;
+  document.getElementById("choiceModeName").innerText = getModeDisplayName(currentMode);
+
+  let html = "";
+
+  currentLOs.forEach((lo, index) => {
+    const question = lo.LO_Question || lo.loQuestion;
+    html += `
+      <div class="lo-choice">
+        <button onclick="loadSelectedLO(${index})" class="wide-button">
+          LO${index + 1}: ${escapeHtml(question)}
+        </button>
+      </div>
+    `;
+  });
+
+  document.getElementById("loChoiceList").innerHTML = html;
+}
+
+function loadSelectedLO(index) {
+  const lo = currentLOs[index];
+
   currentLO = lo.LO_ID || lo.loId;
 
+  document.getElementById("loChoiceSection").style.display = "none";
   document.getElementById("topics").style.display = "none";
   document.getElementById("loSection").style.display = "block";
   document.getElementById("feedback").style.display = "none";
 
+  document.getElementById("currentTopicName").innerText = currentTopicName;
+  document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
   document.getElementById("loQuestion").innerText = lo.LO_Question || lo.loQuestion;
+
+  document.getElementById("response").value = "";
 
   if (currentMode === "builder") {
     document.getElementById("modeInstruction").innerText =
-      "LO Builder Mode: Type what you know freely. The system will show the answer structure with blanks for missing parts.";
+      "Provide your answer to the LO Question. The LO Builder will guide you to writing the correct and complete LO.";
   } else if (currentMode === "self") {
     document.getElementById("modeInstruction").innerText =
-      "Self-Review Mode: Type your answer. Incorrect words or phrases will be highlighted.";
+      "Provide your answer to the LO Question. Incorrect words or phrases will be highlighted.";
   } else {
     document.getElementById("modeInstruction").innerText =
-      "Remediation Mode: Type your answer. Guidance will be added after attempts.";
+      "Provide your answer to the LO Question. The system will guide you after your attempt.";
   }
 }
 
@@ -190,7 +284,7 @@ function renderBuilderFeedback(response, data) {
 
   if (data.builderOutput) {
     data.builderOutput.forEach(item => {
-      builderHtml += `<div class="bullet">• ${item.text}</div>`;
+      builderHtml += `<div class="bullet">• ${escapeHtml(item.text)}</div>`;
     });
   }
 
@@ -198,7 +292,7 @@ function renderBuilderFeedback(response, data) {
   if (data.correct && data.commonQuestions && data.commonQuestions.length > 0) {
     commonQuestionsHtml += `<h4>Additional common questions</h4>`;
     data.commonQuestions.forEach(q => {
-      commonQuestionsHtml += `<div class="bullet">• ${q.Common_Question}</div>`;
+      commonQuestionsHtml += `<div class="bullet">• ${escapeHtml(q.Common_Question)}</div>`;
     });
   }
 
@@ -230,6 +324,13 @@ function renderNormalFeedback(response, data) {
   `;
 }
 
+function getModeDisplayName(mode) {
+  if (mode === "builder") return "LO Builder Mode";
+  if (mode === "self") return "Self-Review Mode";
+  if (mode === "remediation") return "Remediation Mode";
+  return mode;
+}
+
 function highlightIncorrect(text, highlights) {
   let output = escapeHtml(text);
 
@@ -243,14 +344,20 @@ function highlightIncorrect(text, highlights) {
 }
 
 function escapeHtml(text) {
-  return String(text)
+  return String(text || "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 }
 
 function escapeRegExp(text) {
-  return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return String(text || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function escapeJs(text) {
+  return String(text || "")
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'");
 }
 </script>
 
