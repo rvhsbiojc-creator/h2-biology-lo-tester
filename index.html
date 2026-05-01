@@ -3,10 +3,58 @@
 <head>
   <title>H2 Biology LO Tester</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    .pink { background-color: pink; }
-    button { margin-top: 10px; padding: 8px 12px; }
-    textarea { width: 90%; max-width: 700px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      max-width: 900px;
+      margin: auto;
+      background: #fafafa;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      cursor: pointer;
+      background: white;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+
+    textarea {
+      width: 95%;
+      max-width: 800px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      font-size: 15px;
+    }
+
+    .pink {
+      background-color: pink;
+    }
+
+    .bullet {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+
+    .small-note {
+      color: #666;
+      font-size: 14px;
+    }
   </style>
 </head>
 
@@ -14,32 +62,33 @@
 
 <h2>H2 Biology LO Tester</h2>
 
-<div id="login">
+<div id="login" class="card">
   <h3>Login</h3>
   <input id="email" placeholder="Enter email">
   <button onclick="login()">Enter</button>
   <p id="loginMsg"></p>
 </div>
 
-<div id="modeSelect" style="display:none;">
+<div id="modeSelect" class="card" style="display:none;">
   <h3>Select Mode</h3>
   <button onclick="selectMode('builder')">LO Builder Mode</button><br>
   <button onclick="selectMode('self')">Self-Review Mode</button><br>
   <button onclick="selectMode('remediation')">Remediation Mode</button>
 </div>
 
-<div id="topics" style="display:none;">
+<div id="topics" class="card" style="display:none;">
   <h3>Select Topic</h3>
   <div id="topicList"></div>
 </div>
 
-<div id="loSection" style="display:none;">
+<div id="loSection" class="card" style="display:none;">
   <h3 id="loQuestion"></h3>
+  <p id="modeInstruction" class="small-note"></p>
 
-  <textarea id="response" rows="4" placeholder="Type your answer here"></textarea><br>
+  <textarea id="response" rows="5" placeholder="Type your answer here"></textarea><br>
   <button onclick="submitAnswer()">Submit</button>
 
-  <div id="feedback"></div>
+  <div id="feedback" class="card" style="display:none;"></div>
 </div>
 
 <script>
@@ -103,8 +152,20 @@ async function loadLO(topicId) {
 
   document.getElementById("topics").style.display = "none";
   document.getElementById("loSection").style.display = "block";
+  document.getElementById("feedback").style.display = "none";
 
   document.getElementById("loQuestion").innerText = lo.LO_Question || lo.loQuestion;
+
+  if (currentMode === "builder") {
+    document.getElementById("modeInstruction").innerText =
+      "LO Builder Mode: Type what you know freely. The system will show the answer structure with blanks for missing parts.";
+  } else if (currentMode === "self") {
+    document.getElementById("modeInstruction").innerText =
+      "Self-Review Mode: Type your answer. Incorrect words or phrases will be highlighted.";
+  } else {
+    document.getElementById("modeInstruction").innerText =
+      "Remediation Mode: Type your answer. Guidance will be added after attempts.";
+  }
 }
 
 async function submitAnswer() {
@@ -115,22 +176,81 @@ async function submitAnswer() {
   const res = await fetch(url);
   const data = await res.json();
 
-  let feedbackText = response;
+  if (currentMode === "builder") {
+    renderBuilderFeedback(response, data);
+  } else {
+    renderNormalFeedback(response, data);
+  }
+}
 
-  if (data.highlights) {
-    data.highlights.forEach(h => {
-      const regex = new RegExp(h, "gi");
-      feedbackText = feedbackText.replace(regex, `<span class="pink">${h}</span>`);
+function renderBuilderFeedback(response, data) {
+  let highlightedResponse = highlightIncorrect(response, data.highlights || []);
+
+  let builderHtml = "";
+
+  if (data.builderOutput) {
+    data.builderOutput.forEach(item => {
+      builderHtml += `<div class="bullet">• ${item.text}</div>`;
     });
   }
 
+  let commonQuestionsHtml = "";
+  if (data.correct && data.commonQuestions && data.commonQuestions.length > 0) {
+    commonQuestionsHtml += `<h4>Additional common questions</h4>`;
+    data.commonQuestions.forEach(q => {
+      commonQuestionsHtml += `<div class="bullet">• ${q.Common_Question}</div>`;
+    });
+  }
+
+  document.getElementById("feedback").style.display = "block";
   document.getElementById("feedback").innerHTML = `
     <h4>Feedback on your submission</h4>
-    <div>${feedbackText}</div>
+    <div>${highlightedResponse}</div>
+
+    <h4>LO Builder</h4>
+    ${builderHtml}
+
+    <h4>Next step</h4>
+    <div>${data.correct ? "Correct." : "Please fill in the blanks and retry."}</div>
+
+    ${commonQuestionsHtml}
+  `;
+}
+
+function renderNormalFeedback(response, data) {
+  let highlightedResponse = highlightIncorrect(response, data.highlights || []);
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML = `
+    <h4>Feedback on your submission</h4>
+    <div>${highlightedResponse}</div>
 
     <h4>Next step</h4>
     <div>${data.correct ? "Correct." : "Please retry your answer."}</div>
   `;
+}
+
+function highlightIncorrect(text, highlights) {
+  let output = escapeHtml(text);
+
+  highlights.forEach(h => {
+    const escaped = escapeRegExp(h);
+    const regex = new RegExp(escaped, "gi");
+    output = output.replace(regex, match => `<span class="pink">${match}</span>`);
+  });
+
+  return output;
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function escapeRegExp(text) {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 </script>
 
