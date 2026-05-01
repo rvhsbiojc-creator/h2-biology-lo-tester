@@ -50,6 +50,7 @@
       max-width: 850px;
       display: block;
       text-align: left;
+      line-height: 1.4;
     }
 
     textarea {
@@ -59,6 +60,7 @@
       border-radius: 8px;
       border: 1px solid #bbb;
       font-size: 15px;
+      margin-top: 6px;
     }
 
     .pink { background-color: pink; }
@@ -85,6 +87,18 @@
       margin-top: 6px;
     }
 
+    .bullet-input {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .bullet-label {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 
@@ -136,7 +150,8 @@
 
   <p id="modeInstruction"></p>
 
-  <textarea id="response" rows="6"></textarea><br>
+  <div id="answerArea"></div>
+
   <button onclick="submitAnswer()">Submit</button>
 
   <div id="feedback" style="display:none;"></div>
@@ -150,6 +165,7 @@ let currentMode = "";
 let currentLO = "";
 let currentTopicName = "";
 let currentLOs = [];
+let currentLOPackage = null;
 
 async function login() {
   const email = document.getElementById("email").value.trim();
@@ -160,6 +176,8 @@ async function login() {
     studentEmail = email;
     document.getElementById("login").style.display = "none";
     document.getElementById("modeSelect").style.display = "block";
+  } else {
+    document.getElementById("loginMsg").innerText = "Invalid email";
   }
 }
 
@@ -177,7 +195,7 @@ async function loadTopics() {
 
   let html = "";
   data.topics.forEach(t => {
-    html += `<button onclick="loadTopic('${t.Topic_ID}','${t.Topic_Name}')" class="wide-button">${t.Topic_Name}</button>`;
+    html += `<button onclick="loadTopic('${escapeJs(t.Topic_ID)}','${escapeJs(t.Topic_Name)}')" class="wide-button">${escapeHtml(t.Topic_Name)}</button>`;
   });
 
   document.getElementById("topicList").innerHTML = html;
@@ -186,10 +204,10 @@ async function loadTopics() {
 async function loadTopic(id, name) {
   currentTopicName = name;
 
-  const res = await fetch(`${BASE_URL}?action=getTopicLOs&topicId=${id}`);
+  const res = await fetch(`${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}`);
   const data = await res.json();
 
-  currentLOs = data.los;
+  currentLOs = data.los || [];
 
   document.getElementById("topics").style.display = "none";
 
@@ -203,56 +221,149 @@ async function loadTopic(id, name) {
 function showLOChoice() {
   document.getElementById("loChoiceSection").style.display = "block";
   document.getElementById("choiceTopicName").innerText = currentTopicName;
-  document.getElementById("choiceModeName").innerText = currentMode;
+  document.getElementById("choiceModeName").innerText = getModeDisplayName(currentMode);
 
   let html = "";
   currentLOs.forEach((lo, i) => {
-    html += `<button onclick="loadLO(${i})" class="wide-button">LO${i+1}: ${lo.LO_Question}</button><br>`;
+    html += `<button onclick="loadLO(${i})" class="wide-button">LO${i + 1}: ${escapeHtml(lo.LO_Question)}</button><br>`;
   });
 
   document.getElementById("loChoiceList").innerHTML = html;
 }
 
-function loadLO(i) {
+async function loadLO(i) {
   const lo = currentLOs[i];
   currentLO = lo.LO_ID;
 
+  const pkgRes = await fetch(`${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}`);
+  currentLOPackage = await pkgRes.json();
+
   document.getElementById("loChoiceSection").style.display = "none";
   document.getElementById("loSection").style.display = "block";
+  document.getElementById("feedback").style.display = "none";
 
   document.getElementById("currentTopicName").innerText = currentTopicName;
-  document.getElementById("currentModeName").innerText = currentMode;
+  document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
   document.getElementById("loQuestion").innerText = lo.LO_Question;
 
-  document.getElementById("modeInstruction").innerText =
-    "Provide your answer. The system will guide you.";
+  renderAnswerArea();
 
-  document.getElementById("response").value = "";
+  if (currentMode === "builder") {
+    document.getElementById("modeInstruction").innerText =
+      "Provide your answer to the LO Question. The LO Builder will guide you to writing the correct and complete LO.";
+  } else if (currentMode === "self") {
+    document.getElementById("modeInstruction").innerText =
+      "Provide your answer to the LO Question using the bullet spaces below.";
+  } else {
+    document.getElementById("modeInstruction").innerText =
+      "Provide your answer to the LO Question. The system will guide you after your attempt.";
+  }
+}
+
+function renderAnswerArea() {
+  const area = document.getElementById("answerArea");
+
+  if (currentMode === "self") {
+    const bullets = currentLOPackage.answerBullets || [];
+    let html = "";
+
+    bullets.forEach((b, i) => {
+      html += `
+        <div class="bullet-input">
+          <div class="bullet-label">Bullet ${i + 1}</div>
+          <textarea rows="3" data-section="${escapeHtml(b.Section)}" data-order="${escapeHtml(b.Bullet_Order)}"></textarea>
+        </div>
+      `;
+    });
+
+    area.innerHTML = html;
+  } else {
+    area.innerHTML = `<textarea id="singleResponse" rows="6" placeholder="Type your answer here"></textarea>`;
+  }
 }
 
 async function submitAnswer() {
-  const response = document.getElementById("response").value;
+  let responsePayload = "";
 
-  const res = await fetch(`${BASE_URL}?action=checkResponse&email=${studentEmail}&loId=${currentLO}&mode=${currentMode}&response=${encodeURIComponent(response)}`);
+  if (currentMode === "self") {
+    const textareas = document.querySelectorAll("#answerArea textarea");
+    const responses = [];
+
+    textareas.forEach(t => {
+      responses.push({
+        section: t.dataset.section,
+        bulletOrder: Number(t.dataset.order),
+        text: t.value
+      });
+    });
+
+    responsePayload = JSON.stringify(responses);
+  } else {
+    responsePayload = document.getElementById("singleResponse").value;
+  }
+
+  const res = await fetch(`${BASE_URL}?action=checkResponse&email=${encodeURIComponent(studentEmail)}&loId=${encodeURIComponent(currentLO)}&mode=${encodeURIComponent(currentMode)}&response=${encodeURIComponent(responsePayload)}`);
   const data = await res.json();
 
-  renderFeedback(response, data);
+  if (currentMode === "self") {
+    renderSelfFeedback(data);
+  } else {
+    renderGeneralFeedback(responsePayload, data);
+  }
 }
 
-function renderFeedback(response, data) {
+function renderSelfFeedback(data) {
+  const issues = renderIssues(data.issueTypes || []);
+
+  let bulletHtml = "";
+
+  data.bulletResults.forEach((b, i) => {
+    const highlighted = highlight(b.responseText, b.highlights || []);
+    bulletHtml += `
+      <div class="section-box">
+        <div class="section-title">Bullet ${i + 1}</div>
+        <div>${highlighted}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML = `
+    <div class="section-box">
+      <div class="section-title">Feedback on your submission</div>
+      ${issues}
+      ${bulletHtml}
+    </div>
+
+    <div class="section-box">
+      <div class="section-title">Next step</div>
+      ${escapeHtml(data.message)}
+    </div>
+  `;
+}
+
+function renderGeneralFeedback(response, data) {
   const highlighted = highlight(response, data.highlights || []);
   const issues = renderIssues(data.issueTypes || []);
 
   let builder = "";
   if (data.builderOutput) {
     data.builderOutput.forEach(b => {
-      builder += `<div>• ${b.text}</div>`;
+      builder += `<div>• ${escapeHtml(b.text)}</div>`;
     });
+  }
+
+  let commonQuestions = "";
+  if (data.correct && data.commonQuestions && data.commonQuestions.length > 0) {
+    commonQuestions += `<div class="section-box"><div class="section-title">Additional common questions</div>`;
+    data.commonQuestions.forEach(q => {
+      commonQuestions += `<div>• ${escapeHtml(q.Common_Question)}</div>`;
+    });
+    commonQuestions += `</div>`;
   }
 
   document.getElementById("feedback").style.display = "block";
   document.getElementById("feedback").innerHTML = `
-
     <div class="section-box">
       <div class="section-title">Feedback on your submission</div>
       ${issues}
@@ -266,25 +377,49 @@ function renderFeedback(response, data) {
 
     <div class="section-box">
       <div class="section-title">Next step</div>
-      ${data.message}
+      ${escapeHtml(data.message)}
     </div>
 
+    ${commonQuestions}
   `;
 }
 
 function renderIssues(arr) {
-  return arr.map(a => `<span class="issue-tag">${a}</span>`).join("");
+  return arr.map(a => `<span class="issue-tag">${escapeHtml(a)}</span>`).join("");
 }
 
 function highlight(text, arr) {
-  let out = text;
+  let out = escapeHtml(text);
   arr.forEach(h => {
-    const r = new RegExp(h, "gi");
-    out = out.replace(r, `<span class="pink">${h}</span>`);
+    const r = new RegExp(escapeRegExp(h), "gi");
+    out = out.replace(r, match => `<span class="pink">${match}</span>`);
   });
   return out;
 }
 
+function getModeDisplayName(mode) {
+  if (mode === "builder") return "LO Builder Mode";
+  if (mode === "self") return "Self-Review Mode";
+  if (mode === "remediation") return "Remediation Mode";
+  return mode;
+}
+
+function escapeHtml(text) {
+  return String(text || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function escapeRegExp(text) {
+  return String(text || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function escapeJs(text) {
+  return String(text || "")
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'");
+}
 </script>
 
 </body>
