@@ -110,8 +110,13 @@ async function submitAnswer() {
     });
   }
 
-  document.getElementById("feedback").innerHTML =
-    feedbackText + "<br><br>" + data.message;
+  document.getElementById("feedback").innerHTML = `
+  <h4>Feedback on your submission</h4>
+  <div>${feedbackText}</div>
+
+  <h4>Next step</h4>
+  <div>${data.correct ? "Correct." : "Please retry your answer."}</div>
+`;
 }
 </script>
 
