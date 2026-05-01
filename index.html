@@ -63,6 +63,13 @@
       margin-top: 6px;
     }
 
+    input {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      min-width: 280px;
+    }
+
     .pink { background-color: pink; }
 
     .issue-tag {
@@ -80,11 +87,18 @@
       border-radius: 10px;
       padding: 12px;
       margin-bottom: 14px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .context-grid {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px 14px;
     }
 
     .label {
       font-weight: bold;
-      margin-top: 6px;
+      color: #333;
     }
 
     .bullet-input {
@@ -98,6 +112,15 @@
     .bullet-label {
       font-weight: bold;
       margin-bottom: 4px;
+    }
+
+    .subtle {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .success-text {
+      font-weight: bold;
     }
   </style>
 </head>
@@ -127,10 +150,13 @@
 
 <div id="loChoiceSection" class="card" style="display:none;">
   <div class="context-box">
-    <div class="label">Topic</div>
-    <div id="choiceTopicName"></div>
-    <div class="label">Mode</div>
-    <div id="choiceModeName"></div>
+    <div class="context-grid">
+      <div class="label">Topic</div>
+      <div id="choiceTopicName"></div>
+
+      <div class="label">Mode</div>
+      <div id="choiceModeName"></div>
+    </div>
   </div>
 
   <h3>Select LO Question</h3>
@@ -139,10 +165,13 @@
 
 <div id="loSection" class="card" style="display:none;">
   <div class="context-box">
-    <div class="label">Topic</div>
-    <div id="currentTopicName"></div>
-    <div class="label">Mode</div>
-    <div id="currentModeName"></div>
+    <div class="context-grid">
+      <div class="label">Topic</div>
+      <div id="currentTopicName"></div>
+
+      <div class="label">Mode</div>
+      <div id="currentModeName"></div>
+    </div>
   </div>
 
   <h3>LO Question</h3>
@@ -211,7 +240,7 @@ async function loadTopic(id, name) {
 
   document.getElementById("topics").style.display = "none";
 
-  if (currentMode === "builder") {
+  if (currentMode === "builder" || currentMode === "self") {
     showLOChoice();
   } else {
     loadLO(0);
@@ -253,7 +282,7 @@ async function loadLO(i) {
       "Provide your answer to the LO Question. The LO Builder will guide you to writing the correct and complete LO.";
   } else if (currentMode === "self") {
     document.getElementById("modeInstruction").innerText =
-      "Provide your answer to the LO Question using the bullet spaces below.";
+      "Provide your answer to check if you have key terms, accurate phrasing and complete LO.";
   } else {
     document.getElementById("modeInstruction").innerText =
       "Provide your answer to the LO Question. The system will guide you after your attempt.";
@@ -265,13 +294,18 @@ function renderAnswerArea() {
 
   if (currentMode === "self") {
     const bullets = currentLOPackage.answerBullets || [];
-    let html = "";
+    let html = `
+      <div class="section-box">
+        <div class="section-title">Answer Structure</div>
+        <div>You are expected to answer in <strong>${bullets.length}</strong> bullet(s).</div>
+      </div>
+    `;
 
     bullets.forEach((b, i) => {
       html += `
         <div class="bullet-input">
           <div class="bullet-label">Bullet ${i + 1}</div>
-          <textarea rows="3" data-section="${escapeHtml(b.Section)}" data-order="${escapeHtml(b.Bullet_Order)}"></textarea>
+          <textarea rows="3" data-section="${escapeHtml(b.Section)}" data-order="${escapeHtml(b.Bullet_Order)}" placeholder="Type bullet ${i + 1} here"></textarea>
         </div>
       `;
     });
@@ -316,13 +350,12 @@ function renderSelfFeedback(data) {
   const issues = renderIssues(data.issueTypes || []);
 
   let bulletHtml = "";
-
   data.bulletResults.forEach((b, i) => {
     const highlighted = highlight(b.responseText, b.highlights || []);
     bulletHtml += `
       <div class="section-box">
         <div class="section-title">Bullet ${i + 1}</div>
-        <div>${highlighted}</div>
+        <div>${highlighted || "<span class='subtle'>(No response)</span>"}</div>
       </div>
     `;
   });
@@ -336,8 +369,14 @@ function renderSelfFeedback(data) {
     </div>
 
     <div class="section-box">
+      <div class="section-title">Answer Structure</div>
+      <div>You are expected to answer in <strong>${(currentLOPackage.answerBullets || []).length}</strong> bullet(s).</div>
+      <div class="subtle">No model answer is shown in Self-Review Mode.</div>
+    </div>
+
+    <div class="section-box">
       <div class="section-title">Next step</div>
-      ${escapeHtml(data.message)}
+      <div>${data.correct ? "<span class='success-text'>Correct.</span>" : escapeHtml(data.message)}</div>
     </div>
   `;
 }
@@ -377,7 +416,7 @@ function renderGeneralFeedback(response, data) {
 
     <div class="section-box">
       <div class="section-title">Next step</div>
-      ${escapeHtml(data.message)}
+      <div>${escapeHtml(data.message)}</div>
     </div>
 
     ${commonQuestions}
@@ -385,6 +424,7 @@ function renderGeneralFeedback(response, data) {
 }
 
 function renderIssues(arr) {
+  if (!arr || arr.length === 0) return "";
   return arr.map(a => `<span class="issue-tag">${escapeHtml(a)}</span>`).join("");
 }
 
