@@ -21,6 +21,13 @@
   <p id="loginMsg"></p>
 </div>
 
+<div id="modeSelect" style="display:none;">
+  <h3>Select Mode</h3>
+  <button onclick="selectMode('builder')">LO Builder Mode</button><br>
+  <button onclick="selectMode('self')">Self-Review Mode</button><br>
+  <button onclick="selectMode('remediation')">Remediation Mode</button>
+</div>
+
 <div id="topics" style="display:none;">
   <h3>Select Topic</h3>
   <div id="topicList"></div>
@@ -32,7 +39,7 @@
   <textarea id="response" rows="4" placeholder="Type your answer here"></textarea><br>
   <button onclick="submitAnswer()">Submit</button>
 
-  <p id="feedback"></p>
+  <div id="feedback"></div>
 </div>
 
 <script>
@@ -40,6 +47,7 @@ const BASE_URL = "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9
 
 let studentEmail = "";
 let currentLO = "";
+let currentMode = "";
 
 async function login() {
   const email = document.getElementById("email").value.trim();
@@ -50,10 +58,16 @@ async function login() {
   if (data.valid) {
     studentEmail = email;
     document.getElementById("login").style.display = "none";
-    loadTopics();
+    document.getElementById("modeSelect").style.display = "block";
   } else {
     document.getElementById("loginMsg").innerText = "Invalid email";
   }
+}
+
+function selectMode(mode) {
+  currentMode = mode;
+  document.getElementById("modeSelect").style.display = "none";
+  loadTopics();
 }
 
 async function loadTopics() {
@@ -96,7 +110,7 @@ async function loadLO(topicId) {
 async function submitAnswer() {
   const response = document.getElementById("response").value;
 
-  const url = `${BASE_URL}?action=checkResponse&email=${encodeURIComponent(studentEmail)}&loId=${encodeURIComponent(currentLO)}&mode=self&response=${encodeURIComponent(response)}`;
+  const url = `${BASE_URL}?action=checkResponse&email=${encodeURIComponent(studentEmail)}&loId=${encodeURIComponent(currentLO)}&mode=${encodeURIComponent(currentMode)}&response=${encodeURIComponent(response)}`;
 
   const res = await fetch(url);
   const data = await res.json();
@@ -111,12 +125,12 @@ async function submitAnswer() {
   }
 
   document.getElementById("feedback").innerHTML = `
-  <h4>Feedback on your submission</h4>
-  <div>${feedbackText}</div>
+    <h4>Feedback on your submission</h4>
+    <div>${feedbackText}</div>
 
-  <h4>Next step</h4>
-  <div>${data.correct ? "Correct." : "Please retry your answer."}</div>
-`;
+    <h4>Next step</h4>
+    <div>${data.correct ? "Correct." : "Please retry your answer."}</div>
+  `;
 }
 </script>
 
