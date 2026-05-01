@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>H2 Biology LO Tester</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .pink { background-color: pink; }
+    button { margin-top: 10px; }
+  </style>
+</head>
+
+<body>
+
+<h2>H2 Biology LO Tester</h2>
+
+<!-- LOGIN -->
+<div id="login">
+  <h3>Login</h3>
+  <input id="email" placeholder="Enter email"><br>
+  <button onclick="login()">Enter</button>
+  <p id="loginMsg"></p>
+</div>
+
+<!-- TOPIC -->
+<div id="topics" style="display:none;">
+  <h3>Select Topic</h3>
+  <div id="topicList"></div>
+</div>
+
+<!-- LO -->
+<div id="loSection" style="display:none;">
+  <h3 id="loQuestion"></h3>
+
+  <textarea id="response" rows="4" cols="50"></textarea><br>
+  <button onclick="submitAnswer()">Submit</button>
+
+  <p id="feedback"></p>
+</div>
+
+<script>
+
+const BASE_URL = "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
+
+let studentEmail = "";
+let currentLO = "";
+
+async function login() {
+  const email = document.getElementById("email").value;
+
+  const res = await fetch(`${BASE_URL}?action=validateStudent&email=${email}`);
+  const data = await res.json();
+
+  if (data.valid) {
+    studentEmail = email;
+    document.getElementById("login").style.display = "none";
+    loadTopics();
+  } else {
+    document.getElementById("loginMsg").innerText = "Invalid email";
+  }
+}
+
+async function loadTopics() {
+  const res = await fetch(`${BASE_URL}?action=getTopics`);
+  const data = await res.json();
+
+  document.getElementById("topics").style.display = "block";
+
+  let html = "";
+  data.topics.forEach(t => {
+    html += `<button onclick="loadLO('${t.topicId}')">${t.topicName}</button><br>`;
+  });
+
+  document.getElementById("topicList").innerHTML = html;
+}
+
+async function loadLO(topicId) {
+  const res = await fetch(`${BASE_URL}?action=getTopicLOs&topicId=${topicId}`);
+  const data = await res.json();
+
+  const lo = data.los[0]; // first LO only for now
+  currentLO = lo.loId;
+
+  document.getElementById("topics").style.display = "none";
+  document.getElementById("loSection").style.display = "block";
+
+  document.getElementById("loQuestion").innerText = lo.loQuestion;
+}
+
+async function submitAnswer() {
+  const response = document.getElementById("response").value;
+
+  const url = `${BASE_URL}?action=checkResponse&email=${studentEmail}&loId=${currentLO}&mode=self&response=${encodeURIComponent(response)}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  let feedbackText = response;
+
+  // highlight incorrect phrases
+  data.highlights.forEach(h => {
+    const regex = new RegExp(h, "gi");
+    feedbackText = feedbackText.replace(regex, `<span class="pink">${h}</span>`);
+  });
+
+  document.getElementById("feedback").innerHTML =
+    feedbackText + "<br><br>" + data.message;
+}
+
+</script>
+
+</body>
+</html>
