@@ -30,9 +30,7 @@
       text-align: left;
     }
 
-    button:hover {
-      background: #f0f0f0;
-    }
+    button:hover { background: #f0f0f0; }
 
     .wide-button {
       width: 100%;
@@ -50,9 +48,7 @@
       font-size: 15px;
     }
 
-    .pink {
-      background-color: pink;
-    }
+    .pink { background-color: pink; }
 
     .bullet {
       margin: 8px 0;
@@ -77,9 +73,7 @@
       border: 1px solid #e0e0e0;
     }
 
-    .lo-choice {
-      margin-bottom: 8px;
-    }
+    .lo-choice { margin-bottom: 8px; }
 
     .issue-tag {
       display: inline-block;
@@ -120,7 +114,6 @@
   <div class="context-box">
     <div class="label">Topic</div>
     <div id="choiceTopicName"></div>
-
     <div class="label">Mode</div>
     <div id="choiceModeName"></div>
   </div>
@@ -133,7 +126,6 @@
   <div class="context-box">
     <div class="label">Topic</div>
     <div id="currentTopicName"></div>
-
     <div class="label">Mode</div>
     <div id="currentModeName"></div>
   </div>
@@ -161,7 +153,6 @@ let currentLOs = [];
 
 async function login() {
   const email = document.getElementById("email").value.trim();
-
   const res = await fetch(`${BASE_URL}?action=validateStudent&email=${encodeURIComponent(email)}`);
   const data = await res.json();
 
@@ -187,11 +178,9 @@ async function loadTopics() {
   document.getElementById("topics").style.display = "block";
 
   let html = "";
-
   data.topics.forEach(t => {
     const topicId = t.Topic_ID || t.topicId;
     const topicName = t.Topic_Name || t.topicName;
-
     html += `<button onclick="loadTopic('${escapeJs(topicId)}', '${escapeJs(topicName)}')" class="wide-button">${topicName}</button>`;
   });
 
@@ -227,7 +216,6 @@ function showLOChoiceList() {
   document.getElementById("choiceModeName").innerText = getModeDisplayName(currentMode);
 
   let html = "";
-
   currentLOs.forEach((lo, index) => {
     const question = lo.LO_Question || lo.loQuestion;
     html += `
@@ -244,7 +232,6 @@ function showLOChoiceList() {
 
 function loadSelectedLO(index) {
   const lo = currentLOs[index];
-
   currentLO = lo.LO_ID || lo.loId;
 
   document.getElementById("loChoiceSection").style.display = "none";
@@ -255,7 +242,6 @@ function loadSelectedLO(index) {
   document.getElementById("currentTopicName").innerText = currentTopicName;
   document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
   document.getElementById("loQuestion").innerText = lo.LO_Question || lo.loQuestion;
-
   document.getElementById("response").value = "";
 
   if (currentMode === "builder") {
@@ -286,19 +272,10 @@ async function submitAnswer() {
 }
 
 function renderBuilderFeedback(response, data) {
-  let highlightedResponse = highlightIncorrect(response, data.highlights || []);
-
-  let issueHtml = "";
-  if (data.issueTypes && data.issueTypes.length > 0) {
-    issueHtml += `<div>`;
-    data.issueTypes.forEach(issue => {
-      issueHtml += `<span class="issue-tag">${escapeHtml(issue)}</span>`;
-    });
-    issueHtml += `</div>`;
-  }
+  const highlightedResponse = highlightIncorrect(response, data.highlights || []);
+  const issueHtml = renderIssueTags(data.issueTypes || []);
 
   let builderHtml = "";
-
   if (data.builderOutput) {
     data.builderOutput.forEach(item => {
       builderHtml += `<div class="bullet">• ${escapeHtml(item.text)}</div>`;
@@ -330,16 +307,8 @@ function renderBuilderFeedback(response, data) {
 }
 
 function renderNormalFeedback(response, data) {
-  let highlightedResponse = highlightIncorrect(response, data.highlights || []);
-
-  let issueHtml = "";
-  if (data.issueTypes && data.issueTypes.length > 0) {
-    issueHtml += `<div>`;
-    data.issueTypes.forEach(issue => {
-      issueHtml += `<span class="issue-tag">${escapeHtml(issue)}</span>`;
-    });
-    issueHtml += `</div>`;
-  }
+  const highlightedResponse = highlightIncorrect(response, data.highlights || []);
+  const issueHtml = renderIssueTags(data.issueTypes || []);
 
   document.getElementById("feedback").style.display = "block";
   document.getElementById("feedback").innerHTML = `
@@ -350,6 +319,16 @@ function renderNormalFeedback(response, data) {
     <h4>Next step</h4>
     <div>${data.correct ? "Correct." : "Please retry your answer."}</div>
   `;
+}
+
+function renderIssueTags(issues) {
+  if (!issues || issues.length === 0) return "";
+  let html = `<div>`;
+  issues.forEach(issue => {
+    html += `<span class="issue-tag">${escapeHtml(issue)}</span>`;
+  });
+  html += `</div>`;
+  return html;
 }
 
 function getModeDisplayName(mode) {
