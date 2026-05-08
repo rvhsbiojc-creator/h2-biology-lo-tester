@@ -20,10 +20,10 @@
     .lo-question-display { font-size: 20px; font-weight: bold; line-height: 1.4; margin: 10px 0 8px 0; }
     .subtle { color: #666; font-size: 14px; }
     .success-text { font-weight: bold; }
-    .hint-line { margin: 8px 0; }
-    .student-bullet { margin: 10px 0; line-height: 1.5; }
-    .bullet-status { margin-left: 8px; font-style: italic; color: #666; }
-    .missing-blank { text-decoration: underline; text-underline-offset: 3px; }
+    .hint-line { margin: 8px 0; font-size: 15px; }
+    .student-bullet { margin: 10px 0; line-height: 1.5; font-size: 15px; font-weight: normal; }
+    .bullet-status { margin-left: 8px; font-style: italic; color: #666; font-size: 15px; }
+    .missing-blank { text-decoration: underline; text-underline-offset: 3px; font-weight: normal; }
   </style>
 </head>
 
@@ -209,21 +209,22 @@ async function submitAnswer() {
 }
 
 function renderSelfFeedback(data) {
-  const issues = renderIssues(data.issueTypes || []);
-
   let bulletFeedback = "";
+
   data.bulletResults.forEach((b, i) => {
     const highlighted = highlight(b.responseText, b.highlights || []);
     const blanks = (b.missingBlanks || []).map(blank => `<span class="missing-blank">${escapeHtml(blank)}</span>`).join(" ");
-    const bulletIssues = b.issueTypes && b.issueTypes.length > 0
+    const prefix = b.prefixBlank ? `<span class="missing-blank">${escapeHtml(b.prefixBlank)}</span> ` : "";
+
+    const status = b.issueTypes && b.issueTypes.length > 0
       ? ` - ${b.issueTypes.map(escapeHtml).join(" with ")}`
       : "";
 
     bulletFeedback += `
       <div class="student-bullet">
         <strong>Bullet ${i + 1}:</strong><br>
-        • ${highlighted}${blanks ? " " + blanks : ""}
-        <span class="bullet-status">${bulletIssues}</span>
+        • ${prefix}${highlighted}${blanks ? " " + blanks : ""}
+        <span class="bullet-status">${status}</span>
       </div>
     `;
   });
@@ -252,7 +253,6 @@ function renderSelfFeedback(data) {
   document.getElementById("feedback").innerHTML = `
     <div class="section-box">
       <div class="section-title">Feedback on your submission</div>
-      ${issues}
       ${bulletFeedback}
     </div>
 
