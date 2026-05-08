@@ -209,58 +209,101 @@ async function submitAnswer() {
 }
 
 function renderSelfFeedback(data) {
+
   let bulletFeedback = "";
 
   data.bulletResults.forEach((b, i) => {
-    const highlighted = highlight(b.responseText, b.highlights || []);
-    const blanks = (b.missingBlanks || []).map(blank => `<span class="missing-blank">${escapeHtml(blank)}</span>`).join(" ");
-    const prefix = b.prefixBlank ? `<span class="missing-blank">${escapeHtml(b.prefixBlank)}</span> ` : "";
 
-    const status = b.issueTypes && b.issueTypes.length > 0
-      ? ` - ${b.issueTypes.map(escapeHtml).join(" with ")}`
-      : "";
+    const highlighted =
+      highlight(
+        b.responseText,
+        b.highlights || []
+      );
+
+    const feedback =
+      b.feedbackLabels && b.feedbackLabels.length > 0
+        ? " — " + b.feedbackLabels.join(" with ")
+        : "";
 
     bulletFeedback += `
       <div class="student-bullet">
         <strong>Bullet ${i + 1}:</strong><br>
-        • ${prefix}${highlighted}${blanks ? " " + blanks : ""}
-        <span class="bullet-status">${status}</span>
+        • ${highlighted}${feedback}
       </div>
     `;
   });
 
   let hints = "";
+
   if (!data.correct && data.hintOutput) {
-    hints += `<div class="section-box"><div class="section-title">Answer Structure Hint</div>`;
+
+    hints += `
+      <div class="section-box">
+        <div class="section-title">
+          Answer Structure Hint
+        </div>
+    `;
+
     data.hintOutput.forEach((h, i) => {
-      hints += `<div class="hint-line"><strong>Bullet ${i + 1}:</strong> ${escapeHtml(h.hint || "No hint needed for this bullet.")}</div>`;
+
+      hints += `
+        <div class="hint-line">
+          <strong>Bullet ${i + 1}:</strong>
+          ${escapeHtml(h.hint)}
+        </div>
+      `;
     });
+
     hints += `</div>`;
   }
 
   let successOptions = "";
+
   if (data.correct) {
+
     successOptions = `
       <div class="section-box">
-        <div class="section-title">Choose your next action</div>
-        <button onclick="showLOChoice()">Next LO</button>
-        <button onclick="endSession()">End Session</button>
+        <div class="section-title">
+          Choose your next action
+        </div>
+
+        <button onclick="showLOChoice()">
+          Next LO
+        </button>
+
+        <button onclick="endSession()">
+          End Session
+        </button>
       </div>
     `;
   }
 
   document.getElementById("feedback").style.display = "block";
+
   document.getElementById("feedback").innerHTML = `
+
     <div class="section-box">
-      <div class="section-title">Feedback on your submission</div>
+      <div class="section-title">
+        Feedback on your submission
+      </div>
+
       ${bulletFeedback}
     </div>
 
     ${hints}
 
     <div class="section-box">
-      <div class="section-title">Next step</div>
-      <div>${data.correct ? "<span class='success-text'>Correct.</span>" : escapeHtml(data.message)}</div>
+      <div class="section-title">
+        Next step
+      </div>
+
+      <div>
+        ${
+          data.correct
+            ? "<span class='success-text'>Correct.</span>"
+            : escapeHtml(data.message)
+        }
+      </div>
     </div>
 
     ${successOptions}
