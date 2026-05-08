@@ -12,8 +12,8 @@
     .wide-button { width: 100%; max-width: 850px; display: block; text-align: left; line-height: 1.4; }
     textarea { width: 95%; max-width: 850px; padding: 10px; border-radius: 8px; border: 1px solid #bbb; font-size: 15px; margin-top: 6px; }
     input { padding: 8px; border-radius: 8px; border: 1px solid #bbb; min-width: 280px; }
-    .pink { background-color: pink; }
-    .issue-tag { display: inline-block; background: #ffe6ee; border: 1px solid #f3aac0; padding: 4px 8px; border-radius: 8px; margin: 4px 4px 4px 0; font-size: 14px; }
+    .wrong { text-decoration: line-through; text-decoration-thickness: 2px; }
+    .feedback-label { background: yellow; padding: 2px 4px; border-radius: 4px; }
     .context-box { background: #f7f7f7; border-radius: 10px; padding: 12px; margin-bottom: 14px; border: 1px solid #e0e0e0; }
     .context-grid { display: grid; grid-template-columns: 120px 1fr; gap: 8px 14px; }
     .label { font-weight: bold; color: #333; }
@@ -23,7 +23,6 @@
     .hint-line { margin: 8px 0; font-size: 15px; }
     .student-bullet { margin: 10px 0; line-height: 1.5; font-size: 15px; font-weight: normal; }
     .bullet-status { margin-left: 8px; font-style: italic; color: #666; font-size: 15px; }
-    .missing-blank { text-decoration: underline; text-underline-offset: 3px; font-weight: normal; }
   </style>
 </head>
 
@@ -209,20 +208,14 @@ async function submitAnswer() {
 }
 
 function renderSelfFeedback(data) {
-
   let bulletFeedback = "";
 
   data.bulletResults.forEach((b, i) => {
-
-    const highlighted =
-      highlight(
-        b.responseText,
-        b.highlights || []
-      );
+    const highlighted = highlight(b.responseText, b.highlights || []);
 
     const feedback =
       b.feedbackLabels && b.feedbackLabels.length > 0
-        ? " — " + b.feedbackLabels.join(" with ")
+        ? " — " + b.feedbackLabels.map(label => `<span class="feedback-label">${escapeHtml(label)}</span>`).join(" ")
         : "";
 
     bulletFeedback += `
@@ -236,16 +229,12 @@ function renderSelfFeedback(data) {
   let hints = "";
 
   if (!data.correct && data.hintOutput) {
-
     hints += `
       <div class="section-box">
-        <div class="section-title">
-          Answer Structure Hint
-        </div>
+        <div class="section-title">Answer Structure Hint</div>
     `;
 
     data.hintOutput.forEach((h, i) => {
-
       hints += `
         <div class="hint-line">
           <strong>Bullet ${i + 1}:</strong>
@@ -260,20 +249,11 @@ function renderSelfFeedback(data) {
   let successOptions = "";
 
   if (data.correct) {
-
     successOptions = `
       <div class="section-box">
-        <div class="section-title">
-          Choose your next action
-        </div>
-
-        <button onclick="showLOChoice()">
-          Next LO
-        </button>
-
-        <button onclick="endSession()">
-          End Session
-        </button>
+        <div class="section-title">Choose your next action</div>
+        <button onclick="showLOChoice()">Next LO</button>
+        <button onclick="endSession()">End Session</button>
       </div>
     `;
   }
@@ -281,29 +261,16 @@ function renderSelfFeedback(data) {
   document.getElementById("feedback").style.display = "block";
 
   document.getElementById("feedback").innerHTML = `
-
     <div class="section-box">
-      <div class="section-title">
-        Feedback on your submission
-      </div>
-
+      <div class="section-title">Feedback on your submission</div>
       ${bulletFeedback}
     </div>
 
     ${hints}
 
     <div class="section-box">
-      <div class="section-title">
-        Next step
-      </div>
-
-      <div>
-        ${
-          data.correct
-            ? "<span class='success-text'>Correct.</span>"
-            : escapeHtml(data.message)
-        }
-      </div>
+      <div class="section-title">Next step</div>
+      <div>${data.correct ? "<span class='success-text'>Correct.</span>" : escapeHtml(data.message)}</div>
     </div>
 
     ${successOptions}
@@ -360,14 +327,14 @@ function endSession() {
 
 function renderIssues(arr) {
   if (!arr || arr.length === 0) return "";
-  return arr.map(a => `<span class="issue-tag">${escapeHtml(a)}</span>`).join("");
+  return arr.map(a => `<span class="feedback-label">${escapeHtml(a)}</span>`).join("");
 }
 
 function highlight(text, arr) {
   let out = escapeHtml(text);
   arr.forEach(h => {
     const r = new RegExp(escapeRegExp(h), "gi");
-    out = out.replace(r, match => `<span class="pink">${match}</span>`);
+    out = out.replace(r, match => `<span class="wrong">${match}</span>`);
   });
   return out;
 }
