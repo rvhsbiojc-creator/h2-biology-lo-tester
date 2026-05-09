@@ -5,286 +5,56 @@
   <title>Teacher LO Builder</title>
 
   <style>
-    body{
-      font-family:Arial,sans-serif;
-      padding:24px;
-      max-width:1200px;
-      margin:auto;
-      background:#fafafa;
+    body{font-family:Arial,sans-serif;padding:24px;max-width:1200px;margin:auto;background:#fafafa;}
+    .card{background:white;border:1px solid #ddd;border-radius:12px;padding:20px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    label{font-weight:bold;display:block;margin-top:12px;}
+    input,textarea,select{width:95%;max-width:1000px;padding:8px;margin-top:4px;border-radius:8px;border:1px solid #bbb;font-size:14px;}
+    textarea{min-height:90px;}
+    button{margin-top:16px;padding:10px 16px;border-radius:8px;border:1px solid #aaa;background:white;cursor:pointer;}
+    button:hover{background:#f0f0f0;}
+    table{width:100%;border-collapse:collapse;margin-top:12px;}
+    th,td{border:1px solid #ddd;padding:8px;vertical-align:top;}
+    th{background:#f5f5f5;}
+    .bullet-col{width:70px;max-width:70px;text-align:center;}
+    .bullet-col input{width:42px;text-align:center;}
+    td input,td textarea{width:95%;min-height:38px;}
+    pre{background:#f7f7f7;border:1px solid #ddd;border-radius:8px;padding:12px;white-space:pre-wrap;overflow-x:auto;}
+    .hint{color:#666;font-size:14px;line-height:1.5;}
+    .section-title{font-size:20px;font-weight:bold;margin-bottom:8px;}
+    .warning{background:#fff8d6;border:1px solid #f0dc85;padding:12px;border-radius:8px;margin-top:12px;}
+    .hidden{display:none;}
+    .success{background:#eaf8ea;border:1px solid #9ccc9c;color:#256029;padding:12px;border-radius:8px;margin-top:12px;}
+    .error{background:#ffeaea;border:1px solid #ffb3b3;color:#a40000;padding:12px;border-radius:8px;margin-top:12px;}
+    .feedback-label{background:#fff3a6;padding:2px 6px;border-radius:6px;margin-left:6px;}
+    .wrong{text-decoration:line-through;text-decoration-thickness:2px;}
+    .green-box{background:#e7f8e7;padding:10px;border-radius:8px;display:block;margin-top:8px;line-height:1.7;}
+    .small-button{margin:4px;padding:6px 10px;font-size:13px;}
+    .muted{color:#666;font-size:14px;}
+    *{box-sizing:border-box;}
+    body{width:100%;}
+    button{min-height:44px;font-size:15px;}
+    input,textarea,select{width:100%;max-width:100%;font-size:16px;}
+    textarea{line-height:1.5;}
+    .card{width:100%;}
+    table{display:block;overflow-x:auto;white-space:nowrap;}
+    @media (max-width:768px){
+      body{padding:12px;max-width:100%;}
+      h1,h2{font-size:24px;}
+      .card{padding:14px;border-radius:10px;}
+      .section-title{font-size:18px;}
+      button{width:100%;text-align:center;margin-top:10px;}
+      table{font-size:14px;}
+      th,td{min-width:160px;}
+      .bullet-col{min-width:70px;width:70px;}
+      .bullet-col input{width:50px;}
     }
-
-    .card{
-      background:white;
-      border:1px solid #ddd;
-      border-radius:12px;
-      padding:20px;
-      margin-top:16px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    @media (max-width:480px){
+      body{padding:8px;}
+      h1,h2{font-size:22px;}
+      .card{padding:12px;}
+      textarea{min-height:120px;}
+      .green-box{padding:8px;}
     }
-
-    label{
-      font-weight:bold;
-      display:block;
-      margin-top:12px;
-    }
-
-    input,textarea,select{
-      width:95%;
-      max-width:1000px;
-      padding:8px;
-      margin-top:4px;
-      border-radius:8px;
-      border:1px solid #bbb;
-      font-size:14px;
-    }
-
-    textarea{
-      min-height:90px;
-    }
-
-    button{
-      margin-top:16px;
-      padding:10px 16px;
-      border-radius:8px;
-      border:1px solid #aaa;
-      background:white;
-      cursor:pointer;
-    }
-
-    button:hover{
-      background:#f0f0f0;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:12px;
-    }
-
-    th,td{
-      border:1px solid #ddd;
-      padding:8px;
-      vertical-align:top;
-    }
-
-    th{
-      background:#f5f5f5;
-    }
-
-    .bullet-col{
-      width:70px;
-      max-width:70px;
-      text-align:center;
-    }
-
-    .bullet-col input{
-      width:42px;
-      text-align:center;
-    }
-
-    td input,
-    td textarea{
-      width:95%;
-      min-height:38px;
-    }
-
-    pre{
-      background:#f7f7f7;
-      border:1px solid #ddd;
-      border-radius:8px;
-      padding:12px;
-      white-space:pre-wrap;
-      overflow-x:auto;
-    }
-
-    .hint{
-      color:#666;
-      font-size:14px;
-      line-height:1.5;
-    }
-
-    .section-title{
-      font-size:20px;
-      font-weight:bold;
-      margin-bottom:8px;
-    }
-
-    .warning{
-      background:#fff8d6;
-      border:1px solid #f0dc85;
-      padding:12px;
-      border-radius:8px;
-      margin-top:12px;
-    }
-
-    .hidden{
-      display:none;
-    }
-
-    .success{
-      background:#eaf8ea;
-      border:1px solid #9ccc9c;
-      color:#256029;
-      padding:12px;
-      border-radius:8px;
-      margin-top:12px;
-    }
-
-    .error{
-      background:#ffeaea;
-      border:1px solid #ffb3b3;
-      color:#a40000;
-      padding:12px;
-      border-radius:8px;
-      margin-top:12px;
-    }
-
-    .feedback-label{
-      background:#fff3a6;
-      padding:2px 6px;
-      border-radius:6px;
-      margin-left:6px;
-    }
-
-    .wrong{
-      text-decoration:line-through;
-      text-decoration-thickness:2px;
-    }
-
-    .green-box{
-      background:#e7f8e7;
-      padding:10px;
-      border-radius:8px;
-      display:block;
-      margin-top:8px;
-      line-height:1.7;
-    }
-    /* Responsive design upgrade */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  width: 100%;
-}
-
-button {
-  min-height: 44px;
-  font-size: 15px;
-}
-
-input,
-textarea,
-select {
-  width: 100%;
-  max-width: 100%;
-  font-size: 16px;
-}
-
-textarea {
-  line-height: 1.5;
-}
-
-.card,
-.section-box,
-.context-box {
-  width: 100%;
-}
-
-table {
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-  body {
-    padding: 12px;
-    max-width: 100%;
-  }
-
-  h1, h2 {
-    font-size: 24px;
-  }
-
-  .card {
-    padding: 14px;
-    border-radius: 10px;
-  }
-
-  .section-title {
-    font-size: 18px;
-  }
-
-  .context-grid {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
-
-  button {
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  .wide-button {
-    width: 100%;
-  }
-
-  .lo-question-display {
-    font-size: 18px;
-  }
-
-  .student-bullet,
-  .hint-line,
-  .green-box {
-    font-size: 15px;
-  }
-
-  table {
-    font-size: 14px;
-  }
-
-  th,
-  td {
-    min-width: 160px;
-  }
-
-  .bullet-col {
-    min-width: 70px;
-    width: 70px;
-  }
-
-  .bullet-col input {
-    width: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    padding: 8px;
-  }
-
-  h1, h2 {
-    font-size: 22px;
-  }
-
-  .card {
-    padding: 12px;
-  }
-
-  textarea {
-    min-height: 120px;
-  }
-
-  .lo-question-display {
-    font-size: 17px;
-  }
-
-  .green-box {
-    padding: 8px;
-  }
-}
   </style>
 </head>
 
@@ -293,15 +63,15 @@ table {
 <h1>Teacher LO Builder</h1>
 
 <div class="warning">
-  This page can save NEW LOs directly into the Google Sheet database. Editing existing LOs will be added later.
+  This page can save NEW LOs directly into the Google Sheet database. Editing and deleting existing LOs will be added next.
 </div>
 
 <div id="status"></div>
 
 <div class="card">
-  <div class="section-title">LO Information</div>
+  <div class="section-title">Topic</div>
 
-  <label>Topic</label>
+  <label>Select Topic</label>
   <select id="topicSelect" onchange="updateTopicFields()">
     <option value="T04|Proteins|PRO">Proteins</option>
   </select>
@@ -309,13 +79,31 @@ table {
   <input id="topicId" value="T04" class="hidden">
   <input id="topicName" value="Proteins" class="hidden">
   <input id="topicCode" value="PRO" class="hidden">
+</div>
+
+<div class="card">
+  <div class="section-title">Existing LOs for Topic</div>
+  <p class="hint">Select an LO to view details or test it immediately.</p>
+
+  <div id="existingLOsBox">
+    Loading existing LOs...
+  </div>
+
+  <button onclick="editSelectedLO()">Edit Existing LO</button>
+  <button onclick="deleteSelectedLO()">Delete LO</button>
+
+  <p class="hint">
+    Edit and Delete buttons are placeholders for the next upgrade.
+  </p>
+</div>
+
+<div class="card">
+  <div class="section-title">LO Information</div>
 
   <label>LO Number</label>
   <input id="loNumber" placeholder="e.g. 4">
 
-  <p class="hint">
-    LO Number 4 becomes PRO_LO4.
-  </p>
+  <p class="hint">LO Number 4 becomes PRO_LO4.</p>
 
   <label>LO Question</label>
   <textarea id="loQuestion" placeholder="e.g. Describe the formation of peptide bond"></textarea>
@@ -324,17 +112,11 @@ table {
 <div class="card">
   <div class="section-title">Answer Bullets</div>
 
-  <p class="hint">
-    Enter one answer bullet per line.
-  </p>
-
+  <p class="hint">Enter one answer bullet per line.</p>
   <textarea id="answerBullets" placeholder="Amino group of one amino acid&#10;And carboxyl group of another amino acid&#10;Reacts to form a peptide bond between the two amino acids"></textarea>
 
   <label>Hints</label>
-  <p class="hint">
-    Enter one hint per line, matching each answer bullet.
-  </p>
-
+  <p class="hint">Enter one hint per line, matching each answer bullet.</p>
   <textarea id="hints" placeholder="[Reacting group] Identify the first functional group involved.&#10;[Reacting group] Identify the second functional group involved.&#10;[Product] State what bond is formed."></textarea>
 </div>
 
@@ -355,7 +137,6 @@ table {
         <th>Unacceptable Answers</th>
       </tr>
     </thead>
-
     <tbody id="keywordBody">
       <tr>
         <td class="bullet-col"><input value="1"></td>
@@ -372,9 +153,7 @@ table {
 <div class="card">
   <div class="section-title">Blank Templates</div>
 
-  <p class="hint">
-    Format: bullet number | teacher final blank | blank targets separated by semicolons
-  </p>
+  <p class="hint">Format: bullet number | teacher final blank | blank targets separated by semicolons</p>
 
   <textarea id="blankTemplates" placeholder="1 | _______ _____ of ____ amino acid | amino group; one&#10;2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
 </div>
@@ -382,9 +161,7 @@ table {
 <div class="card">
   <div class="section-title">Common Questions</div>
 
-  <p class="hint">
-    Optional. These appear only after the student gets the LO fully correct.
-  </p>
+  <p class="hint">Optional. These appear only after the student gets the LO fully correct.</p>
 
   <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond.&#10;State the bond formed between amino acids."></textarea>
 </div>
@@ -397,9 +174,11 @@ table {
 <div id="teacherTestSection" class="card" style="display:none;">
   <div class="section-title">Teacher Test Preview</div>
 
-  <p class="hint">
-    Test the saved LO immediately without using the student page.
-  </p>
+  <p class="hint">Test any saved LO immediately without using the student page.</p>
+
+  <div class="green-box" id="teacherTestLOLabel">
+    No LO selected yet.
+  </div>
 
   <label>Test Mode</label>
   <select id="teacherTestMode">
@@ -419,6 +198,11 @@ table {
   <div id="teacherPreviewOutput" style="margin-top:20px;"></div>
 </div>
 
+<div id="detailsSection" class="card" style="display:none;">
+  <div class="section-title">LO Details</div>
+  <div id="loDetailsOutput"></div>
+</div>
+
 <div id="output" style="display:none;">
   <div class="card">
     <div class="section-title">Generated LO ID</div>
@@ -435,6 +219,18 @@ table {
 const BASE_URL =
 "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
 
+let existingLOs = [];
+let selectedTestLoId = "";
+let selectedTestLoQuestion = "";
+
+/************************************
+ * INIT
+ ************************************/
+window.addEventListener("load", () => {
+  updateTopicFields();
+  loadExistingLOs();
+});
+
 /************************************
  * TOPIC
  ************************************/
@@ -445,6 +241,129 @@ function updateTopicFields(){
   document.getElementById("topicId").value = parts[0];
   document.getElementById("topicName").value = parts[1];
   document.getElementById("topicCode").value = parts[2];
+
+  loadExistingLOs();
+}
+
+/************************************
+ * EXISTING LOS
+ ************************************/
+async function loadExistingLOs(){
+  const topicId = val("topicId");
+
+  const res = await fetch(
+    `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(topicId)}`
+  );
+
+  const data = await res.json();
+  existingLOs = data.los || [];
+
+  renderExistingLOs();
+}
+
+function renderExistingLOs(){
+  const box = document.getElementById("existingLOsBox");
+
+  if(existingLOs.length === 0){
+    box.innerHTML = `<p class="muted">No active LOs found for this topic.</p>`;
+    return;
+  }
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>LO</th>
+          <th>LO Question</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  existingLOs.forEach((lo, index) => {
+    const loId = lo.LO_ID || lo.loId;
+    const q = lo.LO_Question || lo.loQuestion;
+    const order = lo.LO_Order || lo.loOrder || index + 1;
+
+    html += `
+      <tr>
+        <td><input type="checkbox" class="loSelect" value="${escapeHtml(loId)}"></td>
+        <td>LO${escapeHtml(order)}</td>
+        <td>${escapeHtml(q)}</td>
+        <td>
+          <button class="small-button" onclick="viewLODetails('${escapeJs(loId)}')">View LO Details</button>
+          <button class="small-button" onclick="testThisLO('${escapeJs(loId)}','${escapeJs(q)}')">Test This LO</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  box.innerHTML = html;
+}
+
+async function viewLODetails(loId){
+  const lo = existingLOs.find(x => String(x.LO_ID) === String(loId)) || {};
+  const res = await fetch(`${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`);
+  const data = await res.json();
+
+  let html = `
+    <h3>${escapeHtml(lo.LO_Question || loId)}</h3>
+    <h4>Answer Bullets</h4>
+  `;
+
+  (data.answerBullets || []).forEach(b => {
+    html += `• ${escapeHtml(b.Canonical_Answer)}<br><span class="hint">${escapeHtml(b.Hint || "")}</span><br><br>`;
+  });
+
+  html += `<h4>Keywords</h4>`;
+  (data.keywords || []).forEach(k => {
+    html += `• Bullet ${escapeHtml(k.Bullet_Order)}: ${escapeHtml(k.Keyword_or_Phrase)} (${escapeHtml(k.Keyword_ID)})<br>`;
+  });
+
+  html += `<h4>Accepted Variants</h4>`;
+  (data.variants || []).forEach(v => {
+    html += `• ${escapeHtml(v.Keyword_ID)}: ${escapeHtml(v.Accepted_Variant)}<br>`;
+  });
+
+  html += `<h4>Unacceptable Answers</h4>`;
+  (data.unacceptable || []).forEach(u => {
+    html += `• ${escapeHtml(u.Phrase)} — ${escapeHtml(u.Reason || "")}<br>`;
+  });
+
+  html += `<h4>Blank Templates</h4>`;
+  (data.blankTemplates || []).forEach(b => {
+    html += `• Bullet ${escapeHtml(b.Bullet_Order)}: ${escapeHtml(b.Teacher_Final_Blank || "")}<br>`;
+  });
+
+  html += `<h4>Common Questions</h4>`;
+  (data.commonQuestions || []).forEach(q => {
+    html += `• ${escapeHtml(q.Common_Question)}<br>`;
+  });
+
+  document.getElementById("detailsSection").style.display = "block";
+  document.getElementById("loDetailsOutput").innerHTML = html;
+}
+
+function testThisLO(loId, question){
+  selectedTestLoId = loId;
+  selectedTestLoQuestion = question;
+
+  document.getElementById("teacherTestSection").style.display = "block";
+  document.getElementById("teacherTestLOLabel").innerHTML =
+    `<strong>Testing:</strong> ${escapeHtml(loId)} — ${escapeHtml(question)}`;
+
+  document.getElementById("teacherPreviewOutput").innerHTML = "";
+}
+
+function editSelectedLO(){
+  alert("Edit Existing LO will be added in the next upgrade.");
+}
+
+function deleteSelectedLO(){
+  alert("Delete LO with confirmation will be added in the next upgrade.");
 }
 
 /************************************
@@ -554,8 +473,12 @@ function saveLOPackage(){
       `Save request sent for ${payload.loId}. Please check the Google Sheet tabs to confirm it was inserted.`
     );
 
+    selectedTestLoId = payload.loId;
+    selectedTestLoQuestion = payload.loQuestion;
+
     setTimeout(()=>{
       form.remove();
+      loadExistingLOs();
     },3000);
 
   }catch(err){
@@ -568,12 +491,19 @@ function saveLOPackage(){
  ************************************/
 function showTeacherTest(){
   document.getElementById("teacherTestSection").style.display = "block";
+
+  if(selectedTestLoId){
+    document.getElementById("teacherTestLOLabel").innerHTML =
+      `<strong>Testing:</strong> ${escapeHtml(selectedTestLoId)} — ${escapeHtml(selectedTestLoQuestion)}`;
+  }
 }
 
 async function runTeacherPreview(){
-  const loNumber = val("loNumber");
+  const fallbackLoNumber = val("loNumber");
   const topicCode = val("topicCode");
-  const loId = `${topicCode}_LO${loNumber}`;
+  const fallbackLoId = `${topicCode}_LO${fallbackLoNumber}`;
+
+  const loId = selectedTestLoId || fallbackLoId;
   const mode = val("teacherTestMode");
   const attemptNo = val("teacherAttemptNo") || "1";
   const responseText = val("teacherTestAnswer");
@@ -595,20 +525,14 @@ function renderTeacherPreview(data){
   let html = "";
 
   if(data.mode==="self" || data.mode==="remediation"){
-    html += `
-      <div class="card">
-        <div class="section-title">Feedback Preview</div>
-    `;
+    html += `<div class="card"><div class="section-title">Feedback Preview</div>`;
 
-    data.bulletResults.forEach((b,i)=>{
+    (data.bulletResults || []).forEach((b,i)=>{
       let line = escapeHtml(b.responseText || "(blank)");
 
       (b.highlights || []).forEach(h=>{
         const regex = new RegExp(escapeRegExp(h),"gi");
-        line = line.replace(
-          regex,
-          match => `<span class="wrong">${match}</span>`
-        );
+        line = line.replace(regex, match => `<span class="wrong">${match}</span>`);
       });
 
       const labels = (b.feedbackLabels || []).map(label =>
@@ -626,21 +550,15 @@ function renderTeacherPreview(data){
     html += `</div>`;
 
     if(data.hintOutput && data.hintOutput.length){
-      html += `
-        <div class="card">
-          <div class="section-title">Answer Structure Hint</div>
-      `;
+      html += `<div class="card"><div class="section-title">Answer Structure Hint</div>`;
 
       data.hintOutput.forEach((h,i)=>{
         html += `
           <div style="margin-bottom:18px;line-height:1.8;">
             <strong>Bullet ${i+1}</strong><br><br>
             ${escapeHtml(h.conceptualHint || "")}
-            <div class="green-box">
-              ${escapeHtml(h.reconstruction || "")}
-            </div>
-          </div>
-          <hr>
+            <div class="green-box">${escapeHtml(h.reconstruction || "")}</div>
+          </div><hr>
         `;
       });
 
@@ -648,10 +566,7 @@ function renderTeacherPreview(data){
     }
 
     if(data.remediationScaffold && data.remediationScaffold.length){
-      html += `
-        <div class="card">
-          <div class="section-title">Remediation Scaffold</div>
-      `;
+      html += `<div class="card"><div class="section-title">Remediation Scaffold</div>`;
 
       data.remediationScaffold.forEach((s,i)=>{
         html += `
@@ -667,17 +582,10 @@ function renderTeacherPreview(data){
   }
 
   if(data.mode==="builder"){
-    html += `
-      <div class="card">
-        <div class="section-title">Model Answer Suggestion</div>
-    `;
+    html += `<div class="card"><div class="section-title">Model Answer Suggestion</div>`;
 
     (data.builderOutput || []).forEach(b=>{
-      html += `
-        <div style="margin-bottom:14px;line-height:1.8;">
-          • ${escapeHtml(b.text)}
-        </div>
-      `;
+      html += `<div style="margin-bottom:14px;line-height:1.8;">• ${escapeHtml(b.text)}</div>`;
     });
 
     html += `</div>`;
@@ -703,12 +611,7 @@ function readKeywordTable(){
     const unacceptable = splitSemicolon(textareas[1].value);
 
     if(bulletNo && keyword){
-      output.push({
-        bulletNo,
-        keyword,
-        variants,
-        unacceptable
-      });
+      output.push({bulletNo,keyword,variants,unacceptable});
     }
   });
 
@@ -773,6 +676,12 @@ function escapeHtml(text){
 function escapeRegExp(text){
   return String(text || "")
     .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+}
+
+function escapeJs(text){
+  return String(text || "")
+    .replaceAll("\\","\\\\")
+    .replaceAll("'","\\'");
 }
 </script>
 
