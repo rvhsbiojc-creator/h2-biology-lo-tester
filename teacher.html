@@ -2,121 +2,143 @@
 <html>
 <head>
   <title>Teacher LO Builder</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 24px;
-      max-width: 1200px;
-      margin: auto;
-      background: #fafafa;
+
+    body{
+      font-family:Arial,sans-serif;
+      padding:24px;
+      max-width:1200px;
+      margin:auto;
+      background:#fafafa;
     }
 
-    .card {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    .card{
+      background:white;
+      border:1px solid #ddd;
+      border-radius:12px;
+      padding:20px;
+      margin-top:16px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05);
     }
 
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 12px;
+    label{
+      font-weight:bold;
+      display:block;
+      margin-top:12px;
     }
 
-    input, textarea, select {
-      width: 95%;
-      max-width: 1000px;
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: 8px;
-      border: 1px solid #bbb;
-      font-size: 14px;
+    input,textarea,select{
+      width:95%;
+      max-width:1000px;
+      padding:8px;
+      margin-top:4px;
+      border-radius:8px;
+      border:1px solid #bbb;
+      font-size:14px;
     }
 
-    textarea {
-      min-height: 90px;
+    textarea{
+      min-height:90px;
     }
 
-    button {
-      margin-top: 16px;
-      padding: 10px 16px;
-      border-radius: 8px;
-      border: 1px solid #aaa;
-      background: white;
-      cursor: pointer;
+    button{
+      margin-top:16px;
+      padding:10px 16px;
+      border-radius:8px;
+      border:1px solid #aaa;
+      background:white;
+      cursor:pointer;
     }
 
-    button:hover {
-      background: #f0f0f0;
+    button:hover{
+      background:#f0f0f0;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
     }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      vertical-align: top;
+    th,td{
+      border:1px solid #ddd;
+      padding:8px;
+      vertical-align:top;
     }
 
-    th {
-      background: #f5f5f5;
+    th{
+      background:#f5f5f5;
     }
 
-    .bullet-col {
-      width: 70px;
-      max-width: 70px;
-      text-align: center;
+    .bullet-col{
+      width:70px;
+      max-width:70px;
+      text-align:center;
     }
 
-    .bullet-col input {
-      width: 42px;
-      text-align: center;
+    .bullet-col input{
+      width:42px;
+      text-align:center;
     }
 
-    td input, td textarea {
-      width: 95%;
-      min-height: 38px;
+    td input,
+    td textarea{
+      width:95%;
+      min-height:38px;
     }
 
-    pre {
-      background: #f7f7f7;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 12px;
-      white-space: pre-wrap;
-      overflow-x: auto;
+    pre{
+      background:#f7f7f7;
+      border:1px solid #ddd;
+      border-radius:8px;
+      padding:12px;
+      white-space:pre-wrap;
+      overflow-x:auto;
     }
 
-    .hint {
-      color: #666;
-      font-size: 14px;
-      line-height: 1.5;
+    .hint{
+      color:#666;
+      font-size:14px;
+      line-height:1.5;
     }
 
-    .section-title {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 8px;
+    .section-title{
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:8px;
     }
 
-    .warning {
-      background: #fff8d6;
-      border: 1px solid #f0dc85;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 12px;
+    .warning{
+      background:#fff8d6;
+      border:1px solid #f0dc85;
+      padding:12px;
+      border-radius:8px;
+      margin-top:12px;
     }
 
-    .hidden {
-      display: none;
+    .hidden{
+      display:none;
     }
+
+    .success{
+      background:#eaf8ea;
+      border:1px solid #9ccc9c;
+      color:#256029;
+      padding:12px;
+      border-radius:8px;
+      margin-top:12px;
+    }
+
+    .error{
+      background:#ffeaea;
+      border:1px solid #ffb3b3;
+      color:#a40000;
+      padding:12px;
+      border-radius:8px;
+      margin-top:12px;
+    }
+
   </style>
 </head>
 
@@ -125,278 +147,481 @@
 <h1>Teacher LO Builder</h1>
 
 <div class="warning">
-  This page currently generates copy-ready rows for the Google Sheet. It does not save directly into the database yet.
+  This page can now save NEW LOs directly into the Google Sheet database.
 </div>
 
+<div id="status"></div>
+
 <div class="card">
-  <div class="section-title">LO Information</div>
+
+  <div class="section-title">
+    LO Information
+  </div>
 
   <label>Topic</label>
-  <select id="topicSelect" onchange="updateTopicFields()">
-    <option value="T04|Proteins|PRO">Proteins</option>
+
+  <select id="topicSelect"
+          onchange="updateTopicFields()">
+
+    <option value="T04|Proteins|PRO">
+      Proteins
+    </option>
+
   </select>
 
-  <input id="topicId" value="T04" class="hidden">
-  <input id="topicName" value="Proteins" class="hidden">
-  <input id="topicCode" value="PRO" class="hidden">
+  <input id="topicId"
+         value="T04"
+         class="hidden">
+
+  <input id="topicName"
+         value="Proteins"
+         class="hidden">
+
+  <input id="topicCode"
+         value="PRO"
+         class="hidden">
 
   <label>LO Number</label>
-  <input id="loNumber" placeholder="e.g. 4">
+
+  <input id="loNumber"
+         placeholder="e.g. 4">
 
   <p class="hint">
-    Teachers only need to enter the LO number. For example, LO Number <strong>4</strong> will become <strong>PRO_LO4</strong>.
+    LO Number 4 becomes PRO_LO4
   </p>
 
   <label>LO Question</label>
-  <textarea id="loQuestion" placeholder="e.g. Describe the formation of peptide bond"></textarea>
+
+  <textarea id="loQuestion"
+            placeholder="e.g. Describe the formation of peptide bond"></textarea>
+
 </div>
 
 <div class="card">
-  <div class="section-title">Answer Bullets</div>
+
+  <div class="section-title">
+    Answer Bullets
+  </div>
+
   <p class="hint">
-    Enter one answer bullet per line. These are the teacher-approved canonical answers.
+    Enter one answer bullet per line.
   </p>
 
-  <textarea id="answerBullets" placeholder="Amino group of one amino acid&#10;And carboxyl group of another amino acid&#10;Reacts to form a peptide bond between the two amino acids"></textarea>
+  <textarea id="answerBullets"></textarea>
 
   <label>Hints</label>
+
   <p class="hint">
-    Enter one hint per line, matching each answer bullet. Example:<br>
-    [Reacting group] Identify the first functional group involved.<br>
-    [Reacting group] Identify the second functional group involved.<br>
-    [Product] State what bond is formed.
+    One hint per line.
   </p>
 
-  <textarea id="hints" placeholder="[Reacting group] Identify the first functional group involved.&#10;[Reacting group] Identify the second functional group involved.&#10;[Product] State what bond is formed."></textarea>
+  <textarea id="hints"></textarea>
+
 </div>
 
 <div class="card">
-  <div class="section-title">Keywords, Accepted Variants & Unacceptable Answers</div>
 
-  <p class="hint">
-    Enter one keyword per row. Accepted variants and unacceptable answers are optional.<br>
-    For multiple variants or unacceptable answers, separate them using semicolons.
-  </p>
+  <div class="section-title">
+    Keywords, Accepted Variants & Unacceptable Answers
+  </div>
 
   <table id="keywordTable">
+
     <thead>
+
       <tr>
-        <th class="bullet-col">Bullet No.</th>
-        <th>Keyword / Phrase</th>
-        <th>Accepted Variants<br><span class="hint">optional; separate with ;</span></th>
-        <th>Unacceptable Answers<br><span class="hint">optional; separate with ;</span></th>
+
+        <th class="bullet-col">
+          Bullet
+        </th>
+
+        <th>
+          Keyword / Phrase
+        </th>
+
+        <th>
+          Accepted Variants
+        </th>
+
+        <th>
+          Unacceptable Answers
+        </th>
+
       </tr>
+
     </thead>
+
     <tbody id="keywordBody">
+
       <tr>
-        <td class="bullet-col"><input value="1"></td>
-        <td><input placeholder="e.g. amino group"></td>
-        <td><textarea placeholder="e.g. amino functional group"></textarea></td>
-        <td><textarea placeholder="e.g. amine group; hydroxyl group"></textarea></td>
+
+        <td class="bullet-col">
+          <input value="1">
+        </td>
+
+        <td>
+          <input placeholder="e.g. amino group">
+        </td>
+
+        <td>
+          <textarea></textarea>
+        </td>
+
+        <td>
+          <textarea></textarea>
+        </td>
+
       </tr>
-      <tr>
-        <td class="bullet-col"><input value="1"></td>
-        <td><input placeholder="e.g. one amino acid"></td>
-        <td><textarea></textarea></td>
-        <td><textarea></textarea></td>
-      </tr>
-      <tr>
-        <td class="bullet-col"><input value="2"></td>
-        <td><input placeholder="e.g. carboxyl group"></td>
-        <td><textarea></textarea></td>
-        <td><textarea></textarea></td>
-      </tr>
+
     </tbody>
+
   </table>
 
-  <button onclick="addKeywordRow()">+ Add keyword row</button>
+  <button onclick="addKeywordRow()">
+    + Add keyword row
+  </button>
+
 </div>
 
 <div class="card">
-  <div class="section-title">Blank Templates</div>
 
-  <p class="hint">
-    These are used for LO Builder Mode and Remediation Mode scaffolds.<br>
-    Format: bullet number | teacher final blank | blank targets separated by semicolons
-  </p>
+  <div class="section-title">
+    Blank Templates
+  </div>
 
-  <textarea id="blankTemplates" placeholder="1 | _______ _____ of ____ amino acid | amino group; one&#10;2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
+  <textarea id="blankTemplates"
+            placeholder="1 | _______ _____ of ____ amino acid | amino group; one&#10;2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
+
 </div>
 
 <div class="card">
-  <div class="section-title">Common Questions</div>
 
-  <p class="hint">
-    Optional. These appear only after the student gets the LO fully correct.
-  </p>
+  <div class="section-title">
+    Common Questions
+  </div>
 
-  <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond.&#10;State the bond formed between amino acids."></textarea>
+  <textarea id="commonQuestions"></textarea>
+
 </div>
 
 <div class="card">
-  <button onclick="generateRows()">Generate Sheet Rows</button>
+
+  <button onclick="previewRows()">
+    Preview Sheet Rows
+  </button>
+
+  <button onclick="saveLOPackage()">
+    Save New LO to Database
+  </button>
+
 </div>
 
-<div id="output" style="display:none;">
+<div id="output"
+     style="display:none;">
 
   <div class="card">
-    <div class="section-title">Generated LO ID</div>
+
+    <div class="section-title">
+      Generated LO ID
+    </div>
+
     <pre id="outGeneratedId"></pre>
+
   </div>
 
   <div class="card">
-    <div class="section-title">LOs tab</div>
-    <pre id="outLOs"></pre>
-  </div>
 
-  <div class="card">
-    <div class="section-title">Answer_Bullets tab</div>
-    <pre id="outBullets"></pre>
-  </div>
+    <div class="section-title">
+      Preview Payload
+    </div>
 
-  <div class="card">
-    <div class="section-title">Keywords tab</div>
-    <pre id="outKeywords"></pre>
-  </div>
+    <pre id="previewPayload"></pre>
 
-  <div class="card">
-    <div class="section-title">Accepted_Variants tab</div>
-    <pre id="outVariants"></pre>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Unacceptable_Answers tab</div>
-    <pre id="outUnacceptable"></pre>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Blank_Templates tab</div>
-    <pre id="outBlanks"></pre>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Common_Questions tab</div>
-    <pre id="outCommon"></pre>
   </div>
 
 </div>
 
 <script>
-function updateTopicFields() {
-  const selected = document.getElementById("topicSelect").value;
-  const parts = selected.split("|");
 
-  document.getElementById("topicId").value = parts[0];
-  document.getElementById("topicName").value = parts[1];
-  document.getElementById("topicCode").value = parts[2];
+const BASE_URL =
+"https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
+
+/************************************
+ * TOPIC
+ ************************************/
+function updateTopicFields(){
+
+  const selected =
+    document
+      .getElementById("topicSelect")
+      .value;
+
+  const parts =
+    selected.split("|");
+
+  document
+    .getElementById("topicId")
+    .value = parts[0];
+
+  document
+    .getElementById("topicName")
+    .value = parts[1];
+
+  document
+    .getElementById("topicCode")
+    .value = parts[2];
 }
 
-function addKeywordRow() {
-  const tbody = document.getElementById("keywordBody");
-  const row = document.createElement("tr");
+/************************************
+ * KEYWORD ROW
+ ************************************/
+function addKeywordRow(){
+
+  const tbody =
+    document
+      .getElementById("keywordBody");
+
+  const row =
+    document.createElement("tr");
 
   row.innerHTML = `
-    <td class="bullet-col"><input></td>
-    <td><input></td>
-    <td><textarea></textarea></td>
-    <td><textarea></textarea></td>
+
+    <td class="bullet-col">
+      <input>
+    </td>
+
+    <td>
+      <input>
+    </td>
+
+    <td>
+      <textarea></textarea>
+    </td>
+
+    <td>
+      <textarea></textarea>
+    </td>
   `;
 
   tbody.appendChild(row);
 }
 
-function generateRows() {
-  const topicId = val("topicId");
-  const topicCode = val("topicCode");
-  const loNumber = val("loNumber");
-  const loQuestion = val("loQuestion");
+/************************************
+ * BUILD PAYLOAD
+ ************************************/
+function buildPayload(){
 
-  if (!loNumber || !loQuestion) {
-    alert("Please enter LO Number and LO Question.");
-    return;
-  }
+  const topicId =
+    val("topicId");
 
-  const loId = `${topicCode}_LO${loNumber}`;
-  const loOrder = loNumber;
+  const topicCode =
+    val("topicCode");
 
-  const bullets = lines("answerBullets");
-  const hints = lines("hints");
-  const blankLines = lines("blankTemplates");
-  const commonLines = lines("commonQuestions");
+  const loNumber =
+    val("loNumber");
 
-  const keywordRowsData = readKeywordTable();
+  const loQuestion =
+    val("loQuestion");
 
-  document.getElementById("output").style.display = "block";
+  const loId =
+    `${topicCode}_LO${loNumber}`;
 
-  document.getElementById("outGeneratedId").innerText = loId;
+  const answerBullets =
+    lines("answerBullets")
+      .map((line,i)=>({
 
-  document.getElementById("outLOs").innerText =
-    `${topicId}\t${loId}\t${loOrder}\t${loQuestion}\tTRUE`;
+        bulletOrder:i+1,
 
-  let bulletRows = "";
-  bullets.forEach((b, i) => {
-    bulletRows += `${loId}\tMain\t${i + 1}\t${b}\t${hints[i] || ""}\n`;
-  });
-  document.getElementById("outBullets").innerText = bulletRows.trim();
+        canonicalAnswer:line,
 
-  let keywordRows = "";
-  let variantRows = "";
-  let unacceptableRows = "";
+        hint:
+          lines("hints")[i] || ""
+      }));
 
-  keywordRowsData.forEach((row, i) => {
-    const keywordId = `K${i + 1}`;
+  const keywords =
+    readKeywordTable();
 
-    keywordRows += `${loId}\t${keywordId}\t${row.keyword}\tTRUE\t\tMain\t${row.bulletNo}\n`;
+  const blankTemplates =
+    lines("blankTemplates")
+      .map(line=>{
 
-    splitSemicolon(row.variants).forEach(v => {
-      variantRows += `${loId}\t${keywordId}\t${v}\n`;
-    });
+        const parts =
+          splitPipe(line);
 
-    splitSemicolon(row.unacceptable).forEach(u => {
-      unacceptableRows += `${loId}\t${u}\tReview this phrase; teacher to edit reason if needed.\n`;
-    });
-  });
+        return {
 
-  document.getElementById("outKeywords").innerText = keywordRows.trim();
-  document.getElementById("outVariants").innerText = variantRows.trim();
-  document.getElementById("outUnacceptable").innerText = unacceptableRows.trim();
+          bulletOrder:
+            parts[0] || "",
 
-  let blankRows = "";
-  blankLines.forEach(line => {
-    const parts = splitPipe(line);
-    const bulletOrder = parts[0] || "";
-    const template = parts[1] || "";
-    const targets = parts[2] || "";
+          template:
+            parts[1] || "",
 
-    blankRows += `${loId}\tMain\t${bulletOrder}\t\t${template}\t${targets}\n`;
-  });
-  document.getElementById("outBlanks").innerText = blankRows.trim();
+          targets:
+            parts[2] || ""
+        };
+      });
 
-  let commonRows = "";
-  commonLines.forEach((q, i) => {
-    commonRows += `${loId}\t${i + 1}\t${q}\n`;
-  });
-  document.getElementById("outCommon").innerText = commonRows.trim();
+  const commonQuestions =
+    lines("commonQuestions");
+
+  return {
+
+    topicId,
+
+    loId,
+
+    loOrder:loNumber,
+
+    loQuestion,
+
+    answerBullets,
+
+    keywords,
+
+    blankTemplates,
+
+    commonQuestions
+  };
 }
 
-function readKeywordTable() {
-  const rows = document.querySelectorAll("#keywordBody tr");
+/************************************
+ * PREVIEW
+ ************************************/
+function previewRows(){
+
+  const payload =
+    buildPayload();
+
+  document
+    .getElementById("output")
+    .style.display = "block";
+
+  document
+    .getElementById("outGeneratedId")
+    .innerText = payload.loId;
+
+  document
+    .getElementById("previewPayload")
+    .innerText =
+      JSON.stringify(
+        payload,
+        null,
+        2
+      );
+}
+
+/************************************
+ * SAVE
+ ************************************/
+async function saveLOPackage(){
+
+  clearStatus();
+
+  try{
+
+    const payload =
+      buildPayload();
+
+    const response =
+      await fetch(
+        BASE_URL,
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+
+            action:
+              "saveLOPackage",
+
+            payload
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if(data.ok){
+
+      showSuccess(
+        `Successfully saved ${data.loId} into the database.`
+      );
+
+    }else{
+
+      showError(
+        data.error ||
+        "Unknown error."
+      );
+    }
+
+  }catch(err){
+
+    showError(
+      err.message
+    );
+  }
+}
+
+/************************************
+ * READ KEYWORD TABLE
+ ************************************/
+function readKeywordTable(){
+
+  const rows =
+    document.querySelectorAll(
+      "#keywordBody tr"
+    );
+
   const output = [];
 
-  rows.forEach(row => {
-    const inputs = row.querySelectorAll("input");
-    const textareas = row.querySelectorAll("textarea");
+  rows.forEach(row=>{
 
-    const bulletNo = inputs[0].value.trim();
-    const keyword = inputs[1].value.trim();
-    const variants = textareas[0].value.trim();
-    const unacceptable = textareas[1].value.trim();
+    const inputs =
+      row.querySelectorAll("input");
 
-    if (bulletNo && keyword) {
+    const textareas =
+      row.querySelectorAll("textarea");
+
+    const bulletNo =
+      inputs[0]
+        .value
+        .trim();
+
+    const keyword =
+      inputs[1]
+        .value
+        .trim();
+
+    const variants =
+      splitSemicolon(
+        textareas[0].value
+      );
+
+    const unacceptable =
+      splitSemicolon(
+        textareas[1].value
+      );
+
+    if(
+      bulletNo &&
+      keyword
+    ){
+
       output.push({
+
         bulletNo,
+
         keyword,
+
         variants,
+
         unacceptable
       });
     }
@@ -405,27 +630,91 @@ function readKeywordTable() {
   return output;
 }
 
-function val(id) {
-  return document.getElementById(id).value.trim();
+/************************************
+ * STATUS
+ ************************************/
+function clearStatus(){
+
+  document
+    .getElementById("status")
+    .innerHTML = "";
 }
 
-function lines(id) {
-  return document.getElementById(id).value
+function showSuccess(msg){
+
+  document
+    .getElementById("status")
+    .innerHTML = `
+
+      <div class="success">
+        ${escapeHtml(msg)}
+      </div>
+    `;
+}
+
+function showError(msg){
+
+  document
+    .getElementById("status")
+    .innerHTML = `
+
+      <div class="error">
+        ${escapeHtml(msg)}
+      </div>
+    `;
+}
+
+/************************************
+ * HELPERS
+ ************************************/
+function val(id){
+
+  return document
+    .getElementById(id)
+    .value
+    .trim();
+}
+
+function lines(id){
+
+  return document
+    .getElementById(id)
+    .value
+
     .split("\n")
-    .map(x => x.trim())
+
+    .map(x=>x.trim())
+
     .filter(Boolean);
 }
 
-function splitPipe(line) {
-  return line.split("|").map(x => x.trim());
+function splitPipe(line){
+
+  return line
+    .split("|")
+    .map(x=>x.trim());
 }
 
-function splitSemicolon(text) {
+function splitSemicolon(text){
+
   return String(text || "")
+
     .split(";")
-    .map(x => x.trim())
+
+    .map(x=>x.trim())
+
     .filter(Boolean);
 }
+
+function escapeHtml(text){
+
+  return String(text || "")
+
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;");
+}
+
 </script>
 
 </body>
