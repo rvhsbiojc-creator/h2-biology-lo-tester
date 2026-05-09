@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teacher LO Builder</title>
 
   <style>
@@ -158,6 +159,132 @@
       margin-top:8px;
       line-height:1.7;
     }
+    /* Responsive design upgrade */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+}
+
+button {
+  min-height: 44px;
+  font-size: 15px;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  max-width: 100%;
+  font-size: 16px;
+}
+
+textarea {
+  line-height: 1.5;
+}
+
+.card,
+.section-box,
+.context-box {
+  width: 100%;
+}
+
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  h1, h2 {
+    font-size: 24px;
+  }
+
+  .card {
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .context-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  button {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .wide-button {
+    width: 100%;
+  }
+
+  .lo-question-display {
+    font-size: 18px;
+  }
+
+  .student-bullet,
+  .hint-line,
+  .green-box {
+    font-size: 15px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th,
+  td {
+    min-width: 160px;
+  }
+
+  .bullet-col {
+    min-width: 70px;
+    width: 70px;
+  }
+
+  .bullet-col input {
+    width: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+
+  h1, h2 {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  textarea {
+    min-height: 120px;
+  }
+
+  .lo-question-display {
+    font-size: 17px;
+  }
+
+  .green-box {
+    padding: 8px;
+  }
+}
   </style>
 </head>
 
