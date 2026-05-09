@@ -1515,6 +1515,14 @@ function renderFinalLeaderboardCelebration(result){
       </div>
     `;
 }
+
+  async function finishRemediationTopic(){
+
+  const result =
+    await logTopicCompletion();
+
+  renderFinalLeaderboardCelebration(result);
+}
 </script>
 
 </body>
