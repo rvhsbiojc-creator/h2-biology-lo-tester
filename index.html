@@ -552,34 +552,10 @@ async function submitAnswer(){
   /***** CORRECT *****/
   if(data.correct){
 
-    /***** REMEDIATION AUTO NEXT *****/
+    /***** REMEDIATION FLOW *****/
     if(currentMode==="remediation"){
 
-      setTimeout(async ()=>{
-
-        currentLOIndex++;
-
-        /***** FINISHED TOPIC *****/
-        if(
-          currentLOIndex
-          >=
-          currentLOs.length
-        ){
-
-          await logTopicCompletion();
-
-          alert(
-            "Topic completed successfully."
-          );
-
-          location.reload();
-
-          return;
-        }
-
-        loadLO(currentLOIndex);
-
-      },1500);
+      showRemediationCelebration();
 
       return;
     }
@@ -588,6 +564,228 @@ async function submitAnswer(){
   }
 
   attemptNo++;
+}
+  /************************************
+ * REMEDIATION CELEBRATION
+ ************************************/
+function showRemediationCelebration(){
+
+  const completed =
+    currentLOIndex + 1;
+
+  const total =
+    currentLOs.length;
+
+  const garden =
+    getGardenProgress(
+      completed,
+      total
+    );
+
+  let finalMessage = "";
+
+  /***** FINAL LO *****/
+  if(completed >= total){
+
+    finalMessage = `
+
+      <div class="section-box">
+
+        <div style="
+          font-size:34px;
+          text-align:center;
+          line-height:1.8;
+        ">
+
+          🌞😎🌸🌺🌻🌷🪻🌼🌿
+
+        </div>
+
+        <h2 style="text-align:center;">
+
+          TOPIC COMPLETED!
+
+        </h2>
+
+        <div style="
+          text-align:center;
+          font-size:18px;
+          line-height:1.8;
+        ">
+
+          Your Biology garden is now fully blooming!
+
+          <br><br>
+
+          Excellent perseverance —
+          your remediation session
+          has been successfully completed
+          and saved.
+
+        </div>
+
+        <div style="
+          font-size:34px;
+          text-align:center;
+          line-height:1.8;
+          margin-top:12px;
+        ">
+
+          🌞😎🌸🌺🌻🌷🪻🌼🌿
+
+        </div>
+
+        <div style="
+          text-align:center;
+          margin-top:18px;
+        ">
+
+          <button onclick="finishRemediationTopic()">
+
+            Finish Session
+
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+  }else{
+
+    finalMessage = `
+
+      <div class="section-box">
+
+        <div style="
+          text-align:center;
+          font-size:30px;
+          line-height:1.8;
+        ">
+
+          ${garden}
+
+        </div>
+
+        <h2 style="text-align:center;">
+
+          🎉 LO COMPLETED!
+
+        </h2>
+
+        <div style="
+          text-align:center;
+          line-height:1.8;
+        ">
+
+          Well done —
+          your Biology garden has grown.
+
+          <br><br>
+
+          You must complete all LOs
+          in this topic before
+          your remediation attempt
+          can be saved.
+
+        </div>
+
+        <div style="
+          text-align:center;
+          margin-top:18px;
+        ">
+
+          <button onclick="continueRemediationLO()">
+
+            Continue to Next LO
+
+          </button>
+
+        </div>
+
+      </div>
+    `;
+  }
+
+  /***** MODEL ANSWER *****/
+  let modelAnswer = `
+
+    <div class="section-box">
+
+      <div class="section-title">
+
+        Model Answer
+
+      </div>
+  `;
+
+  currentLOPackage.answerBullets
+    .forEach(b=>{
+
+      modelAnswer += `
+        • ${escapeHtml(b.Canonical_Answer)}
+        <br><br>
+      `;
+    });
+
+  modelAnswer += `</div>`;
+
+  document
+    .getElementById("feedback")
+    .innerHTML =
+
+      finalMessage
+      +
+      modelAnswer;
+}
+
+/************************************
+ * CONTINUE REMEDIATION
+ ************************************/
+function continueRemediationLO(){
+
+  currentLOIndex++;
+
+  loadLO(currentLOIndex);
+}
+
+/************************************
+ * FINISH TOPIC
+ ************************************/
+async function finishRemediationTopic(){
+
+  await logTopicCompletion();
+
+  location.reload();
+}
+
+/************************************
+ * GARDEN PROGRESSION
+ ************************************/
+function getGardenProgress(
+  completed,
+  total
+){
+
+  const ratio =
+    completed / total;
+
+  if(ratio < 0.34){
+
+    return "🌱";
+  }
+
+  if(ratio < 0.67){
+
+    return "🌱🌿🌼";
+  }
+
+  if(ratio < 1){
+
+    return "🌿🌸🌼🌷";
+  }
+
+  return "🌞😎🌸🌺🌻🌷🪻🌼🌿";
 }
 
 /************************************
