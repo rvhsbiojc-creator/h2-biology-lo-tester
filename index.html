@@ -921,6 +921,24 @@ async function logTopicCompletion(){
   return await res.json();
 }
 
+  function formatDuration(totalSeconds){
+
+  const h =
+    Math.floor(totalSeconds / 3600);
+
+  const m =
+    Math.floor((totalSeconds % 3600) / 60);
+
+  const s =
+    totalSeconds % 60;
+
+  if(h > 0){
+    return `${h}h ${m}m ${s}s`;
+  }
+
+  return `${m}m ${s}s`;
+}
+
 /************************************
  * GARDEN PROGRESSION
  ************************************/
