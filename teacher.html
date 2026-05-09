@@ -6,7 +6,7 @@
     body {
       font-family: Arial, sans-serif;
       padding: 24px;
-      max-width: 1100px;
+      max-width: 1200px;
       margin: auto;
       background: #fafafa;
     }
@@ -26,7 +26,7 @@
       margin-top: 12px;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 95%;
       max-width: 1000px;
       padding: 8px;
@@ -53,6 +53,27 @@
       background: #f0f0f0;
     }
 
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f5f5f5;
+    }
+
+    td input, td textarea {
+      width: 95%;
+      min-height: 38px;
+    }
+
     pre {
       background: #f7f7f7;
       border: 1px solid #ddd;
@@ -65,12 +86,21 @@
     .hint {
       color: #666;
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .section-title {
       font-size: 20px;
       font-weight: bold;
       margin-bottom: 8px;
+    }
+
+    .warning {
+      background: #fff8d6;
+      border: 1px solid #f0dc85;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -79,69 +109,118 @@
 
 <h1>Teacher LO Builder</h1>
 
+<div class="warning">
+  This page currently generates copy-ready rows for the Google Sheet. It does not save directly into the database yet.
+</div>
+
 <div class="card">
   <div class="section-title">LO Information</div>
 
+  <label>Topic</label>
+  <select id="topicSelect" onchange="updateTopicFields()">
+    <option value="T04|Proteins|PRO">Proteins</option>
+  </select>
+
   <label>Topic ID</label>
-  <input id="topicId" value="T04">
+  <input id="topicId" value="T04" readonly>
 
   <label>Topic Name</label>
-  <input id="topicName" value="Proteins">
+  <input id="topicName" value="Proteins" readonly>
 
-  <label>LO ID</label>
-  <input id="loId" placeholder="e.g. PRO_LO4">
+  <label>Topic Short Code</label>
+  <input id="topicCode" value="PRO" readonly>
 
-  <label>LO Order</label>
-  <input id="loOrder" placeholder="e.g. 4">
+  <label>LO Number</label>
+  <input id="loNumber" placeholder="e.g. 4">
+
+  <p class="hint">
+    Teachers only need to enter the LO number. For example, LO Number <strong>4</strong> will become <strong>PRO_LO4</strong>.
+  </p>
 
   <label>LO Question</label>
-  <textarea id="loQuestion" placeholder="Enter the LO question"></textarea>
+  <textarea id="loQuestion" placeholder="e.g. Describe the formation of peptide bond"></textarea>
 </div>
 
 <div class="card">
   <div class="section-title">Answer Bullets</div>
-  <p class="hint">Enter one answer bullet per line. These become the canonical teacher-approved answer bullets.</p>
+  <p class="hint">
+    Enter one answer bullet per line. These are the teacher-approved canonical answers.
+  </p>
 
-  <textarea id="answerBullets" placeholder="Bullet 1&#10;Bullet 2&#10;Bullet 3"></textarea>
+  <textarea id="answerBullets" placeholder="Amino group of one amino acid&#10;And carboxyl group of another amino acid&#10;Reacts to form a peptide bond between the two amino acids"></textarea>
 
   <label>Hints</label>
-  <p class="hint">Enter one hint per line, matching each answer bullet.</p>
-  <textarea id="hints" placeholder="[Structure] ...&#10;[Property] ..."></textarea>
+  <p class="hint">
+    Enter one hint per line, matching each answer bullet. Example:<br>
+    [Reacting group] Identify the first functional group involved.<br>
+    [Reacting group] Identify the second functional group involved.<br>
+    [Product] State what bond is formed.
+  </p>
+
+  <textarea id="hints" placeholder="[Reacting group] Identify the first functional group involved.&#10;[Reacting group] Identify the second functional group involved.&#10;[Product] State what bond is formed."></textarea>
 </div>
 
 <div class="card">
-  <div class="section-title">Keywords</div>
-  <p class="hint">Enter required keywords/phrases. Format: keyword | bullet number</p>
+  <div class="section-title">Keywords, Accepted Variants & Unacceptable Answers</div>
 
-  <textarea id="keywords" placeholder="amino group | 1&#10;carboxyl group | 2&#10;peptide bond | 3"></textarea>
-</div>
+  <p class="hint">
+    Enter one keyword per row. Accepted variants and unacceptable answers are optional.<br>
+    For multiple variants or unacceptable answers, separate them using semicolons.
+  </p>
 
-<div class="card">
-  <div class="section-title">Accepted Variants</div>
-  <p class="hint">Optional. Format: keyword ID | accepted variant</p>
+  <table id="keywordTable">
+    <thead>
+      <tr>
+        <th>Bullet No.</th>
+        <th>Keyword / Phrase</th>
+        <th>Accepted Variants<br><span class="hint">optional; separate with ;</span></th>
+        <th>Unacceptable Answers<br><span class="hint">optional; separate with ;</span></th>
+      </tr>
+    </thead>
+    <tbody id="keywordBody">
+      <tr>
+        <td><input value="1"></td>
+        <td><input placeholder="e.g. amino group"></td>
+        <td><textarea placeholder="e.g. amino functional group"></textarea></td>
+        <td><textarea placeholder="e.g. amine group; hydroxyl group"></textarea></td>
+      </tr>
+      <tr>
+        <td><input value="1"></td>
+        <td><input placeholder="e.g. one amino acid"></td>
+        <td><textarea></textarea></td>
+        <td><textarea></textarea></td>
+      </tr>
+      <tr>
+        <td><input value="2"></td>
+        <td><input placeholder="e.g. carboxyl group"></td>
+        <td><textarea></textarea></td>
+        <td><textarea></textarea></td>
+      </tr>
+    </tbody>
+  </table>
 
-  <textarea id="variants" placeholder="K1 | α-carbon&#10;K1 | central C atom"></textarea>
-</div>
-
-<div class="card">
-  <div class="section-title">Unacceptable Answers</div>
-  <p class="hint">Optional. Format: phrase | reason</p>
-
-  <textarea id="unacceptable" placeholder="hydroxyl group | Use amino group&#10;amine group | Use amino group"></textarea>
+  <button onclick="addKeywordRow()">+ Add keyword row</button>
 </div>
 
 <div class="card">
   <div class="section-title">Blank Templates</div>
-  <p class="hint">Format: bullet number | teacher final blank | blank targets separated by semicolons</p>
+
+  <p class="hint">
+    These are used for LO Builder Mode and Remediation Mode scaffolds.<br>
+    Format: bullet number | teacher final blank | blank targets separated by semicolons
+  </p>
 
   <textarea id="blankTemplates" placeholder="1 | ______ group of one amino acid | amino group; one amino acid&#10;2 | ______ group of another amino acid | carboxyl group; another amino acid"></textarea>
 </div>
 
 <div class="card">
   <div class="section-title">Common Questions</div>
-  <p class="hint">Optional. Enter one common question per line.</p>
 
-  <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond."></textarea>
+  <p class="hint">
+    Optional. These appear only after the student gets the LO fully correct.
+  </p>
+
+  <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond.&#10;State the bond formed between amino acids."></textarea>
 </div>
 
 <div class="card">
@@ -149,6 +228,11 @@
 </div>
 
 <div id="output" style="display:none;">
+
+  <div class="card">
+    <div class="section-title">Generated LO ID</div>
+    <pre id="outGeneratedId"></pre>
+  </div>
 
   <div class="card">
     <div class="section-title">LOs tab</div>
@@ -188,23 +272,54 @@
 </div>
 
 <script>
-function generateRows(){
+function updateTopicFields() {
+  const selected = document.getElementById("topicSelect").value;
+  const parts = selected.split("|");
 
+  document.getElementById("topicId").value = parts[0];
+  document.getElementById("topicName").value = parts[1];
+  document.getElementById("topicCode").value = parts[2];
+}
+
+function addKeywordRow() {
+  const tbody = document.getElementById("keywordBody");
+
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td><input></td>
+    <td><input></td>
+    <td><textarea></textarea></td>
+    <td><textarea></textarea></td>
+  `;
+
+  tbody.appendChild(row);
+}
+
+function generateRows() {
   const topicId = val("topicId");
-  const loId = val("loId");
-  const loOrder = val("loOrder");
+  const topicCode = val("topicCode");
+  const loNumber = val("loNumber");
   const loQuestion = val("loQuestion");
+
+  if (!loNumber || !loQuestion) {
+    alert("Please enter LO Number and LO Question.");
+    return;
+  }
+
+  const loId = `${topicCode}_LO${loNumber}`;
+  const loOrder = loNumber;
 
   const bullets = lines("answerBullets");
   const hints = lines("hints");
-
-  const keywordLines = lines("keywords");
-  const variantLines = lines("variants");
-  const unacceptableLines = lines("unacceptable");
   const blankLines = lines("blankTemplates");
   const commonLines = lines("commonQuestions");
 
+  const keywordRowsData = readKeywordTable();
+
   document.getElementById("output").style.display = "block";
+
+  document.getElementById("outGeneratedId").innerText = loId;
 
   document.getElementById("outLOs").innerText =
     `${topicId}\t${loId}\t${loOrder}\t${loQuestion}\tTRUE`;
@@ -216,28 +331,25 @@ function generateRows(){
   document.getElementById("outBullets").innerText = bulletRows.trim();
 
   let keywordRows = "";
-  keywordLines.forEach((line, i) => {
-    const parts = splitPipe(line);
-    const keyword = parts[0] || "";
-    const bulletOrder = parts[1] || "";
+  let variantRows = "";
+  let unacceptableRows = "";
+
+  keywordRowsData.forEach((row, i) => {
     const keywordId = `K${i + 1}`;
 
-    keywordRows += `${loId}\t${keywordId}\t${keyword}\tTRUE\t\tMain\t${bulletOrder}\n`;
+    keywordRows += `${loId}\t${keywordId}\t${row.keyword}\tTRUE\t\tMain\t${row.bulletNo}\n`;
+
+    splitSemicolon(row.variants).forEach(v => {
+      variantRows += `${loId}\t${keywordId}\t${v}\n`;
+    });
+
+    splitSemicolon(row.unacceptable).forEach(u => {
+      unacceptableRows += `${loId}\t${u}\tReview this phrase; teacher to edit reason if needed.\n`;
+    });
   });
+
   document.getElementById("outKeywords").innerText = keywordRows.trim();
-
-  let variantRows = "";
-  variantLines.forEach(line => {
-    const parts = splitPipe(line);
-    variantRows += `${loId}\t${parts[0] || ""}\t${parts[1] || ""}\n`;
-  });
   document.getElementById("outVariants").innerText = variantRows.trim();
-
-  let unacceptableRows = "";
-  unacceptableLines.forEach(line => {
-    const parts = splitPipe(line);
-    unacceptableRows += `${loId}\t${parts[0] || ""}\t${parts[1] || ""}\n`;
-  });
   document.getElementById("outUnacceptable").innerText = unacceptableRows.trim();
 
   let blankRows = "";
@@ -258,19 +370,52 @@ function generateRows(){
   document.getElementById("outCommon").innerText = commonRows.trim();
 }
 
-function val(id){
+function readKeywordTable() {
+  const rows = document.querySelectorAll("#keywordBody tr");
+  const output = [];
+
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll("input");
+    const textareas = row.querySelectorAll("textarea");
+
+    const bulletNo = inputs[0].value.trim();
+    const keyword = inputs[1].value.trim();
+    const variants = textareas[0].value.trim();
+    const unacceptable = textareas[1].value.trim();
+
+    if (bulletNo && keyword) {
+      output.push({
+        bulletNo,
+        keyword,
+        variants,
+        unacceptable
+      });
+    }
+  });
+
+  return output;
+}
+
+function val(id) {
   return document.getElementById(id).value.trim();
 }
 
-function lines(id){
+function lines(id) {
   return document.getElementById(id).value
     .split("\n")
     .map(x => x.trim())
     .filter(Boolean);
 }
 
-function splitPipe(line){
+function splitPipe(line) {
   return line.split("|").map(x => x.trim());
+}
+
+function splitSemicolon(text) {
+  return String(text || "")
+    .split(";")
+    .map(x => x.trim())
+    .filter(Boolean);
 }
 </script>
 
