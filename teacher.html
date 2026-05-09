@@ -805,11 +805,14 @@ function renderKeywordRows(data){
 
   (data.keywords || []).forEach(k => {
 
+    /************************************
+     * ACCEPTED VARIANTS
+     ************************************/
     const variants =
       (data.variants || [])
 
         .filter(v =>
-          v.Keyword_ID===k.Keyword_ID
+          v.Keyword_ID === k.Keyword_ID
         )
 
         .map(v =>
@@ -818,13 +821,25 @@ function renderKeywordRows(data){
 
         .join("; ");
 
+    /************************************
+     * UNACCEPTABLE ANSWERS
+     ************************************/
     const unacceptable =
       (data.unacceptable || [])
 
-        .map(u => u.Phrase)
+        .filter(u =>
+          u.Keyword_ID === k.Keyword_ID
+        )
+
+        .map(u =>
+          u.Phrase
+        )
 
         .join("; ");
 
+    /************************************
+     * BUILD ROW
+     ************************************/
     const row =
       document.createElement("tr");
 
@@ -848,6 +863,7 @@ function renderKeywordRows(data){
     `;
 
     body.appendChild(row);
+
   });
 }
 
