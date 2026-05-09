@@ -4,7 +4,6 @@
   <title>Teacher LO Builder</title>
 
   <style>
-
     body{
       font-family:Arial,sans-serif;
       padding:24px;
@@ -139,6 +138,26 @@
       margin-top:12px;
     }
 
+    .feedback-label{
+      background:#fff3a6;
+      padding:2px 6px;
+      border-radius:6px;
+      margin-left:6px;
+    }
+
+    .wrong{
+      text-decoration:line-through;
+      text-decoration-thickness:2px;
+    }
+
+    .green-box{
+      background:#e7f8e7;
+      padding:10px;
+      border-radius:8px;
+      display:block;
+      margin-top:8px;
+      line-height:1.7;
+    }
   </style>
 </head>
 
@@ -147,202 +166,145 @@
 <h1>Teacher LO Builder</h1>
 
 <div class="warning">
-  This page can now save NEW LOs directly into the Google Sheet database.
+  This page can save NEW LOs directly into the Google Sheet database. Editing existing LOs will be added later.
 </div>
 
 <div id="status"></div>
 
 <div class="card">
-
-  <div class="section-title">
-    LO Information
-  </div>
+  <div class="section-title">LO Information</div>
 
   <label>Topic</label>
-
-  <select id="topicSelect"
-          onchange="updateTopicFields()">
-
-    <option value="T04|Proteins|PRO">
-      Proteins
-    </option>
-
+  <select id="topicSelect" onchange="updateTopicFields()">
+    <option value="T04|Proteins|PRO">Proteins</option>
   </select>
 
-  <input id="topicId"
-         value="T04"
-         class="hidden">
-
-  <input id="topicName"
-         value="Proteins"
-         class="hidden">
-
-  <input id="topicCode"
-         value="PRO"
-         class="hidden">
+  <input id="topicId" value="T04" class="hidden">
+  <input id="topicName" value="Proteins" class="hidden">
+  <input id="topicCode" value="PRO" class="hidden">
 
   <label>LO Number</label>
-
-  <input id="loNumber"
-         placeholder="e.g. 4">
+  <input id="loNumber" placeholder="e.g. 4">
 
   <p class="hint">
-    LO Number 4 becomes PRO_LO4
+    LO Number 4 becomes PRO_LO4.
   </p>
 
   <label>LO Question</label>
-
-  <textarea id="loQuestion"
-            placeholder="e.g. Describe the formation of peptide bond"></textarea>
-
+  <textarea id="loQuestion" placeholder="e.g. Describe the formation of peptide bond"></textarea>
 </div>
 
 <div class="card">
-
-  <div class="section-title">
-    Answer Bullets
-  </div>
+  <div class="section-title">Answer Bullets</div>
 
   <p class="hint">
     Enter one answer bullet per line.
   </p>
 
-  <textarea id="answerBullets"></textarea>
+  <textarea id="answerBullets" placeholder="Amino group of one amino acid&#10;And carboxyl group of another amino acid&#10;Reacts to form a peptide bond between the two amino acids"></textarea>
 
   <label>Hints</label>
-
   <p class="hint">
-    One hint per line.
+    Enter one hint per line, matching each answer bullet.
   </p>
 
-  <textarea id="hints"></textarea>
-
+  <textarea id="hints" placeholder="[Reacting group] Identify the first functional group involved.&#10;[Reacting group] Identify the second functional group involved.&#10;[Product] State what bond is formed."></textarea>
 </div>
 
 <div class="card">
+  <div class="section-title">Keywords, Accepted Variants & Unacceptable Answers</div>
 
-  <div class="section-title">
-    Keywords, Accepted Variants & Unacceptable Answers
-  </div>
+  <p class="hint">
+    Enter one keyword per row. Accepted variants and unacceptable answers are optional.
+    For multiple entries, separate them using semicolons.
+  </p>
 
   <table id="keywordTable">
-
     <thead>
-
       <tr>
-
-        <th class="bullet-col">
-          Bullet
-        </th>
-
-        <th>
-          Keyword / Phrase
-        </th>
-
-        <th>
-          Accepted Variants
-        </th>
-
-        <th>
-          Unacceptable Answers
-        </th>
-
+        <th class="bullet-col">Bullet</th>
+        <th>Keyword / Phrase</th>
+        <th>Accepted Variants</th>
+        <th>Unacceptable Answers</th>
       </tr>
-
     </thead>
 
     <tbody id="keywordBody">
-
       <tr>
-
-        <td class="bullet-col">
-          <input value="1">
-        </td>
-
-        <td>
-          <input placeholder="e.g. amino group">
-        </td>
-
-        <td>
-          <textarea></textarea>
-        </td>
-
-        <td>
-          <textarea></textarea>
-        </td>
-
+        <td class="bullet-col"><input value="1"></td>
+        <td><input placeholder="e.g. amino group"></td>
+        <td><textarea placeholder="e.g. amino functional group"></textarea></td>
+        <td><textarea placeholder="e.g. amine group; hydroxyl group"></textarea></td>
       </tr>
-
     </tbody>
-
   </table>
 
-  <button onclick="addKeywordRow()">
-    + Add keyword row
-  </button>
-
+  <button onclick="addKeywordRow()">+ Add keyword row</button>
 </div>
 
 <div class="card">
+  <div class="section-title">Blank Templates</div>
 
-  <div class="section-title">
-    Blank Templates
-  </div>
+  <p class="hint">
+    Format: bullet number | teacher final blank | blank targets separated by semicolons
+  </p>
 
-  <textarea id="blankTemplates"
-            placeholder="1 | _______ _____ of ____ amino acid | amino group; one&#10;2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
-
+  <textarea id="blankTemplates" placeholder="1 | _______ _____ of ____ amino acid | amino group; one&#10;2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
 </div>
 
 <div class="card">
+  <div class="section-title">Common Questions</div>
 
-  <div class="section-title">
-    Common Questions
-  </div>
+  <p class="hint">
+    Optional. These appear only after the student gets the LO fully correct.
+  </p>
 
-  <textarea id="commonQuestions"></textarea>
-
+  <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond.&#10;State the bond formed between amino acids."></textarea>
 </div>
 
 <div class="card">
-
-  <button onclick="previewRows()">
-    Preview Sheet Rows
-  </button>
-
-  <button onclick="saveLOPackage()">
-    Save New LO to Database
-  </button>
-
+  <button onclick="previewRows()">Preview Sheet Rows</button>
+  <button onclick="saveLOPackage()">Save New LO to Database</button>
 </div>
 
-<div id="output"
-     style="display:none;">
+<div id="teacherTestSection" class="card" style="display:none;">
+  <div class="section-title">Teacher Test Preview</div>
 
+  <p class="hint">
+    Test the saved LO immediately without using the student page.
+  </p>
+
+  <label>Test Mode</label>
+  <select id="teacherTestMode">
+    <option value="self">Self-Review Mode</option>
+    <option value="builder">LO Builder Mode</option>
+    <option value="remediation">Remediation Mode</option>
+  </select>
+
+  <label>Attempt Number</label>
+  <input id="teacherAttemptNo" value="1">
+
+  <label>Test Student Answer</label>
+  <textarea id="teacherTestAnswer" placeholder="Type a sample student answer here..."></textarea>
+
+  <button onclick="runTeacherPreview()">Check Response</button>
+
+  <div id="teacherPreviewOutput" style="margin-top:20px;"></div>
+</div>
+
+<div id="output" style="display:none;">
   <div class="card">
-
-    <div class="section-title">
-      Generated LO ID
-    </div>
-
+    <div class="section-title">Generated LO ID</div>
     <pre id="outGeneratedId"></pre>
-
   </div>
 
   <div class="card">
-
-    <div class="section-title">
-      Preview Payload
-    </div>
-
+    <div class="section-title">Preview Payload</div>
     <pre id="previewPayload"></pre>
-
   </div>
-
 </div>
 
 <script>
-
 const BASE_URL =
 "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
 
@@ -350,57 +312,26 @@ const BASE_URL =
  * TOPIC
  ************************************/
 function updateTopicFields(){
+  const selected = document.getElementById("topicSelect").value;
+  const parts = selected.split("|");
 
-  const selected =
-    document
-      .getElementById("topicSelect")
-      .value;
-
-  const parts =
-    selected.split("|");
-
-  document
-    .getElementById("topicId")
-    .value = parts[0];
-
-  document
-    .getElementById("topicName")
-    .value = parts[1];
-
-  document
-    .getElementById("topicCode")
-    .value = parts[2];
+  document.getElementById("topicId").value = parts[0];
+  document.getElementById("topicName").value = parts[1];
+  document.getElementById("topicCode").value = parts[2];
 }
 
 /************************************
  * KEYWORD ROW
  ************************************/
 function addKeywordRow(){
-
-  const tbody =
-    document
-      .getElementById("keywordBody");
-
-  const row =
-    document.createElement("tr");
+  const tbody = document.getElementById("keywordBody");
+  const row = document.createElement("tr");
 
   row.innerHTML = `
-
-    <td class="bullet-col">
-      <input>
-    </td>
-
-    <td>
-      <input>
-    </td>
-
-    <td>
-      <textarea></textarea>
-    </td>
-
-    <td>
-      <textarea></textarea>
-    </td>
+    <td class="bullet-col"><input></td>
+    <td><input></td>
+    <td><textarea></textarea></td>
+    <td><textarea></textarea></td>
   `;
 
   tbody.appendChild(row);
@@ -410,76 +341,43 @@ function addKeywordRow(){
  * BUILD PAYLOAD
  ************************************/
 function buildPayload(){
+  const topicId = val("topicId");
+  const topicCode = val("topicCode");
+  const loNumber = val("loNumber");
+  const loQuestion = val("loQuestion");
+  const loId = `${topicCode}_LO${loNumber}`;
 
-  const topicId =
-    val("topicId");
-
-  const topicCode =
-    val("topicCode");
-
-  const loNumber =
-    val("loNumber");
-
-  const loQuestion =
-    val("loQuestion");
-
-  const loId =
-    `${topicCode}_LO${loNumber}`;
+  const hintLines = lines("hints");
 
   const answerBullets =
-    lines("answerBullets")
-      .map((line,i)=>({
+    lines("answerBullets").map((line,i)=>({
+      bulletOrder:i+1,
+      canonicalAnswer:line,
+      hint:hintLines[i] || ""
+    }));
 
-        bulletOrder:i+1,
-
-        canonicalAnswer:line,
-
-        hint:
-          lines("hints")[i] || ""
-      }));
-
-  const keywords =
-    readKeywordTable();
+  const keywords = readKeywordTable();
 
   const blankTemplates =
-    lines("blankTemplates")
-      .map(line=>{
+    lines("blankTemplates").map(line=>{
+      const parts = splitPipe(line);
+      return {
+        bulletOrder:parts[0] || "",
+        template:parts[1] || "",
+        targets:parts[2] || ""
+      };
+    });
 
-        const parts =
-          splitPipe(line);
-
-        return {
-
-          bulletOrder:
-            parts[0] || "",
-
-          template:
-            parts[1] || "",
-
-          targets:
-            parts[2] || ""
-        };
-      });
-
-  const commonQuestions =
-    lines("commonQuestions");
+  const commonQuestions = lines("commonQuestions");
 
   return {
-
     topicId,
-
     loId,
-
     loOrder:loNumber,
-
     loQuestion,
-
     answerBullets,
-
     keywords,
-
     blankTemplates,
-
     commonQuestions
   };
 }
@@ -488,134 +386,200 @@ function buildPayload(){
  * PREVIEW
  ************************************/
 function previewRows(){
+  const payload = buildPayload();
 
-  const payload =
-    buildPayload();
-
-  document
-    .getElementById("output")
-    .style.display = "block";
-
-  document
-    .getElementById("outGeneratedId")
-    .innerText = payload.loId;
-
-  document
-    .getElementById("previewPayload")
-    .innerText =
-      JSON.stringify(
-        payload,
-        null,
-        2
-      );
+  document.getElementById("output").style.display = "block";
+  document.getElementById("outGeneratedId").innerText = payload.loId;
+  document.getElementById("previewPayload").innerText =
+    JSON.stringify(payload,null,2);
 }
 
 /************************************
  * SAVE
  ************************************/
-async function saveLOPackage(){
-
+function saveLOPackage(){
   clearStatus();
 
   try{
+    const payload = buildPayload();
 
-    const payload =
-      buildPayload();
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = BASE_URL;
+    form.target = "hiddenSaveFrame";
+    form.style.display = "none";
 
-    const response =
-      await fetch(
-        BASE_URL,
-        {
-          method:"POST",
+    const actionInput = document.createElement("input");
+    actionInput.name = "action";
+    actionInput.value = "saveLOPackage";
 
-          body:JSON.stringify({
+    const payloadInput = document.createElement("input");
+    payloadInput.name = "payload";
+    payloadInput.value = JSON.stringify(payload);
 
-            action:
-              "saveLOPackage",
+    form.appendChild(actionInput);
+    form.appendChild(payloadInput);
 
-            payload
-          })
-        }
-      );
+    document.body.appendChild(form);
+    form.submit();
 
-    const data =
-      await response.json();
+    showSuccess(
+      `Save request sent for ${payload.loId}. Please check the Google Sheet tabs to confirm it was inserted.`
+    );
 
-    if(data.ok){
-
-      showSuccess(
-        `Successfully saved ${data.loId} into the database.`
-      );
-
-    }else{
-
-      showError(
-        data.error ||
-        "Unknown error."
-      );
-    }
+    setTimeout(()=>{
+      form.remove();
+    },3000);
 
   }catch(err){
-
-    showError(
-      err.message
-    );
+    showError(err.message);
   }
+}
+
+/************************************
+ * TEACHER TEST PREVIEW
+ ************************************/
+function showTeacherTest(){
+  document.getElementById("teacherTestSection").style.display = "block";
+}
+
+async function runTeacherPreview(){
+  const loNumber = val("loNumber");
+  const topicCode = val("topicCode");
+  const loId = `${topicCode}_LO${loNumber}`;
+  const mode = val("teacherTestMode");
+  const attemptNo = val("teacherAttemptNo") || "1";
+  const responseText = val("teacherTestAnswer");
+
+  const res = await fetch(
+    `${BASE_URL}?action=checkResponse`
+    + `&email=teacher_preview@local`
+    + `&loId=${encodeURIComponent(loId)}`
+    + `&mode=${encodeURIComponent(mode)}`
+    + `&attemptNo=${encodeURIComponent(attemptNo)}`
+    + `&response=${encodeURIComponent(responseText)}`
+  );
+
+  const data = await res.json();
+  renderTeacherPreview(data);
+}
+
+function renderTeacherPreview(data){
+  let html = "";
+
+  if(data.mode==="self" || data.mode==="remediation"){
+    html += `
+      <div class="card">
+        <div class="section-title">Feedback Preview</div>
+    `;
+
+    data.bulletResults.forEach((b,i)=>{
+      let line = escapeHtml(b.responseText || "(blank)");
+
+      (b.highlights || []).forEach(h=>{
+        const regex = new RegExp(escapeRegExp(h),"gi");
+        line = line.replace(
+          regex,
+          match => `<span class="wrong">${match}</span>`
+        );
+      });
+
+      const labels = (b.feedbackLabels || []).map(label =>
+        `<span class="feedback-label">${escapeHtml(label)}</span>`
+      ).join(" ");
+
+      html += `
+        <div style="margin-bottom:18px;line-height:1.8;">
+          <strong>Bullet ${i+1}</strong><br>
+          • ${line} ${labels}
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+
+    if(data.hintOutput && data.hintOutput.length){
+      html += `
+        <div class="card">
+          <div class="section-title">Answer Structure Hint</div>
+      `;
+
+      data.hintOutput.forEach((h,i)=>{
+        html += `
+          <div style="margin-bottom:18px;line-height:1.8;">
+            <strong>Bullet ${i+1}</strong><br><br>
+            ${escapeHtml(h.conceptualHint || "")}
+            <div class="green-box">
+              ${escapeHtml(h.reconstruction || "")}
+            </div>
+          </div>
+          <hr>
+        `;
+      });
+
+      html += `</div>`;
+    }
+
+    if(data.remediationScaffold && data.remediationScaffold.length){
+      html += `
+        <div class="card">
+          <div class="section-title">Remediation Scaffold</div>
+      `;
+
+      data.remediationScaffold.forEach((s,i)=>{
+        html += `
+          <div style="margin-bottom:18px;">
+            <strong>Bullet ${i+1}</strong>
+            <div class="green-box">${escapeHtml(s.scaffold || "")}</div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    }
+  }
+
+  if(data.mode==="builder"){
+    html += `
+      <div class="card">
+        <div class="section-title">Model Answer Suggestion</div>
+    `;
+
+    (data.builderOutput || []).forEach(b=>{
+      html += `
+        <div style="margin-bottom:14px;line-height:1.8;">
+          • ${escapeHtml(b.text)}
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+  }
+
+  document.getElementById("teacherPreviewOutput").innerHTML = html;
 }
 
 /************************************
  * READ KEYWORD TABLE
  ************************************/
 function readKeywordTable(){
-
-  const rows =
-    document.querySelectorAll(
-      "#keywordBody tr"
-    );
-
+  const rows = document.querySelectorAll("#keywordBody tr");
   const output = [];
 
   rows.forEach(row=>{
+    const inputs = row.querySelectorAll("input");
+    const textareas = row.querySelectorAll("textarea");
 
-    const inputs =
-      row.querySelectorAll("input");
+    const bulletNo = inputs[0].value.trim();
+    const keyword = inputs[1].value.trim();
+    const variants = splitSemicolon(textareas[0].value);
+    const unacceptable = splitSemicolon(textareas[1].value);
 
-    const textareas =
-      row.querySelectorAll("textarea");
-
-    const bulletNo =
-      inputs[0]
-        .value
-        .trim();
-
-    const keyword =
-      inputs[1]
-        .value
-        .trim();
-
-    const variants =
-      splitSemicolon(
-        textareas[0].value
-      );
-
-    const unacceptable =
-      splitSemicolon(
-        textareas[1].value
-      );
-
-    if(
-      bulletNo &&
-      keyword
-    ){
-
+    if(bulletNo && keyword){
       output.push({
-
         bulletNo,
-
         keyword,
-
         variants,
-
         unacceptable
       });
     }
@@ -628,88 +592,64 @@ function readKeywordTable(){
  * STATUS
  ************************************/
 function clearStatus(){
-
-  document
-    .getElementById("status")
-    .innerHTML = "";
+  document.getElementById("status").innerHTML = "";
 }
 
 function showSuccess(msg){
-
-  document
-    .getElementById("status")
-    .innerHTML = `
-
-      <div class="success">
-        ${escapeHtml(msg)}
-      </div>
-    `;
+  document.getElementById("status").innerHTML = `
+    <div class="success">
+      ${escapeHtml(msg)}
+      <br><br>
+      <button onclick="showTeacherTest()">Test This LO as Teacher</button>
+    </div>
+  `;
 }
 
 function showError(msg){
-
-  document
-    .getElementById("status")
-    .innerHTML = `
-
-      <div class="error">
-        ${escapeHtml(msg)}
-      </div>
-    `;
+  document.getElementById("status").innerHTML = `
+    <div class="error">${escapeHtml(msg)}</div>
+  `;
 }
 
 /************************************
  * HELPERS
  ************************************/
 function val(id){
-
-  return document
-    .getElementById(id)
-    .value
-    .trim();
+  return document.getElementById(id).value.trim();
 }
 
 function lines(id){
-
-  return document
-    .getElementById(id)
-    .value
-
+  return document.getElementById(id).value
     .split("\n")
-
     .map(x=>x.trim())
-
     .filter(Boolean);
 }
 
 function splitPipe(line){
-
-  return line
-    .split("|")
-    .map(x=>x.trim());
+  return line.split("|").map(x=>x.trim());
 }
 
 function splitSemicolon(text){
-
   return String(text || "")
-
     .split(";")
-
     .map(x=>x.trim())
-
     .filter(Boolean);
 }
 
 function escapeHtml(text){
-
   return String(text || "")
-
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;");
 }
 
+function escapeRegExp(text){
+  return String(text || "")
+    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+}
 </script>
+
+<iframe name="hiddenSaveFrame" style="display:none;"></iframe>
 
 </body>
 </html>
