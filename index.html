@@ -880,37 +880,45 @@ function continueRemediationLO(){
  ************************************/
 async function logTopicCompletion(){
 
-  const completedAt = new Date();
+  const completedAt =
+    new Date();
 
   const durationSeconds =
-    Math.floor((completedAt - remediationStartedAt) / 1000);
+    Math.floor(
+      (
+        completedAt -
+        remediationStartedAt
+      ) / 1000
+    );
 
-  const duration =
+  const durationDisplay =
     formatDuration(durationSeconds);
 
-  await fetch(
-    `${BASE_URL}?action=logTopicCompletion`
-    + `&email=${encodeURIComponent(studentEmail)}`
-    + `&topicId=${encodeURIComponent(currentTopicId)}`
-    + `&topicName=${encodeURIComponent(currentTopicName)}`
-    + `&mode=${encodeURIComponent(currentMode)}`
-    + `&startedAt=${encodeURIComponent(remediationStartedAt.toISOString())}`
-    + `&completedAt=${encodeURIComponent(completedAt.toISOString())}`
-    + `&durationSeconds=${encodeURIComponent(duration)}`
-    + `&loCount=${currentLOs.length}`
-  );
-}
+  const res =
+    await fetch(
 
-function formatDuration(totalSeconds){
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.floor((totalSeconds % 3600) / 60);
-  const s = totalSeconds % 60;
+      `${BASE_URL}?action=logTopicCompletion`
 
-  if(h > 0){
-    return `${h}h ${m}m ${s}s`;
-  }
+      + `&email=${encodeURIComponent(studentEmail)}`
 
-  return `${m}m ${s}s`;
+      + `&topicId=${encodeURIComponent(currentTopicId)}`
+
+      + `&topicName=${encodeURIComponent(currentTopicName)}`
+
+      + `&mode=${encodeURIComponent(currentMode)}`
+
+      + `&startedAt=${encodeURIComponent(remediationStartedAt.toISOString())}`
+
+      + `&completedAt=${encodeURIComponent(completedAt.toISOString())}`
+
+      + `&durationSeconds=${encodeURIComponent(durationSeconds)}`
+
+      + `&durationDisplay=${encodeURIComponent(durationDisplay)}`
+
+      + `&loCount=${currentLOs.length}`
+    );
+
+  return await res.json();
 }
 
 /************************************
