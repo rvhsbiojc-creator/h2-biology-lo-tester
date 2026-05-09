@@ -752,11 +752,39 @@ function continueRemediationLO(){
 /************************************
  * FINISH TOPIC
  ************************************/
-async function finishRemediationTopic(){
+async function logTopicCompletion(){
 
-  await logTopicCompletion();
+  const completedAt = new Date();
 
-  location.reload();
+  const durationSeconds =
+    Math.floor((completedAt - remediationStartedAt) / 1000);
+
+  const duration =
+    formatDuration(durationSeconds);
+
+  await fetch(
+    `${BASE_URL}?action=logTopicCompletion`
+    + `&email=${encodeURIComponent(studentEmail)}`
+    + `&topicId=${encodeURIComponent(currentTopicId)}`
+    + `&topicName=${encodeURIComponent(currentTopicName)}`
+    + `&mode=${encodeURIComponent(currentMode)}`
+    + `&startedAt=${encodeURIComponent(remediationStartedAt.toISOString())}`
+    + `&completedAt=${encodeURIComponent(completedAt.toISOString())}`
+    + `&durationSeconds=${encodeURIComponent(duration)}`
+    + `&loCount=${currentLOs.length}`
+  );
+}
+
+function formatDuration(totalSeconds){
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+
+  if(h > 0){
+    return `${h}h ${m}m ${s}s`;
+  }
+
+  return `${m}m ${s}s`;
 }
 
 /************************************
