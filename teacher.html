@@ -5,86 +5,43 @@
   <title>Teacher LO Builder</title>
 
   <style>
+
+    *{
+      box-sizing:border-box;
+    }
+
     body{
       font-family:Arial,sans-serif;
+      background:#f5f7fb;
+      margin:0;
       padding:24px;
-      max-width:1200px;
+      color:#222;
+    }
+
+    .page{
+      max-width:1400px;
       margin:auto;
-      background:#fafafa;
+    }
+
+    h1{
+      margin-top:0;
+      margin-bottom:18px;
+      font-size:34px;
     }
 
     .card{
       background:white;
-      border:1px solid #ddd;
-      border-radius:12px;
-      padding:20px;
-      margin-top:16px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    label{
-      font-weight:bold;
-      display:block;
-      margin-top:12px;
-    }
-
-    input,textarea,select{
-      width:100%;
-      padding:8px;
-      margin-top:4px;
-      border-radius:8px;
-      border:1px solid #bbb;
-      font-size:16px;
-    }
-
-    textarea{
-      min-height:90px;
-      line-height:1.5;
-    }
-
-    button{
-      margin-top:12px;
-      padding:10px 16px;
-      border-radius:8px;
-      border:1px solid #aaa;
-      background:white;
-      cursor:pointer;
-      min-height:44px;
-    }
-
-    button:hover{
-      background:#f0f0f0;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:12px;
-      display:block;
-      overflow-x:auto;
-      white-space:nowrap;
-    }
-
-    th,td{
-      border:1px solid #ddd;
-      padding:8px;
-      vertical-align:top;
-    }
-
-    th{
-      background:#f5f5f5;
-    }
-
-    .bullet-col{
-      width:70px;
-      min-width:70px;
-      text-align:center;
+      border-radius:14px;
+      padding:22px;
+      margin-bottom:20px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.06);
+      border:1px solid #e5e7eb;
     }
 
     .section-title{
-      font-size:20px;
+      font-size:22px;
       font-weight:bold;
-      margin-bottom:8px;
+      margin-bottom:14px;
     }
 
     .hint{
@@ -93,59 +50,191 @@
       line-height:1.5;
     }
 
-    .success{
-      background:#eaf8ea;
-      border:1px solid #9ccc9c;
-      color:#256029;
+    label{
+      font-weight:bold;
+      display:block;
+      margin-top:14px;
+      margin-bottom:6px;
+    }
+
+    input,
+    textarea,
+    select{
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid #cfd6df;
+      font-size:15px;
+      background:white;
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical;
+      line-height:1.5;
+    }
+
+    button{
+      border:none;
+      background:#ffffff;
+      border:1px solid #ccd3dc;
+      border-radius:10px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-size:14px;
+      transition:0.2s;
+    }
+
+    button:hover{
+      background:#f3f6fa;
+    }
+
+    .button-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:14px;
+    }
+
+    th{
+      background:#f2f5f8;
+      text-align:left;
       padding:12px;
-      border-radius:8px;
-      margin-top:12px;
+      border-bottom:1px solid #dbe1e8;
+      font-size:14px;
+    }
+
+    td{
+      padding:12px;
+      border-bottom:1px solid #edf1f5;
+      vertical-align:top;
+    }
+
+    tr:hover{
+      background:#fafcff;
+    }
+
+    .checkbox-col{
+      width:60px;
+      text-align:center;
+    }
+
+    .action-buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .small-button{
+      padding:7px 10px;
+      font-size:13px;
+    }
+
+    .selected-row{
+      background:#eef7ff !important;
+    }
+
+    .success{
+      background:#e8f7e8;
+      border:1px solid #9dd39d;
+      color:#246624;
+      padding:12px;
+      border-radius:10px;
+      margin-bottom:18px;
     }
 
     .error{
       background:#ffeaea;
       border:1px solid #ffb3b3;
-      color:#a40000;
+      color:#8a1f1f;
       padding:12px;
-      border-radius:8px;
-      margin-top:12px;
+      border-radius:10px;
+      margin-bottom:18px;
     }
 
     .green-box{
       background:#e7f8e7;
-      padding:10px;
-      border-radius:8px;
-      margin-top:8px;
+      border-radius:10px;
+      padding:12px;
       line-height:1.7;
+      margin-top:8px;
     }
 
-    .small-button{
-      margin:4px;
-      padding:6px 10px;
-      font-size:13px;
+    .two-col{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
     }
 
-    .selected-row{
-      background:#eef8ff;
+    .keyword-table input,
+    .keyword-table textarea{
+      width:100%;
     }
 
-    @media (max-width:768px){
-      body{
-        padding:12px;
+    .bullet-col{
+      width:80px;
+      min-width:80px;
+    }
+
+    .bullet-col input{
+      text-align:center;
+    }
+
+    pre{
+      white-space:pre-wrap;
+      background:#f7f7f7;
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:12px;
+    }
+
+    @media (max-width:900px){
+
+      .two-col{
+        grid-template-columns:1fr;
       }
 
-      .card{
-        padding:14px;
+      .action-buttons{
+        flex-direction:column;
+      }
+
+      button{
+        width:100%;
+      }
+    }
+
+    @media (max-width:600px){
+
+      body{
+        padding:10px;
       }
 
       h1{
-        font-size:24px;
+        font-size:28px;
+      }
+
+      .card{
+        padding:16px;
+      }
+
+      table{
+        display:block;
+        overflow-x:auto;
       }
     }
+
   </style>
 </head>
 
 <body>
+
+<div class="page">
 
 <h1>Teacher LO Builder</h1>
 
@@ -184,8 +273,24 @@
     Existing LOs for Topic
   </div>
 
+  <p class="hint">
+    Select an LO to edit or delete.
+  </p>
+
   <div id="existingLOsBox">
-    Loading...
+    Loading existing LOs...
+  </div>
+
+  <div class="button-row">
+
+    <button onclick="editSelectedLO()">
+      Edit Existing LO
+    </button>
+
+    <button onclick="deleteSelectedLO()">
+      Delete LO
+    </button>
+
   </div>
 
 </div>
@@ -196,14 +301,34 @@
     LO Information
   </div>
 
-  <div class="green-box" id="editingLabel">
+  <div class="green-box"
+       id="editingLabel">
+
     Creating NEW LO
+
   </div>
 
-  <label>LO Number</label>
+  <div class="two-col">
 
-  <input id="loNumber"
-         placeholder="e.g. 4">
+    <div>
+
+      <label>LO Number</label>
+
+      <input id="loNumber"
+             placeholder="e.g. 4">
+
+    </div>
+
+    <div>
+
+      <label>Generated LO ID</label>
+
+      <input id="generatedLoId"
+             readonly>
+
+    </div>
+
+  </div>
 
   <label>LO Question</label>
 
@@ -231,24 +356,43 @@
     Keywords, Accepted Variants & Unacceptable Answers
   </div>
 
-  <table id="keywordTable">
+  <table class="keyword-table">
 
     <thead>
+
       <tr>
-        <th class="bullet-col">Bullet</th>
-        <th>Keyword / Phrase</th>
-        <th>Accepted Variants</th>
-        <th>Unacceptable Answers</th>
+
+        <th class="bullet-col">
+          Bullet
+        </th>
+
+        <th>
+          Keyword / Phrase
+        </th>
+
+        <th>
+          Accepted Variants
+        </th>
+
+        <th>
+          Unacceptable Answers
+        </th>
+
       </tr>
+
     </thead>
 
     <tbody id="keywordBody"></tbody>
 
   </table>
 
-  <button onclick="addKeywordRow()">
-    + Add keyword row
-  </button>
+  <div class="button-row">
+
+    <button onclick="addKeywordRow()">
+      + Add keyword row
+    </button>
+
+  </div>
 
 </div>
 
@@ -274,21 +418,25 @@
 
 <div class="card">
 
-  <button onclick="previewRows()">
-    Preview Sheet Rows
-  </button>
+  <div class="button-row">
 
-  <button onclick="saveNewLO()">
-    Save New LO
-  </button>
+    <button onclick="previewRows()">
+      Preview Sheet Rows
+    </button>
 
-  <button onclick="updateExistingLO()">
-    Update Existing LO
-  </button>
+    <button onclick="saveNewLO()">
+      Save New LO
+    </button>
 
-  <button onclick="resetForm()">
-    Reset Form
-  </button>
+    <button onclick="updateExistingLO()">
+      Update Existing LO
+    </button>
+
+    <button onclick="resetForm()">
+      Reset Form
+    </button>
+
+  </div>
 
 </div>
 
@@ -319,7 +467,6 @@ let currentEditingLO = null;
  * INIT
  ************************************/
 window.addEventListener("load", () => {
-
   updateTopicFields();
 });
 
@@ -344,7 +491,32 @@ function updateTopicFields(){
     .getElementById("topicCode")
     .value = parts[2];
 
+  updateGeneratedLOId();
+
   loadExistingLOs();
+}
+
+/************************************
+ * GENERATED LO ID
+ ************************************/
+document
+  .getElementById("loNumber")
+  .addEventListener("input", updateGeneratedLOId);
+
+function updateGeneratedLOId(){
+
+  const code =
+    val("topicCode");
+
+  const number =
+    val("loNumber");
+
+  document
+    .getElementById("generatedLoId")
+    .value =
+      number
+        ? `${code}_LO${number}`
+        : "";
 }
 
 /************************************
@@ -390,9 +562,21 @@ function renderExistingLOs(){
 
         <tr>
 
-          <th>LO</th>
-          <th>Question</th>
-          <th>Actions</th>
+          <th class="checkbox-col">
+            Select
+          </th>
+
+          <th>
+            LO
+          </th>
+
+          <th>
+            LO Question
+          </th>
+
+          <th>
+            Actions
+          </th>
 
         </tr>
 
@@ -411,6 +595,14 @@ function renderExistingLOs(){
         : ''
       }">
 
+        <td class="checkbox-col">
+
+          <input type="checkbox"
+                 class="loCheckbox"
+                 value="${escapeHtml(lo.LO_ID)}">
+
+        </td>
+
         <td>
           ${escapeHtml(lo.LO_ID)}
         </td>
@@ -421,19 +613,23 @@ function renderExistingLOs(){
 
         <td>
 
-          <button class="small-button"
-                  onclick="loadLOIntoForm('${escapeJs(lo.LO_ID)}')">
+          <div class="action-buttons">
 
-            Edit Existing LO
+            <button class="small-button"
+                    onclick="viewLODetails('${escapeJs(lo.LO_ID)}')">
 
-          </button>
+              View LO Details
 
-          <button class="small-button"
-                  onclick="viewLODetails('${escapeJs(lo.LO_ID)}')">
+            </button>
 
-            View LO Details
+            <button class="small-button"
+                    onclick="loadLOIntoForm('${escapeJs(lo.LO_ID)}')">
 
-          </button>
+              Test This LO
+
+            </button>
+
+          </div>
 
         </td>
 
@@ -447,6 +643,62 @@ function renderExistingLOs(){
   `;
 
   box.innerHTML = html;
+}
+
+/************************************
+ * GET SELECTED LOS
+ ************************************/
+function getSelectedLOs(){
+
+  return Array.from(
+    document.querySelectorAll(".loCheckbox:checked")
+  )
+
+  .map(x => x.value);
+}
+
+/************************************
+ * EDIT SELECTED LO
+ ************************************/
+async function editSelectedLO(){
+
+  const selected =
+    getSelectedLOs();
+
+  if(selected.length!==1){
+
+    showError(
+      "Please select exactly ONE LO to edit."
+    );
+
+    return;
+  }
+
+  await loadLOIntoForm(
+    selected[0]
+  );
+}
+
+/************************************
+ * DELETE PLACEHOLDER
+ ************************************/
+function deleteSelectedLO(){
+
+  const selected =
+    getSelectedLOs();
+
+  if(selected.length===0){
+
+    showError(
+      "Please select at least one LO."
+    );
+
+    return;
+  }
+
+  alert(
+    "Delete LO with confirmation will be added next."
+  );
 }
 
 /************************************
@@ -481,12 +733,13 @@ async function loadLOIntoForm(loId){
     .getElementById("loNumber")
     .value = loNumber;
 
+  updateGeneratedLOId();
+
   document
     .getElementById("loQuestion")
     .value =
       lo.LO_Question || "";
 
-  /***** BULLETS *****/
   document
     .getElementById("answerBullets")
     .value =
@@ -494,7 +747,6 @@ async function loadLOIntoForm(loId){
         .map(x => x.Canonical_Answer)
         .join("\n");
 
-  /***** HINTS *****/
   document
     .getElementById("hints")
     .value =
@@ -502,26 +754,42 @@ async function loadLOIntoForm(loId){
         .map(x => x.Hint || "")
         .join("\n");
 
-  /***** KEYWORDS *****/
   renderKeywordRows(data);
 
-  /***** BLANKS *****/
   document
     .getElementById("blankTemplates")
     .value =
       (data.blankTemplates || [])
+
         .map(x =>
           `${x.Bullet_Order} | ${x.Teacher_Final_Blank} | ${x.Blank_Targets}`
         )
+
         .join("\n");
 
-  /***** COMMON QUESTIONS *****/
   document
     .getElementById("commonQuestions")
     .value =
       (data.commonQuestions || [])
         .map(x => x.Common_Question)
         .join("\n");
+
+  window.scrollTo({
+    top:document.body.scrollHeight,
+    behavior:"smooth"
+  });
+}
+
+/************************************
+ * VIEW DETAILS
+ ************************************/
+async function viewLODetails(loId){
+
+  await loadLOIntoForm(loId);
+
+  showSuccess(
+    `Loaded ${loId} into the form below.`
+  );
 }
 
 /************************************
@@ -584,36 +852,55 @@ function renderKeywordRows(data){
 }
 
 /************************************
- * VIEW DETAILS
+ * ADD KEYWORD ROW
  ************************************/
-async function viewLODetails(loId){
+function addKeywordRow(){
 
-  await loadLOIntoForm(loId);
+  const body =
+    document
+      .getElementById("keywordBody");
 
-  alert(
-    "LO details loaded into the form below."
-  );
+  const row =
+    document.createElement("tr");
+
+  row.innerHTML = `
+
+    <td class="bullet-col">
+      <input>
+    </td>
+
+    <td>
+      <input>
+    </td>
+
+    <td>
+      <textarea></textarea>
+    </td>
+
+    <td>
+      <textarea></textarea>
+    </td>
+  `;
+
+  body.appendChild(row);
 }
 
 /************************************
- * SAVE NEW
+ * SAVE NEW LO
  ************************************/
 function saveNewLO(){
-
-  submitLOAction(
-    "saveLOPackage"
-  );
+  submitLOAction("saveLOPackage");
 }
 
 /************************************
- * UPDATE EXISTING
+ * UPDATE EXISTING LO
  ************************************/
 function updateExistingLO(){
 
   if(!currentEditingLO){
 
     showError(
-      "Please choose an existing LO first."
+      "Please load an LO first."
     );
 
     return;
@@ -641,7 +928,7 @@ function submitLOAction(action){
 
     form.method = "POST";
     form.action = BASE_URL;
-    form.target = "hiddenSaveFrame";
+    form.target = "hiddenFrame";
     form.style.display = "none";
 
     const actionInput =
@@ -812,29 +1099,22 @@ function resetForm(){
     .innerHTML =
       "Creating NEW LO";
 
-  document
-    .getElementById("loNumber")
-    .value = "";
+  [
+    "loNumber",
+    "generatedLoId",
+    "loQuestion",
+    "answerBullets",
+    "hints",
+    "blankTemplates",
+    "commonQuestions"
+  ]
 
-  document
-    .getElementById("loQuestion")
-    .value = "";
+  .forEach(id => {
 
-  document
-    .getElementById("answerBullets")
-    .value = "";
-
-  document
-    .getElementById("hints")
-    .value = "";
-
-  document
-    .getElementById("blankTemplates")
-    .value = "";
-
-  document
-    .getElementById("commonQuestions")
-    .value = "";
+    document
+      .getElementById(id)
+      .value = "";
+  });
 
   document
     .getElementById("keywordBody")
@@ -842,41 +1122,7 @@ function resetForm(){
 }
 
 /************************************
- * KEYWORD ROW
- ************************************/
-function addKeywordRow(){
-
-  const tbody =
-    document
-      .getElementById("keywordBody");
-
-  const row =
-    document.createElement("tr");
-
-  row.innerHTML = `
-
-    <td class="bullet-col">
-      <input>
-    </td>
-
-    <td>
-      <input>
-    </td>
-
-    <td>
-      <textarea></textarea>
-    </td>
-
-    <td>
-      <textarea></textarea>
-    </td>
-  `;
-
-  tbody.appendChild(row);
-}
-
-/************************************
- * READ KEYWORDS
+ * READ KEYWORD TABLE
  ************************************/
 function readKeywordTable(){
 
@@ -1027,8 +1273,10 @@ function escapeJs(text){
 }
 </script>
 
-<iframe name="hiddenSaveFrame"
+<iframe name="hiddenFrame"
         style="display:none;"></iframe>
+
+</div>
 
 </body>
 </html>
