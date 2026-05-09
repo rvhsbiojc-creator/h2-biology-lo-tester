@@ -587,6 +587,10 @@ function renderExistingLOs(){
 
   existingLOs.forEach(lo => {
 
+    const loNumber =
+      String(lo.LO_ID || "")
+        .split("_LO")[1] || "";
+
     html += `
 
       <tr class="${
@@ -604,11 +608,15 @@ function renderExistingLOs(){
         </td>
 
         <td>
-          ${escapeHtml(lo.LO_ID)}
+
+          LO${escapeHtml(loNumber)}
+
         </td>
 
         <td>
+
           ${escapeHtml(lo.LO_Question)}
+
         </td>
 
         <td>
