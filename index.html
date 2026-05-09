@@ -1298,7 +1298,223 @@ function escapeJs(text){
     .replaceAll("\\","\\\\")
     .replaceAll("'","\\'");
 }
+/************************************
+ * FORMAT DURATION
+ ************************************/
+function formatDuration(totalSeconds){
 
+  const h =
+    Math.floor(totalSeconds / 3600);
+
+  const m =
+    Math.floor((totalSeconds % 3600) / 60);
+
+  const s =
+    totalSeconds % 60;
+
+  if(h > 0){
+    return `${h}h ${m}m ${s}s`;
+  }
+
+  return `${m}m ${s}s`;
+}
+
+/************************************
+ * LOG TOPIC COMPLETION
+ ************************************/
+async function logTopicCompletion(){
+
+  const completedAt =
+    new Date();
+
+  const durationSeconds =
+    Math.floor(
+      (
+        completedAt -
+        remediationStartedAt
+      ) / 1000
+    );
+
+  const durationDisplay =
+    formatDuration(durationSeconds);
+
+  const res =
+    await fetch(
+
+      `${BASE_URL}?action=logTopicCompletion`
+
+      + `&email=${encodeURIComponent(studentEmail)}`
+
+      + `&topicId=${encodeURIComponent(currentTopicId)}`
+
+      + `&topicName=${encodeURIComponent(currentTopicName)}`
+
+      + `&mode=${encodeURIComponent(currentMode)}`
+
+      + `&startedAt=${encodeURIComponent(remediationStartedAt.toISOString())}`
+
+      + `&completedAt=${encodeURIComponent(completedAt.toISOString())}`
+
+      + `&durationSeconds=${encodeURIComponent(durationSeconds)}`
+
+      + `&durationDisplay=${encodeURIComponent(durationDisplay)}`
+
+      + `&loCount=${currentLOs.length}`
+    );
+
+  return await res.json();
+}
+
+/************************************
+ * FINAL CELEBRATION
+ ************************************/
+function renderFinalLeaderboardCelebration(result){
+
+  const rows =
+    result.leaderboard || [];
+
+  let leaderboardHtml = "";
+
+  if(rows.length > 0){
+
+    leaderboardHtml += `
+
+      <div class="section-box">
+
+        <div style="
+          text-align:center;
+          font-size:28px;
+          line-height:1.8;
+        ">
+
+          🎆✨🌞😎 TOP 10 FASTEST FIRST COMPLETIONS 🌸🌺🌻✨🎆
+
+        </div>
+
+        <table style="
+          width:100%;
+          border-collapse:collapse;
+          margin-top:16px;
+        ">
+
+          <thead>
+
+            <tr>
+              <th style="border:1px solid #ddd;padding:8px;">Rank</th>
+              <th style="border:1px solid #ddd;padding:8px;">Student</th>
+              <th style="border:1px solid #ddd;padding:8px;">Class</th>
+              <th style="border:1px solid #ddd;padding:8px;">Time</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+    `;
+
+    rows.forEach(r => {
+
+      let medal = "";
+
+      if(r.rank === 1) medal = "🥇";
+      else if(r.rank === 2) medal = "🥈";
+      else if(r.rank === 3) medal = "🥉";
+      else medal = "🌟";
+
+      leaderboardHtml += `
+
+        <tr>
+          <td style="border:1px solid #ddd;padding:8px;text-align:center;">
+            ${medal} ${r.rank}
+          </td>
+
+          <td style="border:1px solid #ddd;padding:8px;">
+            ${escapeHtml(r.name)}
+          </td>
+
+          <td style="border:1px solid #ddd;padding:8px;text-align:center;">
+            ${escapeHtml(r.className)}
+          </td>
+
+          <td style="border:1px solid #ddd;padding:8px;text-align:center;">
+            ${escapeHtml(r.time)}
+          </td>
+        </tr>
+      `;
+    });
+
+    leaderboardHtml += `
+
+          </tbody>
+
+        </table>
+
+      </div>
+    `;
+  }
+
+  const firstCompletionMessage =
+    result.firstCompletion
+      ? "Your first completion has been entered into the leaderboard!"
+      : "You have completed this topic before, so this attempt was saved but not ranked again.";
+
+  document
+    .getElementById("feedback")
+    .innerHTML = `
+
+      <div class="section-box">
+
+        <div style="
+          font-size:36px;
+          text-align:center;
+          line-height:1.8;
+        ">
+
+          🌞😎🌸🌺🌻🌷🪻🌼🌿
+
+        </div>
+
+        <h2 style="text-align:center;">
+          TOPIC COMPLETED!
+        </h2>
+
+        <div style="
+          text-align:center;
+          font-size:18px;
+          line-height:1.8;
+        ">
+
+          Your Biology garden is fully blooming!
+
+          <br><br>
+
+          ${escapeHtml(firstCompletionMessage)}
+
+        </div>
+
+        <div style="
+          font-size:36px;
+          text-align:center;
+          line-height:1.8;
+          margin-top:12px;
+        ">
+
+          🎆✨🌞😎🌸🌺🌻🌷🪻🌼🌿✨🎆
+
+        </div>
+
+      </div>
+
+      ${leaderboardHtml}
+
+      <div class="section-box" style="text-align:center;">
+
+        <button onclick="location.reload()">
+          Return to Home
+        </button>
+
+      </div>
+    `;
+}
 </script>
 
 </body>
