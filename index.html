@@ -2,27 +2,115 @@
 <html>
 <head>
   <title>H2 Biology LO Tester</title>
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 24px; max-width: 950px; margin: auto; background: #fafafa; }
-    .card { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 20px; margin-top: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .section-box { border: 1px solid #ddd; border-radius: 10px; padding: 14px; margin-top: 14px; background: #fcfcfc; }
-    .section-title { font-weight: bold; margin-bottom: 8px; }
-    button { margin-top: 10px; padding: 9px 14px; border-radius: 8px; border: 1px solid #aaa; cursor: pointer; background: white; }
-    button:hover { background: #f0f0f0; }
-    .wide-button { width: 100%; max-width: 850px; display: block; text-align: left; line-height: 1.4; }
-    textarea { width: 95%; max-width: 850px; padding: 10px; border-radius: 8px; border: 1px solid #bbb; font-size: 15px; margin-top: 6px; }
-    input { padding: 8px; border-radius: 8px; border: 1px solid #bbb; min-width: 280px; }
-    .wrong { text-decoration: line-through; text-decoration-thickness: 2px; }
-    .feedback-label { background: yellow; padding: 2px 4px; border-radius: 4px; }
-    .context-box { background: #f7f7f7; border-radius: 10px; padding: 12px; margin-bottom: 14px; border: 1px solid #e0e0e0; }
-    .context-grid { display: grid; grid-template-columns: 120px 1fr; gap: 8px 14px; }
-    .label { font-weight: bold; color: #333; }
-    .lo-question-display { font-size: 20px; font-weight: bold; line-height: 1.4; margin: 10px 0 8px 0; }
-    .subtle { color: #666; font-size: 14px; }
-    .success-text { font-weight: bold; }
-    .hint-line { margin: 8px 0; font-size: 15px; }
-    .student-bullet { margin: 10px 0; line-height: 1.5; font-size: 15px; font-weight: normal; }
-    .bullet-status { margin-left: 8px; font-style: italic; color: #666; font-size: 15px; }
+
+    body{
+      font-family:Arial;
+      padding:24px;
+      max-width:1000px;
+      margin:auto;
+      background:#fafafa;
+    }
+
+    .card{
+      background:white;
+      border:1px solid #ddd;
+      border-radius:12px;
+      padding:20px;
+      margin-top:16px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .section-box{
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:14px;
+      margin-top:14px;
+      background:#fcfcfc;
+    }
+
+    .section-title{
+      font-weight:bold;
+      margin-bottom:8px;
+    }
+
+    .green-box{
+      background:#eaf8ea;
+      border:1px solid #c8e6c9;
+      border-radius:8px;
+      padding:12px;
+      margin-top:10px;
+      line-height:1.6;
+    }
+
+    button{
+      margin-top:10px;
+      padding:9px 14px;
+      border-radius:8px;
+      border:1px solid #aaa;
+      cursor:pointer;
+      background:white;
+    }
+
+    textarea{
+      width:95%;
+      max-width:850px;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #bbb;
+      font-size:15px;
+      margin-top:6px;
+    }
+
+    input{
+      padding:8px;
+      border-radius:8px;
+      border:1px solid #bbb;
+      min-width:280px;
+    }
+
+    .wrong{
+      text-decoration:line-through;
+      text-decoration-thickness:2px;
+    }
+
+    .feedback-label{
+      background:yellow;
+      padding:2px 4px;
+      border-radius:4px;
+    }
+
+    .context-box{
+      background:#f7f7f7;
+      border-radius:10px;
+      padding:12px;
+      margin-bottom:14px;
+      border:1px solid #e0e0e0;
+    }
+
+    .context-grid{
+      display:grid;
+      grid-template-columns:120px 1fr;
+      gap:8px 14px;
+    }
+
+    .label{
+      font-weight:bold;
+    }
+
+    .lo-question-display{
+      font-size:20px;
+      font-weight:bold;
+      line-height:1.4;
+      margin:10px 0 8px 0;
+    }
+
+    .student-bullet{
+      margin:10px 0;
+      line-height:1.5;
+    }
+
   </style>
 </head>
 
@@ -31,187 +119,523 @@
 <h2>H2 Biology LO Tester</h2>
 
 <div id="login" class="card">
+
   <h3>Login</h3>
+
   <input id="email" placeholder="Enter email">
-  <button onclick="login()">Enter</button>
+
+  <button onclick="login()">
+    Enter
+  </button>
+
   <p id="loginMsg"></p>
+
 </div>
 
-<div id="modeSelect" class="card" style="display:none;">
+<div id="modeSelect"
+     class="card"
+     style="display:none;">
+
   <h3>Select Mode</h3>
-  <button onclick="selectMode('builder')">LO Builder Mode</button><br>
-  <button onclick="selectMode('self')">Self-Review Mode</button><br>
-  <button onclick="selectMode('remediation')">Remediation Mode</button>
+
+  <button onclick="selectMode('builder')">
+    LO Builder Mode
+  </button>
+
+  <br>
+
+  <button onclick="selectMode('self')">
+    Self-Review Mode
+  </button>
+
+  <br>
+
+  <button onclick="selectMode('remediation')">
+    Remediation Mode
+  </button>
+
 </div>
 
-<div id="topics" class="card" style="display:none;">
+<div id="topics"
+     class="card"
+     style="display:none;">
+
   <h3>Select Topic</h3>
+
   <div id="topicList"></div>
+
 </div>
 
-<div id="loChoiceSection" class="card" style="display:none;">
-  <div class="context-box">
-    <div class="context-grid">
-      <div class="label">Topic</div><div id="choiceTopicName"></div>
-      <div class="label">Mode</div><div id="choiceModeName"></div>
-    </div>
-  </div>
+<div id="loChoiceSection"
+     class="card"
+     style="display:none;">
+
   <h3>Select LO Question</h3>
+
   <div id="loChoiceList"></div>
+
 </div>
 
-<div id="loSection" class="card" style="display:none;">
+<div id="loSection"
+     class="card"
+     style="display:none;">
+
   <div class="context-box">
+
     <div class="context-grid">
-      <div class="label">Topic</div><div id="currentTopicName"></div>
-      <div class="label">Mode</div><div id="currentModeName"></div>
+
+      <div class="label">
+        Topic
+      </div>
+
+      <div id="currentTopicName"></div>
+
+      <div class="label">
+        Mode
+      </div>
+
+      <div id="currentModeName"></div>
+
     </div>
   </div>
+
+  <div id="remediationProgress"></div>
 
   <h3>LO Question</h3>
-  <div id="loQuestion" class="lo-question-display"></div>
+
+  <div id="loQuestion"
+       class="lo-question-display"></div>
+
   <p id="modeInstruction"></p>
 
-  <div id="answerArea"></div>
-  <button onclick="submitAnswer()">Submit</button>
+  <div id="scaffoldArea"></div>
 
-  <div id="feedback" style="display:none;"></div>
+  <div id="answerArea"></div>
+
+  <button onclick="submitAnswer()">
+    Submit
+  </button>
+
+  <div id="feedback"
+       style="display:none;"></div>
+
 </div>
 
 <script>
-const BASE_URL = "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
+
+const BASE_URL =
+"https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
 
 let studentEmail = "";
+
 let currentMode = "";
-let currentLO = "";
+
+let currentTopicId = "";
 let currentTopicName = "";
+
 let currentLOs = [];
+let currentLOIndex = 0;
+
+let currentLO = "";
 let currentLOPackage = null;
-let selfAttemptNo = 1;
 
-async function login() {
-  const email = document.getElementById("email").value.trim();
-  const res = await fetch(`${BASE_URL}?action=validateStudent&email=${encodeURIComponent(email)}`);
-  const data = await res.json();
+let attemptNo = 1;
 
-  if (data.valid) {
+let remediationStartedAt = null;
+
+/************************************
+ * LOGIN
+ ************************************/
+async function login(){
+
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim();
+
+  const res =
+    await fetch(
+      `${BASE_URL}?action=validateStudent&email=${encodeURIComponent(email)}`
+    );
+
+  const data =
+    await res.json();
+
+  if(data.valid){
+
     studentEmail = email;
-    document.getElementById("login").style.display = "none";
-    document.getElementById("modeSelect").style.display = "block";
-  } else {
-    document.getElementById("loginMsg").innerText = "Invalid email";
+
+    document
+      .getElementById("login")
+      .style.display = "none";
+
+    document
+      .getElementById("modeSelect")
+      .style.display = "block";
+
+  }else{
+
+    document
+      .getElementById("loginMsg")
+      .innerText = "Invalid email";
   }
 }
 
-function selectMode(mode) {
+/************************************
+ * MODE
+ ************************************/
+function selectMode(mode){
+
   currentMode = mode;
-  document.getElementById("modeSelect").style.display = "none";
+
+  document
+    .getElementById("modeSelect")
+    .style.display = "none";
+
   loadTopics();
 }
 
-async function loadTopics() {
-  const res = await fetch(`${BASE_URL}?action=getTopics`);
-  const data = await res.json();
-  document.getElementById("topics").style.display = "block";
+/************************************
+ * TOPICS
+ ************************************/
+async function loadTopics(){
+
+  const res =
+    await fetch(
+      `${BASE_URL}?action=getTopics`
+    );
+
+  const data =
+    await res.json();
+
+  document
+    .getElementById("topics")
+    .style.display = "block";
 
   let html = "";
+
   data.topics.forEach(t => {
-    html += `<button onclick="loadTopic('${escapeJs(t.Topic_ID)}','${escapeJs(t.Topic_Name)}')" class="wide-button">${escapeHtml(t.Topic_Name)}</button>`;
+
+    html += `
+      <button onclick="
+        loadTopic(
+          '${escapeJs(t.Topic_ID)}',
+          '${escapeJs(t.Topic_Name)}'
+        )
+      ">
+        ${escapeHtml(t.Topic_Name)}
+      </button>
+      <br>
+    `;
   });
-  document.getElementById("topicList").innerHTML = html;
+
+  document
+    .getElementById("topicList")
+    .innerHTML = html;
 }
 
-async function loadTopic(id, name) {
+/************************************
+ * LOAD TOPIC
+ ************************************/
+async function loadTopic(id,name){
+
+  currentTopicId = id;
   currentTopicName = name;
-  const res = await fetch(`${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}`);
-  const data = await res.json();
+
+  const res =
+    await fetch(
+      `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}`
+    );
+
+  const data =
+    await res.json();
 
   currentLOs = data.los || [];
-  document.getElementById("topics").style.display = "none";
+
+  /***** RANDOMISE REMEDIATION *****/
+  if(currentMode === "remediation"){
+
+    shuffleArray(currentLOs);
+
+    remediationStartedAt =
+      new Date();
+
+    currentLOIndex = 0;
+
+    document
+      .getElementById("topics")
+      .style.display = "none";
+
+    loadLO(currentLOIndex);
+
+    return;
+  }
+
+  document
+    .getElementById("topics")
+    .style.display = "none";
+
   showLOChoice();
 }
 
-function showLOChoice() {
-  document.getElementById("loSection").style.display = "none";
-  document.getElementById("loChoiceSection").style.display = "block";
-  document.getElementById("choiceTopicName").innerText = currentTopicName;
-  document.getElementById("choiceModeName").innerText = getModeDisplayName(currentMode);
+/************************************
+ * LO CHOICE
+ ************************************/
+function showLOChoice(){
+
+  document
+    .getElementById("loChoiceSection")
+    .style.display = "block";
 
   let html = "";
-  currentLOs.forEach((lo, i) => {
-    html += `<button onclick="loadLO(${i})" class="wide-button">LO${i + 1}: ${escapeHtml(lo.LO_Question)}</button><br>`;
+
+  currentLOs.forEach((lo,i)=>{
+
+    html += `
+      <button onclick="loadLO(${i})">
+
+        LO${i+1}:
+        ${escapeHtml(lo.LO_Question)}
+
+      </button>
+
+      <br>
+    `;
   });
-  document.getElementById("loChoiceList").innerHTML = html;
+
+  document
+    .getElementById("loChoiceList")
+    .innerHTML = html;
 }
 
-async function loadLO(i) {
-  const lo = currentLOs[i];
+/************************************
+ * LOAD LO
+ ************************************/
+async function loadLO(i){
+
+  const lo =
+    currentLOs[i];
+
   currentLO = lo.LO_ID;
-  selfAttemptNo = 1;
 
-  const pkgRes = await fetch(`${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}`);
-  currentLOPackage = await pkgRes.json();
+  attemptNo = 1;
 
-  document.getElementById("loChoiceSection").style.display = "none";
-  document.getElementById("loSection").style.display = "block";
-  document.getElementById("feedback").style.display = "none";
+  const pkgRes =
+    await fetch(
+      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}`
+    );
 
-  document.getElementById("currentTopicName").innerText = currentTopicName;
-  document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
-  document.getElementById("loQuestion").innerText = lo.LO_Question;
+  currentLOPackage =
+    await pkgRes.json();
+
+  document
+    .getElementById("loChoiceSection")
+    .style.display = "none";
+
+  document
+    .getElementById("loSection")
+    .style.display = "block";
+
+  document
+    .getElementById("feedback")
+    .style.display = "none";
+
+  document
+    .getElementById("currentTopicName")
+    .innerText = currentTopicName;
+
+  document
+    .getElementById("currentModeName")
+    .innerText = getModeDisplayName(currentMode);
+
+  document
+    .getElementById("loQuestion")
+    .innerText = lo.LO_Question;
+
+  if(currentMode==="remediation"){
+
+    document
+      .getElementById("remediationProgress")
+      .innerHTML = `
+        <div class="section-box">
+          LO ${currentLOIndex + 1}
+          of
+          ${currentLOs.length}
+        </div>
+      `;
+  }else{
+
+    document
+      .getElementById("remediationProgress")
+      .innerHTML = "";
+  }
 
   renderAnswerArea();
 
-  if (currentMode === "builder") {
-    document.getElementById("modeInstruction").innerText =
-      "Provide your answer to the LO Question. The LO Builder will guide you to writing the correct and complete LO.";
-  } else if (currentMode === "self") {
-    document.getElementById("modeInstruction").innerText =
-      "Provide your answer to check if you have key terms, accurate phrasing and complete LO.";
-  } else {
-    document.getElementById("modeInstruction").innerText =
-      "Provide your answer to the LO Question. The system will guide you after your attempt.";
+  if(currentMode==="builder"){
+
+    document
+      .getElementById("modeInstruction")
+      .innerText =
+      "Provide your answer to the LO Question. The LO Builder will guide you.";
+
+  }else if(currentMode==="self"){
+
+    document
+      .getElementById("modeInstruction")
+      .innerText =
+      "Provide your answer to check key terms, phrasing and completeness.";
+
+  }else{
+
+    document
+      .getElementById("modeInstruction")
+      .innerText =
+      "Rewrite the full answer until mastery is achieved.";
   }
 }
 
-function renderAnswerArea() {
-  const area = document.getElementById("answerArea");
+/************************************
+ * ANSWER AREA
+ ************************************/
+function renderAnswerArea(){
 
-  if (currentMode === "self") {
-    const bullets = currentLOPackage.answerBullets || [];
-    const bulletPrompts = bullets.map(() => "• ").join("\n");
+  const bullets =
+    currentLOPackage.answerBullets || [];
 
-    area.innerHTML = `
-      <div class="section-box">
-        <div class="section-title">Answer Structure</div>
-        <div>You are expected to answer in <strong>${bullets.length}</strong> bullet(s).</div>
-      </div>
-      <textarea id="singleResponse" rows="${Math.max(5, bullets.length * 2)}">${bulletPrompts}</textarea>
+  const prompts =
+    bullets.map(()=> "• ").join("\n");
+
+  document
+    .getElementById("answerArea")
+    .innerHTML = `
+
+      <textarea
+        id="singleResponse"
+        rows="${Math.max(5,bullets.length*2)}"
+      >${prompts}</textarea>
     `;
-  } else {
-    area.innerHTML = `<textarea id="singleResponse" rows="6" placeholder="Type your answer here"></textarea>`;
-  }
 }
 
-async function submitAnswer() {
-  const responsePayload = document.getElementById("singleResponse").value;
+/************************************
+ * SUBMIT
+ ************************************/
+async function submitAnswer(){
 
-  const res = await fetch(`${BASE_URL}?action=checkResponse&email=${encodeURIComponent(studentEmail)}&loId=${encodeURIComponent(currentLO)}&mode=${encodeURIComponent(currentMode)}&attemptNo=${selfAttemptNo}&response=${encodeURIComponent(responsePayload)}`);
-  const data = await res.json();
+  const responsePayload =
+    document
+      .getElementById("singleResponse")
+      .value;
 
-  if (currentMode === "self") {
-    renderSelfFeedback(data);
-    if (!data.correct) selfAttemptNo++;
-  } else {
-    renderGeneralFeedback(responsePayload, data);
+  const res =
+    await fetch(
+
+      `${BASE_URL}?action=checkResponse`
+
+      + `&email=${encodeURIComponent(studentEmail)}`
+
+      + `&loId=${encodeURIComponent(currentLO)}`
+
+      + `&mode=${encodeURIComponent(currentMode)}`
+
+      + `&attemptNo=${attemptNo}`
+
+      + `&response=${encodeURIComponent(responsePayload)}`
+    );
+
+  const data =
+    await res.json();
+
+  renderStructuredFeedback(data);
+
+  /***** CORRECT *****/
+  if(data.correct){
+
+    /***** REMEDIATION AUTO NEXT *****/
+    if(currentMode==="remediation"){
+
+      setTimeout(async ()=>{
+
+        currentLOIndex++;
+
+        /***** FINISHED TOPIC *****/
+        if(
+          currentLOIndex
+          >=
+          currentLOs.length
+        ){
+
+          await logTopicCompletion();
+
+          alert(
+            "Topic completed successfully."
+          );
+
+          location.reload();
+
+          return;
+        }
+
+        loadLO(currentLOIndex);
+
+      },1500);
+
+      return;
+    }
+
+    return;
   }
+
+  attemptNo++;
 }
 
-function renderSelfFeedback(data) {
+/************************************
+ * TOPIC COMPLETION
+ ************************************/
+async function logTopicCompletion(){
+
+  const completedAt =
+    new Date();
+
+  const durationSeconds =
+    Math.floor(
+      (
+        completedAt -
+        remediationStartedAt
+      ) / 1000
+    );
+
+  await fetch(
+
+    `${BASE_URL}?action=logTopicCompletion`
+
+    + `&email=${encodeURIComponent(studentEmail)}`
+
+    + `&topicId=${encodeURIComponent(currentTopicId)}`
+
+    + `&topicName=${encodeURIComponent(currentTopicName)}`
+
+    + `&mode=${encodeURIComponent(currentMode)}`
+
+    + `&startedAt=${encodeURIComponent(remediationStartedAt.toISOString())}`
+
+    + `&completedAt=${encodeURIComponent(completedAt.toISOString())}`
+
+    + `&durationSeconds=${durationSeconds}`
+
+    + `&loCount=${currentLOs.length}`
+  );
+}
+
+/************************************
+ * FEEDBACK
+ ************************************/
+function renderStructuredFeedback(data){
 
   let bulletFeedback = "";
 
-  data.bulletResults.forEach((b, i) => {
+  data.bulletResults.forEach((b,i)=>{
 
     const highlighted =
       highlight(
@@ -220,58 +644,69 @@ function renderSelfFeedback(data) {
       );
 
     const feedback =
-      b.feedbackLabels &&
       b.feedbackLabels.length > 0
 
         ? " — " +
 
-          b.feedbackLabels
-            .map(label =>
+          b.feedbackLabels.map(label=>
 
-              `<span class="feedback-label">
-                ${escapeHtml(label)}
-              </span>`
-            )
-            .join(" ")
+            `<span class="feedback-label">
+              ${escapeHtml(label)}
+            </span>`
+
+          ).join(" ")
 
         : "";
 
     bulletFeedback += `
+
       <div class="student-bullet">
-        <strong>Bullet ${i + 1}:</strong><br>
+
+        <strong>
+          Bullet ${i+1}
+        </strong>
+
+        <br>
+
         • ${highlighted}${feedback}
+
       </div>
     `;
   });
 
+  /***** HINTS *****/
   let hints = "";
 
-  if (!data.correct && data.hintOutput) {
+  if(!data.correct){
 
     hints += `
       <div class="section-box">
+
         <div class="section-title">
           Answer Structure Hint
         </div>
     `;
 
-    data.hintOutput.forEach((h, i) => {
+    data.hintOutput.forEach((h,i)=>{
 
       hints += `
+
         <div class="hint-line">
 
           <strong>
-            Bullet ${i + 1}
+            Bullet ${i+1}
           </strong>
 
           <br><br>
 
           ${escapeHtml(h.conceptualHint)}
 
-          <br><br>
+          <div class="green-box">
 
-          ${escapeHtml(h.reconstruction)
-            .replace(/\n/g, "<br>")}
+            ${escapeHtml(h.reconstruction)
+              .replace(/\n/g,"<br>")}
+
+          </div>
 
         </div>
 
@@ -279,154 +714,213 @@ function renderSelfFeedback(data) {
       `;
     });
 
+    /***** REMEDIATION SCAFFOLD *****/
+    if(
+      currentMode==="remediation"
+      &&
+      data.remediationScaffold
+      &&
+      data.remediationScaffold.length > 0
+    ){
+
+      hints += `
+
+        <div class="section-box">
+
+          <div class="section-title">
+            Scaffold Support
+          </div>
+      `;
+
+      data.remediationScaffold.forEach((s,i)=>{
+
+        hints += `
+
+          <div>
+
+            <strong>
+              Bullet ${i+1}
+            </strong>
+
+            <div class="green-box">
+              ${escapeHtml(s.scaffold)}
+            </div>
+
+          </div>
+
+          <br>
+        `;
+      });
+
+      hints += `</div>`;
+    }
+
     hints += `</div>`;
   }
 
-  let successOptions = "";
+  /***** COMMON QUESTIONS *****/
+  let commonQuestions = "";
 
-  if (data.correct) {
+  if(
+    data.correct
+    &&
+    data.commonQuestions
+    &&
+    data.commonQuestions.length > 0
+  ){
 
-    successOptions = `
+    commonQuestions += `
+
       <div class="section-box">
+
         <div class="section-title">
-          Choose your next action
+          Additional common questions
         </div>
-
-        <button onclick="showLOChoice()">
-          Next LO
-        </button>
-
-        <button onclick="endSession()">
-          End Session
-        </button>
-      </div>
     `;
+
+    data.commonQuestions.forEach(q=>{
+
+      commonQuestions += `
+        • ${escapeHtml(q.Common_Question)}
+        <br>
+      `;
+    });
+
+    commonQuestions += `</div>`;
   }
 
-  document.getElementById(
-    "feedback"
-  ).style.display = "block";
+  document
+    .getElementById("feedback")
+    .style.display = "block";
 
-  document.getElementById(
-    "feedback"
-  ).innerHTML = `
+  document
+    .getElementById("feedback")
+    .innerHTML = `
 
-    <div class="section-box">
+      <div class="section-box">
 
-      <div class="section-title">
-        Feedback on your submission
+        <div class="section-title">
+          Feedback on your submission
+        </div>
+
+        ${bulletFeedback}
+
       </div>
 
-      ${bulletFeedback}
+      ${hints}
 
-    </div>
+      <div class="section-box">
 
-    ${hints}
-
-    <div class="section-box">
-
-      <div class="section-title">
-        Next step
-      </div>
-
-      <div>
+        <div class="section-title">
+          Next step
+        </div>
 
         ${
           data.correct
 
-            ? "<span class='success-text'>Correct.</span>"
+            ? "Correct."
 
             : escapeHtml(data.message)
         }
 
       </div>
 
-    </div>
-
-    ${successOptions}
+      ${commonQuestions}
   `;
 }
 
-function renderGeneralFeedback(response, data) {
-  const highlighted = highlight(response, data.highlights || []);
-  const issues = renderIssues(data.issueTypes || []);
+/************************************
+ * HELPERS
+ ************************************/
+function highlight(text,arr){
 
-  let builder = "";
-  if (data.builderOutput) {
-    data.builderOutput.forEach(b => {
-      builder += `<div>• ${escapeHtml(b.text)}</div>`;
-    });
-  }
+  let out =
+    escapeHtml(text);
 
-  let commonQuestions = "";
-  if (data.correct && data.commonQuestions && data.commonQuestions.length > 0) {
-    commonQuestions += `<div class="section-box"><div class="section-title">Additional common questions</div>`;
-    data.commonQuestions.forEach(q => {
-      commonQuestions += `<div>• ${escapeHtml(q.Common_Question)}</div>`;
-    });
-    commonQuestions += `</div>`;
-  }
+  arr.forEach(h=>{
 
-  document.getElementById("feedback").style.display = "block";
-  document.getElementById("feedback").innerHTML = `
-    <div class="section-box">
-      <div class="section-title">Feedback on your submission</div>
-      ${issues}
-      <div>${highlighted}</div>
-    </div>
+    const r =
+      new RegExp(
+        escapeRegExp(h),
+        "gi"
+      );
 
-    <div class="section-box">
-      <div class="section-title">Model Answer Suggestion</div>
-      ${builder}
-    </div>
-
-    <div class="section-box">
-      <div class="section-title">Next step</div>
-      <div>${escapeHtml(data.message)}</div>
-    </div>
-
-    ${commonQuestions}
-  `;
-}
-
-function endSession() {
-  document.getElementById("loSection").style.display = "none";
-  document.getElementById("feedback").style.display = "none";
-  document.getElementById("modeSelect").style.display = "block";
-}
-
-function renderIssues(arr) {
-  if (!arr || arr.length === 0) return "";
-  return arr.map(a => `<span class="feedback-label">${escapeHtml(a)}</span>`).join("");
-}
-
-function highlight(text, arr) {
-  let out = escapeHtml(text);
-  arr.forEach(h => {
-    const r = new RegExp(escapeRegExp(h), "gi");
-    out = out.replace(r, match => `<span class="wrong">${match}</span>`);
+    out =
+      out.replace(
+        r,
+        match=>
+          `<span class="wrong">
+            ${match}
+          </span>`
+      );
   });
+
   return out;
 }
 
-function getModeDisplayName(mode) {
-  if (mode === "builder") return "LO Builder Mode";
-  if (mode === "self") return "Self-Review Mode";
-  if (mode === "remediation") return "Remediation Mode";
+function shuffleArray(array){
+
+  for(
+    let i=array.length-1;
+    i>0;
+    i--
+  ){
+
+    const j =
+      Math.floor(
+        Math.random()*(i+1)
+      );
+
+    [array[i],array[j]]
+      =
+    [array[j],array[i]];
+  }
+}
+
+function getModeDisplayName(mode){
+
+  if(mode==="builder"){
+    return "LO Builder Mode";
+  }
+
+  if(mode==="self"){
+    return "Self-Review Mode";
+  }
+
+  if(mode==="remediation"){
+    return "Remediation Mode";
+  }
+
   return mode;
 }
 
-function escapeHtml(text) {
-  return String(text || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+function escapeHtml(text){
+
+  return String(text || "")
+
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;");
 }
 
-function escapeRegExp(text) {
-  return String(text || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function escapeRegExp(text){
+
+  return String(text || "")
+
+    .replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&"
+    );
 }
 
-function escapeJs(text) {
-  return String(text || "").replaceAll("\\", "\\\\").replaceAll("'", "\\'");
+function escapeJs(text){
+
+  return String(text || "")
+
+    .replaceAll("\\","\\\\")
+    .replaceAll("'","\\'");
 }
+
 </script>
 
 </body>
