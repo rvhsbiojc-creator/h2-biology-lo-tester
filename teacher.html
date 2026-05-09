@@ -69,6 +69,17 @@
       background: #f5f5f5;
     }
 
+    .bullet-col {
+      width: 70px;
+      max-width: 70px;
+      text-align: center;
+    }
+
+    .bullet-col input {
+      width: 42px;
+      text-align: center;
+    }
+
     td input, td textarea {
       width: 95%;
       min-height: 38px;
@@ -102,6 +113,10 @@
       border-radius: 8px;
       margin-top: 12px;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
@@ -121,14 +136,9 @@
     <option value="T04|Proteins|PRO">Proteins</option>
   </select>
 
-  <label>Topic ID</label>
-  <input id="topicId" value="T04" readonly>
-
-  <label>Topic Name</label>
-  <input id="topicName" value="Proteins" readonly>
-
-  <label>Topic Short Code</label>
-  <input id="topicCode" value="PRO" readonly>
+  <input id="topicId" value="T04" class="hidden">
+  <input id="topicName" value="Proteins" class="hidden">
+  <input id="topicCode" value="PRO" class="hidden">
 
   <label>LO Number</label>
   <input id="loNumber" placeholder="e.g. 4">
@@ -171,7 +181,7 @@
   <table id="keywordTable">
     <thead>
       <tr>
-        <th>Bullet No.</th>
+        <th class="bullet-col">Bullet No.</th>
         <th>Keyword / Phrase</th>
         <th>Accepted Variants<br><span class="hint">optional; separate with ;</span></th>
         <th>Unacceptable Answers<br><span class="hint">optional; separate with ;</span></th>
@@ -179,19 +189,19 @@
     </thead>
     <tbody id="keywordBody">
       <tr>
-        <td><input value="1"></td>
+        <td class="bullet-col"><input value="1"></td>
         <td><input placeholder="e.g. amino group"></td>
         <td><textarea placeholder="e.g. amino functional group"></textarea></td>
         <td><textarea placeholder="e.g. amine group; hydroxyl group"></textarea></td>
       </tr>
       <tr>
-        <td><input value="1"></td>
+        <td class="bullet-col"><input value="1"></td>
         <td><input placeholder="e.g. one amino acid"></td>
         <td><textarea></textarea></td>
         <td><textarea></textarea></td>
       </tr>
       <tr>
-        <td><input value="2"></td>
+        <td class="bullet-col"><input value="2"></td>
         <td><input placeholder="e.g. carboxyl group"></td>
         <td><textarea></textarea></td>
         <td><textarea></textarea></td>
@@ -210,7 +220,7 @@
     Format: bullet number | teacher final blank | blank targets separated by semicolons
   </p>
 
-  <textarea id="blankTemplates" placeholder="1 | ______ group of one amino acid | amino group; one amino acid&#10;2 | ______ group of another amino acid | carboxyl group; another amino acid"></textarea>
+  <textarea id="blankTemplates" placeholder="1 | _______ _____ of ____ amino acid | amino group; one&#10;2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
 </div>
 
 <div class="card">
@@ -283,11 +293,10 @@ function updateTopicFields() {
 
 function addKeywordRow() {
   const tbody = document.getElementById("keywordBody");
-
   const row = document.createElement("tr");
 
   row.innerHTML = `
-    <td><input></td>
+    <td class="bullet-col"><input></td>
     <td><input></td>
     <td><textarea></textarea></td>
     <td><textarea></textarea></td>
