@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Teacher LO Builder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      max-width: 1100px;
+      margin: auto;
+      background: #fafafa;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 12px;
+    }
+
+    input, textarea {
+      width: 95%;
+      max-width: 1000px;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 90px;
+    }
+
+    button {
+      margin-top: 16px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      background: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+
+    pre {
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .hint {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Teacher LO Builder</h1>
+
+<div class="card">
+  <div class="section-title">LO Information</div>
+
+  <label>Topic ID</label>
+  <input id="topicId" value="T04">
+
+  <label>Topic Name</label>
+  <input id="topicName" value="Proteins">
+
+  <label>LO ID</label>
+  <input id="loId" placeholder="e.g. PRO_LO4">
+
+  <label>LO Order</label>
+  <input id="loOrder" placeholder="e.g. 4">
+
+  <label>LO Question</label>
+  <textarea id="loQuestion" placeholder="Enter the LO question"></textarea>
+</div>
+
+<div class="card">
+  <div class="section-title">Answer Bullets</div>
+  <p class="hint">Enter one answer bullet per line. These become the canonical teacher-approved answer bullets.</p>
+
+  <textarea id="answerBullets" placeholder="Bullet 1&#10;Bullet 2&#10;Bullet 3"></textarea>
+
+  <label>Hints</label>
+  <p class="hint">Enter one hint per line, matching each answer bullet.</p>
+  <textarea id="hints" placeholder="[Structure] ...&#10;[Property] ..."></textarea>
+</div>
+
+<div class="card">
+  <div class="section-title">Keywords</div>
+  <p class="hint">Enter required keywords/phrases. Format: keyword | bullet number</p>
+
+  <textarea id="keywords" placeholder="amino group | 1&#10;carboxyl group | 2&#10;peptide bond | 3"></textarea>
+</div>
+
+<div class="card">
+  <div class="section-title">Accepted Variants</div>
+  <p class="hint">Optional. Format: keyword ID | accepted variant</p>
+
+  <textarea id="variants" placeholder="K1 | α-carbon&#10;K1 | central C atom"></textarea>
+</div>
+
+<div class="card">
+  <div class="section-title">Unacceptable Answers</div>
+  <p class="hint">Optional. Format: phrase | reason</p>
+
+  <textarea id="unacceptable" placeholder="hydroxyl group | Use amino group&#10;amine group | Use amino group"></textarea>
+</div>
+
+<div class="card">
+  <div class="section-title">Blank Templates</div>
+  <p class="hint">Format: bullet number | teacher final blank | blank targets separated by semicolons</p>
+
+  <textarea id="blankTemplates" placeholder="1 | ______ group of one amino acid | amino group; one amino acid&#10;2 | ______ group of another amino acid | carboxyl group; another amino acid"></textarea>
+</div>
+
+<div class="card">
+  <div class="section-title">Common Questions</div>
+  <p class="hint">Optional. Enter one common question per line.</p>
+
+  <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond."></textarea>
+</div>
+
+<div class="card">
+  <button onclick="generateRows()">Generate Sheet Rows</button>
+</div>
+
+<div id="output" style="display:none;">
+
+  <div class="card">
+    <div class="section-title">LOs tab</div>
+    <pre id="outLOs"></pre>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Answer_Bullets tab</div>
+    <pre id="outBullets"></pre>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Keywords tab</div>
+    <pre id="outKeywords"></pre>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Accepted_Variants tab</div>
+    <pre id="outVariants"></pre>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Unacceptable_Answers tab</div>
+    <pre id="outUnacceptable"></pre>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Blank_Templates tab</div>
+    <pre id="outBlanks"></pre>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Common_Questions tab</div>
+    <pre id="outCommon"></pre>
+  </div>
+
+</div>
+
+<script>
+function generateRows(){
+
+  const topicId = val("topicId");
+  const loId = val("loId");
+  const loOrder = val("loOrder");
+  const loQuestion = val("loQuestion");
+
+  const bullets = lines("answerBullets");
+  const hints = lines("hints");
+
+  const keywordLines = lines("keywords");
+  const variantLines = lines("variants");
+  const unacceptableLines = lines("unacceptable");
+  const blankLines = lines("blankTemplates");
+  const commonLines = lines("commonQuestions");
+
+  document.getElementById("output").style.display = "block";
+
+  document.getElementById("outLOs").innerText =
+    `${topicId}\t${loId}\t${loOrder}\t${loQuestion}\tTRUE`;
+
+  let bulletRows = "";
+  bullets.forEach((b, i) => {
+    bulletRows += `${loId}\tMain\t${i + 1}\t${b}\t${hints[i] || ""}\n`;
+  });
+  document.getElementById("outBullets").innerText = bulletRows.trim();
+
+  let keywordRows = "";
+  keywordLines.forEach((line, i) => {
+    const parts = splitPipe(line);
+    const keyword = parts[0] || "";
+    const bulletOrder = parts[1] || "";
+    const keywordId = `K${i + 1}`;
+
+    keywordRows += `${loId}\t${keywordId}\t${keyword}\tTRUE\t\tMain\t${bulletOrder}\n`;
+  });
+  document.getElementById("outKeywords").innerText = keywordRows.trim();
+
+  let variantRows = "";
+  variantLines.forEach(line => {
+    const parts = splitPipe(line);
+    variantRows += `${loId}\t${parts[0] || ""}\t${parts[1] || ""}\n`;
+  });
+  document.getElementById("outVariants").innerText = variantRows.trim();
+
+  let unacceptableRows = "";
+  unacceptableLines.forEach(line => {
+    const parts = splitPipe(line);
+    unacceptableRows += `${loId}\t${parts[0] || ""}\t${parts[1] || ""}\n`;
+  });
+  document.getElementById("outUnacceptable").innerText = unacceptableRows.trim();
+
+  let blankRows = "";
+  blankLines.forEach(line => {
+    const parts = splitPipe(line);
+    const bulletOrder = parts[0] || "";
+    const template = parts[1] || "";
+    const targets = parts[2] || "";
+
+    blankRows += `${loId}\tMain\t${bulletOrder}\t\t${template}\t${targets}\n`;
+  });
+  document.getElementById("outBlanks").innerText = blankRows.trim();
+
+  let commonRows = "";
+  commonLines.forEach((q, i) => {
+    commonRows += `${loId}\t${i + 1}\t${q}\n`;
+  });
+  document.getElementById("outCommon").innerText = commonRows.trim();
+}
+
+function val(id){
+  return document.getElementById(id).value.trim();
+}
+
+function lines(id){
+  return document.getElementById(id).value
+    .split("\n")
+    .map(x => x.trim())
+    .filter(Boolean);
+}
+
+function splitPipe(line){
+  return line.split("|").map(x => x.trim());
+}
+</script>
+
+</body>
+</html>
