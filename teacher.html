@@ -685,16 +685,49 @@ async function viewLODetails(loId){
  * TEST THIS LO
  ************************************/
 async function testThisLO(loId){
+
   selectedTestLO = loId;
 
-  const lo = existingLOs.find(x => x.LO_ID === loId);
+  const lo =
+    existingLOs.find(x => x.LO_ID === loId);
 
-  document.getElementById("teacherTestPanel").style.display = "block";
-  document.getElementById("testLoLabel").innerHTML =
-    `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
+  const pkgRes =
+    await fetch(
+      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
+    );
 
-  document.getElementById("testOutput").innerHTML = "";
-  document.getElementById("teacherTestPanel").scrollIntoView({behavior:"smooth"});
+  const pkg =
+    await pkgRes.json();
+
+  const bulletCount =
+    (pkg.answerBullets || []).length;
+
+  const scaffold =
+    Array.from(
+      { length: bulletCount },
+      () => "• "
+    ).join("\n");
+
+  document
+    .getElementById("teacherTestPanel")
+    .style.display = "block";
+
+  document
+    .getElementById("testLoLabel")
+    .innerHTML =
+      `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
+
+  document
+    .getElementById("testAnswer")
+    .value = scaffold;
+
+  document
+    .getElementById("testOutput")
+    .innerHTML = "";
+
+  document
+    .getElementById("teacherTestPanel")
+    .scrollIntoView({behavior:"smooth"});
 }
 
 async function runTeacherTest(){
