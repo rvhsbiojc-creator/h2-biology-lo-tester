@@ -395,9 +395,12 @@ async function teacherLogin(){
   clearStatus();
 
   const email = val("teacherEmail");
+  const password = val("teacherPassword");
 
   const res = await fetch(
-    `${BASE_URL}?action=validateTeacher&email=${encodeURIComponent(email)}`
+    `${BASE_URL}?action=validateTeacher`
+    + `&email=${encodeURIComponent(email)}`
+    + `&password=${encodeURIComponent(password)}`
   );
 
   const data = await res.json();
@@ -408,7 +411,7 @@ async function teacherLogin(){
     await loadTopics();
   }else{
     document.getElementById("teacherLoginMsg").innerText =
-      "Invalid teacher email or inactive account.";
+      "Invalid teacher email/password or inactive account.";
   }
 }
 
