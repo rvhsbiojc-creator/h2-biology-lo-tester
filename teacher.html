@@ -728,9 +728,105 @@ async function testThisLO(loId){
     .getElementById("testOutput")
     .innerHTML = "";
 
+  renderTeacherTestReference(pkg);
+
   document
     .getElementById("teacherTestPanel")
     .scrollIntoView({behavior:"smooth"});
+}
+
+function renderTeacherTestReference(pkg){
+
+  let html = `
+
+    <div class="readonly-box">
+
+      <strong>
+        Marking Reference
+      </strong>
+
+      <br><br>
+
+      <table class="keyword-table">
+
+        <thead>
+
+          <tr>
+            <th class="bullet-col">Bullet</th>
+            <th>Keyword / Phrase</th>
+            <th>Accepted Variants</th>
+            <th>Unacceptable Answers</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+  `;
+
+  (pkg.keywords || []).forEach(k => {
+
+    const variants =
+      (pkg.variants || [])
+
+        .filter(v =>
+          v.Keyword_ID === k.Keyword_ID
+        )
+
+        .map(v =>
+          v.Accepted_Variant
+        )
+
+        .join("; ");
+
+    const unacceptable =
+      (pkg.unacceptable || [])
+
+        .filter(u =>
+          u.Keyword_ID === k.Keyword_ID
+        )
+
+        .map(u =>
+          u.Phrase
+        )
+
+        .join("; ");
+
+    html += `
+
+      <tr>
+
+        <td class="bullet-col">
+          ${escapeHtml(k.Bullet_Order)}
+        </td>
+
+        <td>
+          ${escapeHtml(k.Keyword_or_Phrase)}
+        </td>
+
+        <td>
+          ${escapeHtml(variants)}
+        </td>
+
+        <td>
+          ${escapeHtml(unacceptable)}
+        </td>
+
+      </tr>
+    `;
+  });
+
+  html += `
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+
+  document
+    .getElementById("testOutput")
+    .innerHTML = html;
 }
 
 async function runTeacherTest(){
@@ -758,32 +854,74 @@ async function runTeacherTest(){
 }
 
 function renderTeacherTestOutput(data){
-  let html = "";
+
+  const existingReference =
+    document
+      .getElementById("testOutput")
+      .innerHTML;
+
+  let html = existingReference;
 
   /***** Feedback section for all modes where available *****/
   if(data.bulletResults && data.bulletResults.length){
-    html += `<div class="readonly-box"><strong>Feedback on your submission</strong><br><br>`;
+
+    html += `
+
+      <div class="readonly-box">
+
+        <strong>
+          Feedback on your submission
+        </strong>
+
+        <br><br>
+    `;
 
     data.bulletResults.forEach((b, i) => {
-      let responseLine = escapeHtml(b.responseText || "(blank)");
+
+      let responseLine =
+        escapeHtml(b.responseText || "(blank)");
 
       (b.highlights || []).forEach(h => {
-        const regex = new RegExp(escapeRegExp(h), "gi");
-        responseLine = responseLine.replace(
-          regex,
-          match => `<span class="wrong">${match}</span>`
-        );
+
+        const regex =
+          new RegExp(
+            escapeRegExp(h),
+            "gi"
+          );
+
+        responseLine =
+          responseLine.replace(
+            regex,
+            match =>
+              `<span class="wrong">${match}</span>`
+          );
       });
 
-      const labels = (b.feedbackLabels || []).map(label =>
-        `<span class="feedback-label">${escapeHtml(label)}</span>`
-      ).join(" ");
+      const labels =
+        (b.feedbackLabels || [])
+
+          .map(label =>
+            `<span class="feedback-label">${escapeHtml(label)}</span>`
+          )
+
+          .join(" ");
 
       html += `
+
         <div style="margin-bottom:14px;">
-          <strong>Bullet ${i + 1}</strong><br>
-          • ${responseLine}<br>
+
+          <strong>
+            Bullet ${i + 1}
+          </strong>
+
+          <br>
+
+          • ${responseLine}
+
+          <br>
+
           ${labels}
+
         </div>
       `;
     });
@@ -793,13 +931,34 @@ function renderTeacherTestOutput(data){
 
   /***** Self-review / Remediation hint output *****/
   if(data.hintOutput && data.hintOutput.length){
-    html += `<div class="readonly-box"><strong>Answer Structure Hint</strong><br><br>`;
+
+    html += `
+
+      <div class="readonly-box">
+
+        <strong>
+          Answer Structure Hint
+        </strong>
+
+        <br><br>
+    `;
 
     data.hintOutput.forEach(h => {
+
       html += `
-        <strong>Bullet ${escapeHtml(h.bulletOrder)}</strong><br>
+
+        <strong>
+          Bullet ${escapeHtml(h.bulletOrder)}
+        </strong>
+
+        <br>
+
         ${escapeHtml(h.conceptualHint || "")}
-        <div class="green-box">${escapeHtml(h.reconstruction || "")}</div>
+
+        <div class="green-box">
+          ${escapeHtml(h.reconstruction || "")}
+        </div>
+
         <br>
       `;
     });
@@ -809,12 +968,30 @@ function renderTeacherTestOutput(data){
 
   /***** Remediation scaffold *****/
   if(data.remediationScaffold && data.remediationScaffold.length){
-    html += `<div class="readonly-box"><strong>Remediation Scaffold</strong><br><br>`;
+
+    html += `
+
+      <div class="readonly-box">
+
+        <strong>
+          Remediation Scaffold
+        </strong>
+
+        <br><br>
+    `;
 
     data.remediationScaffold.forEach(s => {
+
       html += `
-        <strong>Bullet ${escapeHtml(s.bulletOrder)}</strong>
-        <div class="green-box">${escapeHtml(s.scaffold || "")}</div>
+
+        <strong>
+          Bullet ${escapeHtml(s.bulletOrder)}
+        </strong>
+
+        <div class="green-box">
+          ${escapeHtml(s.scaffold || "")}
+        </div>
+
         <br>
       `;
     });
@@ -824,10 +1001,24 @@ function renderTeacherTestOutput(data){
 
   /***** LO Builder Model Answer Suggestion, after feedback *****/
   if(data.mode === "builder" && data.builderOutput && data.builderOutput.length){
-    html += `<div class="readonly-box"><strong>Model Answer Suggestion</strong><br><br>`;
+
+    html += `
+
+      <div class="readonly-box">
+
+        <strong>
+          Model Answer Suggestion
+        </strong>
+
+        <br><br>
+    `;
 
     data.builderOutput.forEach(b => {
-      html += `• ${escapeHtml(b.text)}<br><br>`;
+
+      html += `
+        • ${escapeHtml(b.text)}
+        <br><br>
+      `;
     });
 
     html += `</div>`;
@@ -835,18 +1026,23 @@ function renderTeacherTestOutput(data){
 
   /***** Next step *****/
   html += `
+
     <div class="readonly-box">
-      <strong>Next step</strong><br><br>
+
+      <strong>
+        Next step
+      </strong>
+
+      <br><br>
+
       ${escapeHtml(data.message || "")}
+
     </div>
   `;
 
-  document.getElementById("testOutput").innerHTML = html;
-}
-
-function escapeRegExp(text){
-  return String(text || "")
-    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  document
+    .getElementById("testOutput")
+    .innerHTML = html;
 }
 
 /************************************
