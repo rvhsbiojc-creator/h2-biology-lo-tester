@@ -294,7 +294,9 @@
       <button onclick="runTeacherTest()">Check Response</button>
     </div>
 
-    <div id="testOutput"></div>
+    <div id="testReference"></div>
+
+<div id="testOutput"></div>
   </div>
 
   <div class="card">
@@ -725,6 +727,10 @@ async function testThisLO(loId){
     .value = scaffold;
 
   document
+    .getElementById("testReference")
+    .innerHTML = "";
+
+  document
     .getElementById("testOutput")
     .innerHTML = "";
 
@@ -825,8 +831,8 @@ function renderTeacherTestReference(pkg){
   `;
 
   document
-    .getElementById("testOutput")
-    .innerHTML = html;
+  .getElementById("testReference")
+  .innerHTML = html;
 }
 
 async function runTeacherTest(){
