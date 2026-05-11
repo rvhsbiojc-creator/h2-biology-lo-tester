@@ -5,36 +5,7 @@
   <title>Teacher LO Builder</title>
 
   <style>
-/************************************
- * KEYWORD TABLE HEIGHT FIX
- ************************************/
-.keyword-table input,
-.keyword-table textarea{
-
-  width:100%;
-
-  height:42px;
-  min-height:42px;
-  max-height:42px;
-
-  resize:none;
-
-  overflow:auto;
-
-  font-size:14px;
-
-  line-height:1.3;
-
-  padding:8px;
-}
-
-.keyword-table td{
-
-  vertical-align:middle;
-}
-    *{
-      box-sizing:border-box;
-    }
+    *{box-sizing:border-box;}
 
     body{
       font-family:Arial,sans-serif;
@@ -83,9 +54,7 @@
       margin-bottom:6px;
     }
 
-    input,
-    textarea,
-    select{
+    input, textarea, select{
       width:100%;
       padding:10px;
       border-radius:10px;
@@ -101,7 +70,6 @@
     }
 
     button{
-      border:none;
       background:#ffffff;
       border:1px solid #ccd3dc;
       border-radius:10px;
@@ -162,10 +130,6 @@
       font-size:13px;
     }
 
-    .selected-row{
-      background:#eef7ff !important;
-    }
-
     .success{
       background:#e8f7e8;
       border:1px solid #9dd39d;
@@ -210,6 +174,18 @@
     .keyword-table input,
     .keyword-table textarea{
       width:100%;
+      height:42px;
+      min-height:42px;
+      max-height:42px;
+      resize:none;
+      overflow:auto;
+      font-size:14px;
+      line-height:1.3;
+      padding:8px;
+    }
+
+    .keyword-table td{
+      vertical-align:middle;
     }
 
     .bullet-col{
@@ -229,41 +205,22 @@
       padding:12px;
     }
 
+    .hidden{
+      display:none;
+    }
+
     @media (max-width:900px){
-
-      .two-col{
-        grid-template-columns:1fr;
-      }
-
-      .action-buttons{
-        flex-direction:column;
-      }
-
-      button{
-        width:100%;
-      }
+      .two-col{grid-template-columns:1fr;}
+      .action-buttons{flex-direction:column;}
+      button{width:100%;}
     }
 
     @media (max-width:600px){
-
-      body{
-        padding:10px;
-      }
-
-      h1{
-        font-size:28px;
-      }
-
-      .card{
-        padding:16px;
-      }
-
-      table{
-        display:block;
-        overflow-x:auto;
-      }
+      body{padding:10px;}
+      h1{font-size:28px;}
+      .card{padding:16px;}
+      table{display:block;overflow-x:auto;}
     }
-
   </style>
 </head>
 
@@ -275,278 +232,310 @@
 
 <div id="status"></div>
 
-<div class="card">
+<div id="teacherLogin" class="card">
+  <div class="section-title">Teacher Login</div>
 
-  <div class="section-title">
-    Topic
-  </div>
+  <p class="hint">
+    Enter your teacher email to access the authoring interface.
+  </p>
 
-  <label>Select Topic</label>
-
-  <select id="topicSelect"
-          onchange="updateTopicFields()">
-
-    <option value="T04|Proteins|PRO">
-      Proteins
-    </option>
-
-  </select>
-
-  <input id="topicId"
-         value="T04"
-         hidden>
-
-  <input id="topicCode"
-         value="PRO"
-         hidden>
-
-</div>
-
-<div class="card">
-
-  <div class="section-title">
-    Existing LOs for Topic
-  </div>
-
-  <div id="existingLOsBox">
-    Loading existing LOs...
-  </div>
+  <label>Teacher Email</label>
+  <input id="teacherEmail" placeholder="e.g. teacher@moe.edu.sg">
 
   <div class="button-row">
-
-    <button onclick="editSelectedLO()">
-      Edit Existing LO
-    </button>
-
-    <button onclick="deleteSelectedLO()">
-      Delete LO
-    </button>
-
+    <button onclick="teacherLogin()">Enter Teacher Interface</button>
   </div>
 
+  <p id="teacherLoginMsg" class="hint"></p>
 </div>
 
-<div id="detailsPanel"
-     class="card"
-     style="display:none;">
+<div id="teacherApp" style="display:none;">
 
-  <div class="section-title">
-    LO Details
+  <div class="card">
+    <div class="section-title">Topic</div>
+
+    <label>Select Topic</label>
+    <select id="topicSelect" onchange="updateTopicFields()"></select>
+
+    <input id="topicId" hidden>
+    <input id="topicCode" hidden>
+    <input id="topicName" hidden>
+
+    <div class="button-row">
+      <button onclick="showNewTopicForm()">+ Create New Topic</button>
+    </div>
   </div>
 
-  <div id="detailsOutput"></div>
+  <div id="newTopicCard" class="card" style="display:none;">
+    <div class="section-title">Create New Topic</div>
 
-</div>
+    <p class="hint">
+      Topic order is the order taught in school. Example: Topic 4 = Proteins.
+      Topic code is used internally to generate LO IDs, e.g. PRO.
+    </p>
 
-<div class="card">
+    <div class="two-col">
+      <div>
+        <label>Topic Order</label>
+        <input id="newTopicOrder" placeholder="e.g. 4">
+      </div>
 
-  <div class="section-title">
-    LO Information
-  </div>
-
-  <div class="green-box"
-       id="editingLabel">
-
-    Creating NEW LO
-
-  </div>
-
-  <div class="two-col">
-
-    <div>
-
-      <label>LO Number</label>
-
-      <input id="loNumber"
-       placeholder="e.g. 4">
-
+      <div>
+        <label>Topic Code</label>
+        <input id="newTopicCode" placeholder="e.g. PRO">
+      </div>
     </div>
 
-    <div>
+    <label>Topic Name</label>
+    <input id="newTopicName" placeholder="e.g. Proteins">
 
-      <label>Generated LO ID</label>
+    <div class="button-row">
+      <button onclick="createTopic()">Save New Topic</button>
+      <button onclick="hideNewTopicForm()">Cancel</button>
+    </div>
+  </div>
 
-      <input id="generatedLoId"
-             readonly>
+  <div class="card">
+    <div class="section-title">Existing LOs for Topic</div>
 
+    <div id="existingLOsBox">
+      Loading existing LOs...
     </div>
 
+    <div class="button-row">
+      <button onclick="editSelectedLO()">Edit Existing LO</button>
+      <button onclick="deleteSelectedLO()">Delete LO</button>
+    </div>
   </div>
 
-  <label>LO Question</label>
-
-  <textarea id="loQuestion"
-placeholder="e.g. Describe the formation of peptide bond"></textarea>
-
-</div>
-
-<div class="card">
-
-  <div class="section-title">
-    Answer Bullets
+  <div id="detailsPanel" class="card" style="display:none;">
+    <div class="section-title">LO Details</div>
+    <div id="detailsOutput"></div>
   </div>
 
-  <textarea id="answerBullets"
-placeholder="Amino group of one amino acid
+  <div id="teacherTestPanel" class="card" style="display:none;">
+    <div class="section-title">Teacher Test Preview</div>
+
+    <div id="testLoLabel" class="green-box">No LO selected.</div>
+
+    <label>Mode</label>
+    <select id="testMode">
+      <option value="self">Self-Review Mode</option>
+      <option value="builder">LO Builder Mode</option>
+      <option value="remediation">Remediation Mode</option>
+    </select>
+
+    <label>Attempt Number</label>
+    <input id="testAttemptNo" value="1">
+
+    <label>Sample Student Answer</label>
+    <textarea id="testAnswer" placeholder="Type a sample answer here..."></textarea>
+
+    <div class="button-row">
+      <button onclick="runTeacherTest()">Check Response</button>
+    </div>
+
+    <div id="testOutput"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">LO Information</div>
+
+    <div class="green-box" id="editingLabel">
+      Creating NEW LO
+    </div>
+
+    <div class="two-col">
+      <div>
+        <label>LO Number</label>
+        <input id="loNumber" placeholder="e.g. 4">
+      </div>
+
+      <div>
+        <label>Generated LO ID</label>
+        <input id="generatedLoId" readonly>
+      </div>
+    </div>
+
+    <label>LO Question</label>
+    <textarea id="loQuestion" placeholder="e.g. Describe the formation of peptide bond"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Answer Bullets</div>
+
+    <textarea id="answerBullets" placeholder="Amino group of one amino acid
 And carboxyl group of another amino acid
 Reacts to form a peptide bond between the two amino acids"></textarea>
 
-  <label>Hints</label>
-
-  <textarea id="hints"
-placeholder="[Reacting group] Identify the first functional group involved.
+    <label>Hints</label>
+    <textarea id="hints" placeholder="[Reacting group] Identify the first functional group involved.
 [Product] State what bond is formed."></textarea>
-
-</div>
-
-<div class="card">
-
-  <div class="section-title">
-    Keywords, Accepted Variants & Unacceptable Answers
   </div>
-
-  <table class="keyword-table">
-
-    <thead>
-
-      <tr>
-
-        <th class="bullet-col">
-          Bullet
-        </th>
-
-        <th>
-          Keyword / Phrase
-        </th>
-
-        <th>
-          Accepted Variants
-        </th>
-
-        <th>
-          Unacceptable Answers
-        </th>
-
-      </tr>
-
-    </thead>
-
-    <tbody id="keywordBody"></tbody>
-
-  </table>
-
-  <div class="button-row">
-
-    <button onclick="addKeywordRow()">
-      + Add keyword row
-    </button>
-
-  </div>
-
-</div>
-
-<div class="card">
-
-  <div class="section-title">
-    Blank Templates
-  </div>
-
-  <textarea id="blankTemplates"
-placeholder="1 | _______ _____ of ____ amino acid | amino group; one
-2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
-
-</div>
-
-<div class="card">
-
-  <div class="section-title">
-    Common Questions
-  </div>
-
-  <textarea id="commonQuestions"
-placeholder="Explain why condensation reaction forms a peptide bond.
-State the bond formed between amino acids."></textarea>
-
-</div>
-
-<div class="card">
-
-  <div class="button-row">
-
-    <button onclick="previewRows()">
-      Preview Sheet Rows
-    </button>
-
-    <button onclick="saveNewLO()">
-      Save New LO
-    </button>
-
-    <button onclick="updateExistingLO()">
-      Update Existing LO
-    </button>
-
-    <button onclick="resetForm()">
-      Reset Form
-    </button>
-
-  </div>
-
-</div>
-
-<div id="output"
-     style="display:none;">
 
   <div class="card">
+    <div class="section-title">Keywords, Accepted Variants & Unacceptable Answers</div>
 
-    <div class="section-title">
-      Preview Payload
+    <table class="keyword-table">
+      <thead>
+        <tr>
+          <th class="bullet-col">Bullet</th>
+          <th>Keyword / Phrase</th>
+          <th>Accepted Variants</th>
+          <th>Unacceptable Answers</th>
+        </tr>
+      </thead>
+
+      <tbody id="keywordBody"></tbody>
+    </table>
+
+    <div class="button-row">
+      <button onclick="addKeywordRow()">+ Add keyword row</button>
     </div>
+  </div>
 
-    <pre id="previewPayload"></pre>
+  <div class="card">
+    <div class="section-title">Blank Templates</div>
 
+    <textarea id="blankTemplates" placeholder="1 | _______ _____ of ____ amino acid | amino group; one
+2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Common Questions</div>
+
+    <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond.
+State the bond formed between amino acids."></textarea>
+  </div>
+
+  <div class="card">
+    <div class="button-row">
+      <button onclick="previewRows()">Preview Payload</button>
+      <button onclick="saveNewLO()">Save New LO</button>
+      <button onclick="updateExistingLO()">Update Existing LO</button>
+      <button onclick="resetForm()">Reset Form</button>
+    </div>
+  </div>
+
+  <div id="output" style="display:none;">
+    <div class="card">
+      <div class="section-title">Preview Payload</div>
+      <pre id="previewPayload"></pre>
+    </div>
   </div>
 
 </div>
 
 <script>
-
 const BASE_URL =
 "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
 
+let topics = [];
 let existingLOs = [];
 let currentEditingLO = null;
+let selectedTestLO = null;
 
 /************************************
- * INIT
+ * TEACHER LOGIN
  ************************************/
-window.addEventListener("load", () => {
+async function teacherLogin(){
+  clearStatus();
+
+  const email = val("teacherEmail");
+
+  const res = await fetch(
+    `${BASE_URL}?action=validateTeacher&email=${encodeURIComponent(email)}`
+  );
+
+  const data = await res.json();
+
+  if(data.valid){
+    document.getElementById("teacherLogin").style.display = "none";
+    document.getElementById("teacherApp").style.display = "block";
+    await loadTopics();
+  }else{
+    document.getElementById("teacherLoginMsg").innerText =
+      "Invalid teacher email or inactive account.";
+  }
+}
+
+/************************************
+ * TOPICS
+ ************************************/
+async function loadTopics(){
+  const res = await fetch(`${BASE_URL}?action=getTopics`);
+  const data = await res.json();
+
+  topics = data.topics || [];
+
+  const select = document.getElementById("topicSelect");
+
+  select.innerHTML = "";
+
+  topics.forEach(t => {
+    const option = document.createElement("option");
+
+    option.value =
+      `${t.Topic_ID}|${t.Topic_Name}|${t.Topic_Code || deriveTopicCode(t.Topic_Name)}|${t.Topic_Order}`;
+
+    option.textContent =
+      `Topic ${t.Topic_Order}: ${t.Topic_Name}`;
+
+    select.appendChild(option);
+  });
+
   updateTopicFields();
-});
+}
 
-/************************************
- * TOPIC
- ************************************/
 function updateTopicFields(){
+  const selected = document.getElementById("topicSelect").value;
 
-  const selected =
-    document
-      .getElementById("topicSelect")
-      .value;
+  if(!selected) return;
 
-  const parts =
-    selected.split("|");
+  const parts = selected.split("|");
 
-  document
-    .getElementById("topicId")
-    .value = parts[0];
-
-  document
-    .getElementById("topicCode")
-    .value = parts[2];
+  document.getElementById("topicId").value = parts[0];
+  document.getElementById("topicName").value = parts[1];
+  document.getElementById("topicCode").value = parts[2];
 
   updateGeneratedLOId();
-
   loadExistingLOs();
+}
+
+function showNewTopicForm(){
+  document.getElementById("newTopicCard").style.display = "block";
+}
+
+function hideNewTopicForm(){
+  document.getElementById("newTopicCard").style.display = "none";
+}
+
+function createTopic(){
+  clearStatus();
+
+  const payload = {
+    topicOrder: val("newTopicOrder"),
+    topicName: val("newTopicName"),
+    topicCode: val("newTopicCode")
+  };
+
+  submitPost(
+    "createTopic",
+    payload,
+    "New topic save request sent. Refreshing topic list shortly..."
+  );
+
+  setTimeout(async () => {
+    await loadTopics();
+    hideNewTopicForm();
+  }, 2500);
+}
+
+function deriveTopicCode(topicName){
+  return String(topicName || "")
+    .replace(/[^A-Za-z]/g,"")
+    .slice(0,3)
+    .toUpperCase();
 }
 
 /************************************
@@ -557,547 +546,389 @@ document
   .addEventListener("input", updateGeneratedLOId);
 
 function updateGeneratedLOId(){
+  const code = val("topicCode");
+  const number = val("loNumber");
 
-  const code =
-    val("topicCode");
-
-  const number =
-    val("loNumber");
-
-  document
-    .getElementById("generatedLoId")
-    .value =
-      number
-        ? `${code}_LO${number}`
-        : "";
+  document.getElementById("generatedLoId").value =
+    number ? `${code}_LO${number}` : "";
 }
 
 /************************************
- * LOAD EXISTING LOS
+ * EXISTING LOS
  ************************************/
 async function loadExistingLOs(){
+  const topicId = val("topicId");
 
-  const topicId =
-    val("topicId");
+  if(!topicId) return;
 
-  const res =
-    await fetch(
-      `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(topicId)}`
-    );
+  const res = await fetch(
+    `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(topicId)}`
+  );
 
-  const data =
-    await res.json();
-
-  existingLOs =
-    data.los || [];
+  const data = await res.json();
+  existingLOs = data.los || [];
 
   renderExistingLOs();
 }
 
-/************************************
- * RENDER EXISTING LOS
- ************************************/
 function renderExistingLOs(){
+  const box = document.getElementById("existingLOsBox");
 
-  const box =
-    document.getElementById("existingLOsBox");
-
-  if(existingLOs.length===0){
-
-    box.innerHTML =
-      `<p>No LOs found.</p>`;
-
+  if(existingLOs.length === 0){
+    box.innerHTML = `<p class="hint">No LOs found for this topic.</p>`;
     return;
   }
 
   let html = `
-
     <table>
-
       <thead>
-
         <tr>
-
-          <th class="checkbox-col">
-            Select
-          </th>
-
-          <th>
-            LO
-          </th>
-
-          <th>
-            LO Question
-          </th>
-
-          <th>
-            Actions
-          </th>
-
+          <th class="checkbox-col">Select</th>
+          <th>LO</th>
+          <th>LO Question</th>
+          <th>Actions</th>
         </tr>
-
       </thead>
-
       <tbody>
   `;
 
   existingLOs.forEach(lo => {
-
-    const loNumber =
-      String(lo.LO_ID || "")
-        .split("_LO")[1] || "";
+    const loNumber = String(lo.LO_ID || "").split("_LO")[1] || "";
 
     html += `
-
-      <tr class="${
-        currentEditingLO===lo.LO_ID
-        ? 'selected-row'
-        : ''
-      }">
-
+      <tr>
         <td class="checkbox-col">
-
-          <input type="checkbox"
-                 class="loCheckbox"
-                 value="${escapeHtml(lo.LO_ID)}">
-
+          <input type="checkbox" class="loCheckbox" value="${escapeHtml(lo.LO_ID)}">
         </td>
 
-        <td>
+        <td>LO${escapeHtml(loNumber)}</td>
 
-          LO${escapeHtml(loNumber)}
-
-        </td>
+        <td>${escapeHtml(lo.LO_Question)}</td>
 
         <td>
-
-          ${escapeHtml(lo.LO_Question)}
-
-        </td>
-
-        <td>
-
           <div class="action-buttons">
-
-            <button class="small-button"
-                    onclick="viewLODetails('${escapeJs(lo.LO_ID)}')">
-
+            <button class="small-button" onclick="viewLODetails('${escapeJs(lo.LO_ID)}')">
               View LO Details
-
             </button>
 
-            <button class="small-button"
-                    onclick="loadLOIntoForm('${escapeJs(lo.LO_ID)}')">
-
+            <button class="small-button" onclick="testThisLO('${escapeJs(lo.LO_ID)}')">
               Test This LO
-
             </button>
-
           </div>
-
         </td>
-
       </tr>
     `;
   });
 
-  html += `
-      </tbody>
-    </table>
-  `;
-
+  html += `</tbody></table>`;
   box.innerHTML = html;
 }
 
-/************************************
- * GET SELECTED LOS
- ************************************/
 function getSelectedLOs(){
-
-  return Array.from(
-    document.querySelectorAll(".loCheckbox:checked")
-  )
-
-  .map(x => x.value);
+  return Array.from(document.querySelectorAll(".loCheckbox:checked"))
+    .map(x => x.value);
 }
 
 /************************************
- * EDIT SELECTED LO
+ * VIEW DETAILS
  ************************************/
-async function editSelectedLO(){
+async function viewLODetails(loId){
+  const res = await fetch(
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
+  );
 
-  const selected =
-    getSelectedLOs();
+  const data = await res.json();
+  const lo = existingLOs.find(x => x.LO_ID === loId);
 
-  if(selected.length!==1){
+  let html = `
+    <div class="readonly-box">
+      <strong>LO Question</strong><br><br>
+      ${escapeHtml(lo?.LO_Question || loId)}
+    </div>
 
-    showError(
-      "Please select exactly ONE LO to edit."
-    );
+    <div class="readonly-box">
+      <strong>Answer Bullets</strong><br><br>
+  `;
 
+  (data.answerBullets || []).forEach(b => {
+    html += `• ${escapeHtml(b.Canonical_Answer)}<br>`;
+  });
+
+  html += `</div><div class="readonly-box"><strong>Hints</strong><br><br>`;
+
+  (data.answerBullets || []).forEach(b => {
+    html += `• ${escapeHtml(b.Hint || "")}<br>`;
+  });
+
+  html += `</div><div class="readonly-box"><strong>Keywords</strong><br><br>`;
+
+  (data.keywords || []).forEach(k => {
+    html += `• Bullet ${escapeHtml(k.Bullet_Order)} — ${escapeHtml(k.Keyword_or_Phrase)}<br>`;
+  });
+
+  html += `</div><div class="readonly-box"><strong>Accepted Variants</strong><br><br>`;
+
+  (data.variants || []).forEach(v => {
+    html += `• ${escapeHtml(v.Keyword_ID)} — ${escapeHtml(v.Accepted_Variant)}<br>`;
+  });
+
+  html += `</div><div class="readonly-box"><strong>Unacceptable Answers</strong><br><br>`;
+
+  (data.unacceptable || []).forEach(u => {
+    html += `• ${escapeHtml(u.Keyword_ID || "")} — ${escapeHtml(u.Phrase)}<br>`;
+  });
+
+  html += `</div><div class="readonly-box"><strong>Blank Templates</strong><br><br>`;
+
+  (data.blankTemplates || []).forEach(b => {
+    html += `• Bullet ${escapeHtml(b.Bullet_Order)} — ${escapeHtml(b.Teacher_Final_Blank || "")}<br>`;
+  });
+
+  html += `</div><div class="readonly-box"><strong>Common Questions</strong><br><br>`;
+
+  (data.commonQuestions || []).forEach(q => {
+    html += `• ${escapeHtml(q.Common_Question)}<br>`;
+  });
+
+  html += `</div>`;
+
+  document.getElementById("detailsPanel").style.display = "block";
+  document.getElementById("detailsOutput").innerHTML = html;
+
+  document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
+}
+
+/************************************
+ * TEST THIS LO
+ ************************************/
+async function testThisLO(loId){
+  selectedTestLO = loId;
+
+  const lo = existingLOs.find(x => x.LO_ID === loId);
+
+  document.getElementById("teacherTestPanel").style.display = "block";
+  document.getElementById("testLoLabel").innerHTML =
+    `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
+
+  document.getElementById("testOutput").innerHTML = "";
+  document.getElementById("teacherTestPanel").scrollIntoView({behavior:"smooth"});
+}
+
+async function runTeacherTest(){
+  if(!selectedTestLO){
+    showError("Please choose an LO to test first.");
     return;
   }
 
-  await loadLOIntoForm(
-    selected[0]
+  const mode = val("testMode");
+  const attemptNo = val("testAttemptNo") || "1";
+  const responseText = val("testAnswer");
+
+  const res = await fetch(
+    `${BASE_URL}?action=checkResponse`
+    + `&email=teacher_preview@local`
+    + `&loId=${encodeURIComponent(selectedTestLO)}`
+    + `&mode=${encodeURIComponent(mode)}`
+    + `&attemptNo=${encodeURIComponent(attemptNo)}`
+    + `&response=${encodeURIComponent(responseText)}`
   );
+
+  const data = await res.json();
+
+  renderTeacherTestOutput(data);
+}
+
+function renderTeacherTestOutput(data){
+  let html = "";
+
+  if(data.mode === "self" || data.mode === "remediation"){
+    html += `<div class="readonly-box"><strong>Feedback Preview</strong><br><br>`;
+
+    (data.bulletResults || []).forEach((b, i) => {
+      html += `
+        <div style="margin-bottom:12px;">
+          <strong>Bullet ${i + 1}</strong><br>
+          • ${escapeHtml(b.responseText || "(blank)")}
+          <br>
+          <span class="hint">${escapeHtml((b.feedbackLabels || []).join(", "))}</span>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+
+    if(data.hintOutput && data.hintOutput.length){
+      html += `<div class="readonly-box"><strong>Answer Structure Hint</strong><br><br>`;
+
+      data.hintOutput.forEach(h => {
+        html += `
+          <strong>Bullet ${escapeHtml(h.bulletOrder)}</strong><br>
+          ${escapeHtml(h.conceptualHint || "")}
+          <div class="green-box">${escapeHtml(h.reconstruction || "")}</div>
+          <br>
+        `;
+      });
+
+      html += `</div>`;
+    }
+
+    if(data.remediationScaffold && data.remediationScaffold.length){
+      html += `<div class="readonly-box"><strong>Remediation Scaffold</strong><br><br>`;
+
+      data.remediationScaffold.forEach(s => {
+        html += `
+          <strong>Bullet ${escapeHtml(s.bulletOrder)}</strong>
+          <div class="green-box">${escapeHtml(s.scaffold || "")}</div>
+          <br>
+        `;
+      });
+
+      html += `</div>`;
+    }
+  }
+
+  if(data.mode === "builder"){
+    html += `<div class="readonly-box"><strong>Model Answer Suggestion</strong><br><br>`;
+
+    (data.builderOutput || []).forEach(b => {
+      html += `• ${escapeHtml(b.text)}<br><br>`;
+    });
+
+    html += `</div>`;
+  }
+
+  document.getElementById("testOutput").innerHTML = html;
 }
 
 /************************************
- * DELETE LOS
+ * EDIT / DELETE
  ************************************/
+async function editSelectedLO(){
+  const selected = getSelectedLOs();
+
+  if(selected.length !== 1){
+    showError("Please select exactly ONE LO to edit.");
+    return;
+  }
+
+  await loadLOIntoForm(selected[0]);
+}
+
 async function deleteSelectedLO(){
+  const selected = getSelectedLOs();
 
-  const selected =
-    getSelectedLOs();
-
-  if(selected.length===0){
-
-    showError(
-      "Please select at least one LO."
-    );
-
+  if(selected.length === 0){
+    showError("Please select at least one LO.");
     return;
   }
 
   const confirmDelete =
-    confirm(
-      `Are you sure you want to delete ${selected.length} LO(s)?`
-    );
+    confirm(`Are you sure you want to delete ${selected.length} LO(s)? Students will no longer see them.`);
 
-  if(!confirmDelete){
-    return;
-  }
+  if(!confirmDelete) return;
 
-  try{
+  submitPost(
+    "deleteLOs",
+    {loIds:selected},
+    `Delete request sent for ${selected.length} LO(s).`
+  );
 
-    const response =
-      await fetch(
-        BASE_URL,
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:JSON.stringify({
-
-            action:"deleteLOs",
-
-            payload:{
-              loIds:selected
-            }
-          })
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if(data.ok){
-
-      showSuccess(
-        `Deleted ${selected.length} LO(s).`
-      );
-
-      currentEditingLO = null;
-
-      loadExistingLOs();
-
-    }else{
-
-      showError(
-        data.error ||
-        "Delete failed."
-      );
-    }
-
-  }catch(err){
-
-    showError(
-      err.message
-    );
-  }
+  setTimeout(loadExistingLOs, 2500);
 }
 
-/************************************
- * VIEW LO DETAILS
- ************************************/
-async function viewLODetails(loId){
-
-  const res =
-    await fetch(
-      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
-    );
-
-  const data =
-    await res.json();
-
-  const lo =
-    existingLOs.find(
-      x => x.LO_ID===loId
-    );
-
-  let html = `
-
-    <div class="readonly-box">
-
-      <strong>LO Question</strong>
-
-      <br><br>
-
-      ${escapeHtml(lo.LO_Question)}
-
-    </div>
-  `;
-
-  html += `
-    <div class="readonly-box">
-
-      <strong>Answer Bullets</strong>
-
-      <br><br>
-  `;
-
-  (data.answerBullets || [])
-    .forEach(b => {
-
-      html += `
-        • ${escapeHtml(b.Canonical_Answer)}
-        <br>
-      `;
-    });
-
-  html += `</div>`;
-
-  html += `
-    <div class="readonly-box">
-
-      <strong>Keywords</strong>
-
-      <br><br>
-  `;
-
-  (data.keywords || [])
-    .forEach(k => {
-
-      html += `
-        • Bullet ${escapeHtml(k.Bullet_Order)}
-        — ${escapeHtml(k.Keyword_or_Phrase)}
-        <br>
-      `;
-    });
-
-  html += `</div>`;
-
-  document
-    .getElementById("detailsPanel")
-    .style.display = "block";
-
-  document
-    .getElementById("detailsOutput")
-    .innerHTML = html;
-
-  window.scrollTo({
-    top:
-      document
-        .getElementById("detailsPanel")
-        .offsetTop - 20,
-
-    behavior:"smooth"
-  });
-}
-
-/************************************
- * LOAD INTO FORM
- ************************************/
 async function loadLOIntoForm(loId){
-
   currentEditingLO = loId;
 
-  renderExistingLOs();
+  const res = await fetch(
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
+  );
 
-  const res =
-    await fetch(
-      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
-    );
+  const data = await res.json();
+  const lo = existingLOs.find(x => x.LO_ID === loId);
 
-  const data =
-    await res.json();
+  document.getElementById("editingLabel").innerHTML =
+    `Editing LO${escapeHtml(String(loId).split("_LO")[1] || "")}`;
 
-  const lo =
-    existingLOs.find(
-      x => x.LO_ID===loId
-    );
-
-  document
-    .getElementById("editingLabel")
-    .innerHTML =
-      `Editing ${escapeHtml(loId)}`;
-
-  const loNumber =
-    loId.split("_LO")[1] || "";
-
-  document
-    .getElementById("loNumber")
-    .value =
-      loNumber;
+  document.getElementById("loNumber").value =
+    String(loId).split("_LO")[1] || "";
 
   updateGeneratedLOId();
 
-  document
-    .getElementById("loQuestion")
-    .value =
-      lo.LO_Question || "";
+  document.getElementById("loQuestion").value =
+    lo?.LO_Question || "";
 
-  document
-    .getElementById("answerBullets")
-    .value =
-      (data.answerBullets || [])
+  document.getElementById("answerBullets").value =
+    (data.answerBullets || []).map(x => x.Canonical_Answer).join("\n");
 
-        .map(x =>
-          x.Canonical_Answer
-        )
-
-        .join("\n");
-
-  document
-    .getElementById("hints")
-    .value =
-      (data.answerBullets || [])
-
-        .map(x =>
-          x.Hint || ""
-        )
-
-        .join("\n");
+  document.getElementById("hints").value =
+    (data.answerBullets || []).map(x => x.Hint || "").join("\n");
 
   renderKeywordRows(data);
 
-  document
-    .getElementById("blankTemplates")
-    .value =
-      (data.blankTemplates || [])
+  document.getElementById("blankTemplates").value =
+    (data.blankTemplates || [])
+      .map(x => `${x.Bullet_Order} | ${x.Teacher_Final_Blank} | ${x.Blank_Targets}`)
+      .join("\n");
 
-        .map(x =>
-          `${x.Bullet_Order} | ${x.Teacher_Final_Blank} | ${x.Blank_Targets}`
-        )
+  document.getElementById("commonQuestions").value =
+    (data.commonQuestions || []).map(x => x.Common_Question).join("\n");
 
-        .join("\n");
-
-  document
-    .getElementById("commonQuestions")
-    .value =
-      (data.commonQuestions || [])
-
-        .map(x =>
-          x.Common_Question
-        )
-
-        .join("\n");
-
-  window.scrollTo({
-    top:
-      document.body.scrollHeight,
-
-    behavior:"smooth"
-  });
+  document.getElementById("loQuestion").scrollIntoView({behavior:"smooth"});
 }
 
 /************************************
- * RENDER KEYWORDS
+ * KEYWORD ROWS
  ************************************/
 function renderKeywordRows(data){
-
-  const body =
-    document
-      .getElementById("keywordBody");
-
+  const body = document.getElementById("keywordBody");
   body.innerHTML = "";
 
   (data.keywords || []).forEach(k => {
+    const variants = (data.variants || [])
+      .filter(v => v.Keyword_ID === k.Keyword_ID)
+      .map(v => v.Accepted_Variant)
+      .join("; ");
 
-    const variants =
-      (data.variants || [])
+    const unacceptable = (data.unacceptable || [])
+      .filter(u => u.Keyword_ID === k.Keyword_ID)
+      .map(u => u.Phrase)
+      .join("; ");
 
-        .filter(v =>
-          v.Keyword_ID === k.Keyword_ID
-        )
-
-        .map(v =>
-          v.Accepted_Variant
-        )
-
-        .join("; ");
-
-    const unacceptable =
-      (data.unacceptable || [])
-
-        .filter(u =>
-          u.Keyword_ID === k.Keyword_ID
-        )
-
-        .map(u =>
-          u.Phrase
-        )
-
-        .join("; ");
-
-    const row =
-      document.createElement("tr");
+    const row = document.createElement("tr");
 
     row.innerHTML = `
-
       <td class="bullet-col">
-        <input value="${escapeHtml(k.Bullet_Order)}">
+        <input value="${escapeHtml(k.Bullet_Order)}" placeholder="1">
       </td>
-
       <td>
-        <input value="${escapeHtml(k.Keyword_or_Phrase)}">
+        <input value="${escapeHtml(k.Keyword_or_Phrase)}" placeholder="amino group">
       </td>
-
       <td>
-        <textarea>${escapeHtml(variants)}</textarea>
+        <textarea placeholder="amino functional group">${escapeHtml(variants)}</textarea>
       </td>
-
       <td>
-        <textarea>${escapeHtml(unacceptable)}</textarea>
+        <textarea placeholder="amine group; hydroxyl group">${escapeHtml(unacceptable)}</textarea>
       </td>
     `;
 
     body.appendChild(row);
-
   });
 }
 
-/************************************
- * ADD KEYWORD ROW
- ************************************/
 function addKeywordRow(){
-
-  const body =
-    document
-      .getElementById("keywordBody");
-
-  const row =
-    document.createElement("tr");
+  const body = document.getElementById("keywordBody");
+  const row = document.createElement("tr");
 
   row.innerHTML = `
-
     <td class="bullet-col">
       <input placeholder="1">
     </td>
-
     <td>
       <input placeholder="amino group">
     </td>
-
     <td>
       <textarea placeholder="amino functional group"></textarea>
     </td>
-
     <td>
       <textarea placeholder="amine group; hydroxyl group"></textarea>
     </td>
@@ -1107,218 +938,111 @@ function addKeywordRow(){
 }
 
 /************************************
- * SAVE NEW
+ * SAVE / UPDATE LO
  ************************************/
 function saveNewLO(){
-  submitLOAction("saveLOPackage");
+  submitPost("saveLOPackage", buildPayload(), "New LO save request sent.");
 }
 
-/************************************
- * UPDATE
- ************************************/
 function updateExistingLO(){
-
   if(!currentEditingLO){
-
-    showError(
-      "Please load an LO first."
-    );
-
+    showError("Please load an existing LO first.");
     return;
   }
 
-  submitLOAction(
-    "updateLOPackage"
-  );
+  submitPost("updateLOPackage", buildPayload(), "LO update request sent.");
+  setTimeout(loadExistingLOs, 2500);
 }
 
-/************************************
- * SUBMIT
- ************************************/
-function submitLOAction(action){
-
+function submitPost(action, payload, successMessage){
   clearStatus();
 
   try{
-
-    const payload =
-      buildPayload();
-
-    const form =
-      document.createElement("form");
-
+    const form = document.createElement("form");
     form.method = "POST";
     form.action = BASE_URL;
     form.target = "hiddenFrame";
     form.style.display = "none";
 
-    const actionInput =
-      document.createElement("input");
-
+    const actionInput = document.createElement("input");
     actionInput.name = "action";
     actionInput.value = action;
 
-    const payloadInput =
-      document.createElement("input");
-
+    const payloadInput = document.createElement("input");
     payloadInput.name = "payload";
-    payloadInput.value =
-      JSON.stringify(payload);
+    payloadInput.value = JSON.stringify(payload);
 
     form.appendChild(actionInput);
     form.appendChild(payloadInput);
 
     document.body.appendChild(form);
-
     form.submit();
 
-    if(action==="saveLOPackage"){
-
-      showSuccess(
-        `Saved ${payload.loId}`
-      );
-
-    }else{
-
-      showSuccess(
-        `Updated ${payload.loId}`
-      );
-    }
+    showSuccess(successMessage);
 
     setTimeout(() => {
-
       form.remove();
-
       loadExistingLOs();
-
-    },3000);
+    }, 2500);
 
   }catch(err){
-
-    showError(
-      err.message
-    );
+    showError(err.message);
   }
 }
 
-/************************************
- * BUILD PAYLOAD
- ************************************/
 function buildPayload(){
+  const topicId = val("topicId");
+  const topicCode = val("topicCode");
+  const loNumber = val("loNumber");
+  const loQuestion = val("loQuestion");
+  const loId = `${topicCode}_LO${loNumber}`;
 
-  const topicId =
-    val("topicId");
-
-  const topicCode =
-    val("topicCode");
-
-  const loNumber =
-    val("loNumber");
-
-  const loQuestion =
-    val("loQuestion");
-
-  const loId =
-    `${topicCode}_LO${loNumber}`;
-
-  const hintLines =
-    lines("hints");
+  const hintLines = lines("hints");
 
   const answerBullets =
-    lines("answerBullets")
+    lines("answerBullets").map((line, i) => ({
+      bulletOrder: i + 1,
+      canonicalAnswer: line,
+      hint: hintLines[i] || ""
+    }));
 
-      .map((line,i)=>({
-
-        bulletOrder:i+1,
-
-        canonicalAnswer:line,
-
-        hint:
-          hintLines[i] || ""
-      }));
-
-  const keywords =
-    readKeywordTable();
+  const keywords = readKeywordTable();
 
   const blankTemplates =
-    lines("blankTemplates")
+    lines("blankTemplates").map(line => {
+      const parts = splitPipe(line);
+      return {
+        bulletOrder: parts[0] || "",
+        template: parts[1] || "",
+        targets: parts[2] || ""
+      };
+    });
 
-      .map(line=>{
-
-        const parts =
-          splitPipe(line);
-
-        return {
-
-          bulletOrder:
-            parts[0] || "",
-
-          template:
-            parts[1] || "",
-
-          targets:
-            parts[2] || ""
-        };
-      });
-
-  const commonQuestions =
-    lines("commonQuestions");
+  const commonQuestions = lines("commonQuestions");
 
   return {
-
     topicId,
-
     loId,
-
-    loOrder:loNumber,
-
+    loOrder: loNumber,
     loQuestion,
-
     answerBullets,
-
     keywords,
-
     blankTemplates,
-
     commonQuestions
   };
 }
 
-/************************************
- * PREVIEW
- ************************************/
 function previewRows(){
-
-  const payload =
-    buildPayload();
-
-  document
-    .getElementById("output")
-    .style.display = "block";
-
-  document
-    .getElementById("previewPayload")
-    .innerText =
-      JSON.stringify(
-        payload,
-        null,
-        2
-      );
+  document.getElementById("output").style.display = "block";
+  document.getElementById("previewPayload").innerText =
+    JSON.stringify(buildPayload(), null, 2);
 }
 
-/************************************
- * RESET
- ************************************/
 function resetForm(){
-
   currentEditingLO = null;
 
-  renderExistingLOs();
-
-  document
-    .getElementById("editingLabel")
-    .innerHTML =
-      "Creating NEW LO";
+  document.getElementById("editingLabel").innerHTML =
+    "Creating NEW LO";
 
   [
     "loNumber",
@@ -1328,74 +1052,36 @@ function resetForm(){
     "hints",
     "blankTemplates",
     "commonQuestions"
-  ]
-
-  .forEach(id => {
-
-    document
-      .getElementById(id)
-      .value = "";
+  ].forEach(id => {
+    document.getElementById(id).value = "";
   });
 
-  document
-    .getElementById("keywordBody")
-    .innerHTML = "";
-
-  document
-    .getElementById("detailsPanel")
-    .style.display = "none";
+  document.getElementById("keywordBody").innerHTML = "";
+  document.getElementById("detailsPanel").style.display = "none";
+  document.getElementById("teacherTestPanel").style.display = "none";
 }
 
 /************************************
- * READ KEYWORDS
+ * READ TABLES / HELPERS
  ************************************/
 function readKeywordTable(){
-
-  const rows =
-    document.querySelectorAll(
-      "#keywordBody tr"
-    );
-
+  const rows = document.querySelectorAll("#keywordBody tr");
   const output = [];
 
   rows.forEach(row => {
+    const inputs = row.querySelectorAll("input");
+    const textareas = row.querySelectorAll("textarea");
 
-    const inputs =
-      row.querySelectorAll("input");
-
-    const textareas =
-      row.querySelectorAll("textarea");
-
-    const bulletNo =
-      inputs[0]
-        .value
-        .trim();
-
-    const keyword =
-      inputs[1]
-        .value
-        .trim();
-
-    const variants =
-      splitSemicolon(
-        textareas[0].value
-      );
-
-    const unacceptable =
-      splitSemicolon(
-        textareas[1].value
-      );
+    const bulletNo = inputs[0].value.trim();
+    const keyword = inputs[1].value.trim();
+    const variants = splitSemicolon(textareas[0].value);
+    const unacceptable = splitSemicolon(textareas[1].value);
 
     if(bulletNo && keyword){
-
       output.push({
-
         bulletNo,
-
         keyword,
-
         variants,
-
         unacceptable
       });
     }
@@ -1404,102 +1090,57 @@ function readKeywordTable(){
   return output;
 }
 
-/************************************
- * STATUS
- ************************************/
 function clearStatus(){
-
-  document
-    .getElementById("status")
-    .innerHTML = "";
+  document.getElementById("status").innerHTML = "";
 }
 
 function showSuccess(msg){
-
-  document
-    .getElementById("status")
-    .innerHTML = `
-
-      <div class="success">
-        ${escapeHtml(msg)}
-      </div>
-    `;
+  document.getElementById("status").innerHTML =
+    `<div class="success">${escapeHtml(msg)}</div>`;
 }
 
 function showError(msg){
-
-  document
-    .getElementById("status")
-    .innerHTML = `
-
-      <div class="error">
-        ${escapeHtml(msg)}
-      </div>
-    `;
+  document.getElementById("status").innerHTML =
+    `<div class="error">${escapeHtml(msg)}</div>`;
 }
 
-/************************************
- * HELPERS
- ************************************/
 function val(id){
-
-  return document
-    .getElementById(id)
-    .value
-    .trim();
+  return document.getElementById(id).value.trim();
 }
 
 function lines(id){
-
-  return document
-    .getElementById(id)
-    .value
-
+  return document.getElementById(id).value
     .split("\n")
-
-    .map(x=>x.trim())
-
+    .map(x => x.trim())
     .filter(Boolean);
 }
 
 function splitPipe(line){
-
-  return line
-    .split("|")
-    .map(x=>x.trim());
+  return line.split("|").map(x => x.trim());
 }
 
 function splitSemicolon(text){
-
   return String(text || "")
-
     .split(";")
-
-    .map(x=>x.trim())
-
+    .map(x => x.trim())
     .filter(Boolean);
 }
 
 function escapeHtml(text){
-
   return String(text || "")
-
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;");
 }
 
 function escapeJs(text){
-
   return String(text || "")
-
     .replaceAll("\\","\\\\")
     .replaceAll("'","\\'");
 }
 </script>
 
-<iframe name="hiddenFrame"
-        style="display:none;"></iframe>
+<iframe name="hiddenFrame" style="display:none;"></iframe>
 
 </div>
 
