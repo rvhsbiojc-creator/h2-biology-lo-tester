@@ -1381,7 +1381,7 @@ function renderFinalLeaderboardCelebration(result){
   const firstCompletionMessage =
     result.firstCompletion
       ? "🌟 Your first completion has been entered into the leaderboard!"
-      : "You have completed this topic before, so this attempt was saved but not ranked again.";
+      : "🌿 This topic was already completed previously, so this attempt was saved but not ranked again.";
 
   let leaderboardRows = "";
 
@@ -1397,19 +1397,38 @@ function renderFinalLeaderboardCelebration(result){
 
       <tr>
 
-        <td>
+        <td style="
+          padding:16px;
+          border:1px solid #ddd;
+          text-align:center;
+          font-size:22px;
+        ">
           ${medal} ${r.rank}
         </td>
 
-        <td>
+        <td style="
+          padding:16px;
+          border:1px solid #ddd;
+          font-size:20px;
+        ">
           ${escapeHtml(r.name)}
         </td>
 
-        <td>
+        <td style="
+          padding:16px;
+          border:1px solid #ddd;
+          text-align:center;
+          font-size:20px;
+        ">
           ${escapeHtml(r.className)}
         </td>
 
-        <td>
+        <td style="
+          padding:16px;
+          border:1px solid #ddd;
+          text-align:center;
+          font-size:20px;
+        ">
           ${escapeHtml(r.time)}
         </td>
 
@@ -1417,57 +1436,73 @@ function renderFinalLeaderboardCelebration(result){
     `;
   });
 
+  /************************************
+   * DESTROY OLD PAGE COMPLETELY
+   ************************************/
+  document.body.innerHTML = "";
+
+  /************************************
+   * FULLSCREEN CELEBRATION PAGE
+   ************************************/
   document.body.innerHTML = `
 
     <div style="
       min-height:100vh;
-      width:100%;
-      background:linear-gradient(180deg,#fffbea,#eaffea,#f5f0ff);
-      font-family:Arial,sans-serif;
-      padding:28px;
+      width:100vw;
+      background:
+        linear-gradient(
+          180deg,
+          #fff7cf 0%,
+          #eaffea 35%,
+          #f7efff 100%
+        );
+
+      padding:40px 20px;
       box-sizing:border-box;
+      font-family:Arial,sans-serif;
+      overflow-x:hidden;
     ">
 
       <div style="
-        max-width:1100px;
+        width:100%;
+        max-width:1400px;
         margin:0 auto;
-        background:white;
-        border-radius:24px;
-        padding:32px;
-        box-shadow:0 8px 28px rgba(0,0,0,0.12);
-        border:1px solid #e8e8e8;
       ">
 
         <div style="
           text-align:center;
-          font-size:42px;
+          font-size:56px;
           line-height:1.7;
+          animation:pulse 2s infinite;
         ">
 
           🎆✨🌞😎🌸🌺🌻🌷🪻🌼🌿✨🎆
 
         </div>
 
-        <h1 style="
+        <div style="
           text-align:center;
-          font-size:42px;
-          margin:18px 0 8px 0;
+          font-size:64px;
+          font-weight:bold;
+          margin-top:12px;
+          color:#2b2b2b;
         ">
 
           TOPIC COMPLETED!
 
-        </h1>
+        </div>
 
         <div style="
           text-align:center;
-          font-size:22px;
-          line-height:1.8;
-          margin-bottom:24px;
+          font-size:28px;
+          line-height:1.9;
+          margin-top:20px;
+          color:#444;
         ">
 
-          Your Biology garden is fully blooming!
+          🌿 Your Biology garden is fully blooming! 🌿
 
-          <br>
+          <br><br>
 
           ${escapeHtml(firstCompletionMessage)}
 
@@ -1475,11 +1510,12 @@ function renderFinalLeaderboardCelebration(result){
 
         <div style="
           text-align:center;
-          font-size:34px;
-          margin:24px 0;
+          font-size:42px;
+          margin-top:40px;
+          margin-bottom:26px;
         ">
 
-          🏆 Top 10 Fastest First Completions 🏆
+          🏆 TOP 10 FASTEST FIRST COMPLETIONS 🏆
 
         </div>
 
@@ -1491,27 +1527,51 @@ function renderFinalLeaderboardCelebration(result){
           <table style="
             width:100%;
             border-collapse:collapse;
-            font-size:18px;
-            background:#ffffff;
+            background:white;
+            border-radius:20px;
+            overflow:hidden;
+            box-shadow:0 8px 30px rgba(0,0,0,0.12);
           ">
 
             <thead>
 
-              <tr style="background:#fff3b0;">
+              <tr style="
+                background:#ffe78f;
+              ">
 
-                <th style="padding:14px;border:1px solid #ddd;text-align:center;">
+                <th style="
+                  padding:18px;
+                  border:1px solid #ddd;
+                  font-size:22px;
+                  text-align:center;
+                ">
                   Rank
                 </th>
 
-                <th style="padding:14px;border:1px solid #ddd;text-align:left;">
+                <th style="
+                  padding:18px;
+                  border:1px solid #ddd;
+                  font-size:22px;
+                  text-align:left;
+                ">
                   Student
                 </th>
 
-                <th style="padding:14px;border:1px solid #ddd;text-align:center;">
+                <th style="
+                  padding:18px;
+                  border:1px solid #ddd;
+                  font-size:22px;
+                  text-align:center;
+                ">
                   Class
                 </th>
 
-                <th style="padding:14px;border:1px solid #ddd;text-align:center;">
+                <th style="
+                  padding:18px;
+                  border:1px solid #ddd;
+                  font-size:22px;
+                  text-align:center;
+                ">
                   Time
                 </th>
 
@@ -1522,10 +1582,20 @@ function renderFinalLeaderboardCelebration(result){
             <tbody>
 
               ${leaderboardRows || `
+
                 <tr>
-                  <td colspan="4" style="padding:18px;text-align:center;border:1px solid #ddd;">
+
+                  <td colspan="4" style="
+                    padding:24px;
+                    border:1px solid #ddd;
+                    text-align:center;
+                    font-size:22px;
+                  ">
+
                     No leaderboard entries yet.
+
                   </td>
+
                 </tr>
               `}
 
@@ -1537,27 +1607,28 @@ function renderFinalLeaderboardCelebration(result){
 
         <div style="
           text-align:center;
-          font-size:38px;
+          font-size:56px;
+          margin-top:40px;
           line-height:1.8;
-          margin-top:28px;
         ">
 
-          🌞😎🌸🌺🌻🌷🪻🌼🌿🎉🎆
+          🌞😎🌸🌺🌻🌷🪻🌼🌿🎉🎆✨
 
         </div>
 
         <div style="
           text-align:center;
-          margin-top:28px;
+          margin-top:34px;
         ">
 
           <button onclick="location.reload()" style="
-            font-size:18px;
-            padding:14px 24px;
-            border-radius:14px;
-            border:1px solid #aaa;
+            font-size:24px;
+            padding:18px 34px;
+            border-radius:18px;
+            border:none;
             background:#ffffff;
             cursor:pointer;
+            box-shadow:0 4px 16px rgba(0,0,0,0.12);
           ">
 
             Return to Home
@@ -1570,14 +1641,6 @@ function renderFinalLeaderboardCelebration(result){
 
     </div>
   `;
-}
-
-  async function finishRemediationTopic(){
-
-  const result =
-    await logTopicCompletion();
-
-  renderFinalLeaderboardCelebration(result);
 }
 </script>
 
