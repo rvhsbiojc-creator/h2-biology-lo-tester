@@ -15,16 +15,9 @@
       color:#222;
     }
 
-    .page{
-      max-width:1400px;
-      margin:auto;
-    }
+    .page{max-width:1400px;margin:auto;}
 
-    h1{
-      margin-top:0;
-      margin-bottom:18px;
-      font-size:34px;
-    }
+    h1{margin-top:0;margin-bottom:18px;font-size:34px;}
 
     .card{
       background:white;
@@ -35,26 +28,13 @@
       border:1px solid #e5e7eb;
     }
 
-    .section-title{
-      font-size:22px;
-      font-weight:bold;
-      margin-bottom:14px;
-    }
+    .section-title{font-size:22px;font-weight:bold;margin-bottom:14px;}
 
-    .hint{
-      color:#666;
-      font-size:14px;
-      line-height:1.5;
-    }
+    .hint{color:#666;font-size:14px;line-height:1.5;}
 
-    label{
-      font-weight:bold;
-      display:block;
-      margin-top:14px;
-      margin-bottom:6px;
-    }
+    label{font-weight:bold;display:block;margin-top:14px;margin-bottom:6px;}
 
-    input, textarea, select{
+    input,textarea,select{
       width:100%;
       padding:10px;
       border-radius:10px;
@@ -63,11 +43,7 @@
       background:white;
     }
 
-    textarea{
-      min-height:110px;
-      resize:vertical;
-      line-height:1.5;
-    }
+    textarea{min-height:110px;resize:vertical;line-height:1.5;}
 
     button{
       background:#ffffff;
@@ -79,22 +55,11 @@
       transition:0.2s;
     }
 
-    button:hover{
-      background:#f3f6fa;
-    }
+    button:hover{background:#f3f6fa;}
 
-    .button-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:16px;
-    }
+    .button-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:14px;
-    }
+    table{width:100%;border-collapse:collapse;margin-top:14px;}
 
     th{
       background:#f2f5f8;
@@ -110,25 +75,13 @@
       vertical-align:top;
     }
 
-    tr:hover{
-      background:#fafcff;
-    }
+    tr:hover{background:#fafcff;}
 
-    .checkbox-col{
-      width:60px;
-      text-align:center;
-    }
+    .checkbox-col{width:60px;text-align:center;}
 
-    .action-buttons{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
+    .action-buttons{display:flex;flex-wrap:wrap;gap:8px;}
 
-    .small-button{
-      padding:7px 10px;
-      font-size:13px;
-    }
+    .small-button{padding:7px 10px;font-size:13px;}
 
     .success{
       background:#e8f7e8;
@@ -165,6 +118,20 @@
       line-height:1.7;
     }
 
+    .feedback-label{
+      display:inline-block;
+      background:#fff3a6;
+      padding:3px 7px;
+      border-radius:7px;
+      margin:3px 3px 3px 0;
+      font-size:13px;
+    }
+
+    .wrong{
+      text-decoration:line-through;
+      text-decoration-thickness:2px;
+    }
+
     .two-col{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -184,18 +151,11 @@
       padding:8px;
     }
 
-    .keyword-table td{
-      vertical-align:middle;
-    }
+    .keyword-table td{vertical-align:middle;}
 
-    .bullet-col{
-      width:80px;
-      min-width:80px;
-    }
+    .bullet-col{width:80px;min-width:80px;}
 
-    .bullet-col input{
-      text-align:center;
-    }
+    .bullet-col input{text-align:center;}
 
     pre{
       white-space:pre-wrap;
@@ -203,10 +163,6 @@
       border:1px solid #ddd;
       border-radius:10px;
       padding:12px;
-    }
-
-    .hidden{
-      display:none;
     }
 
     @media (max-width:900px){
@@ -235,9 +191,7 @@
 <div id="teacherLogin" class="card">
   <div class="section-title">Teacher Login</div>
 
-  <p class="hint">
-    Enter your teacher email to access the authoring interface.
-  </p>
+  <p class="hint">Enter your teacher email to access the authoring interface.</p>
 
   <label>Teacher Email</label>
   <input id="teacherEmail" placeholder="e.g. teacher@moe.edu.sg">
@@ -263,6 +217,7 @@
 
     <div class="button-row">
       <button onclick="showNewTopicForm()">+ Create New Topic</button>
+      <button onclick="startNewLO()">+ Create New LO for This Topic</button>
     </div>
   </div>
 
@@ -298,9 +253,7 @@
   <div class="card">
     <div class="section-title">Existing LOs for Topic</div>
 
-    <div id="existingLOsBox">
-      Loading existing LOs...
-    </div>
+    <div id="existingLOsBox">Loading existing LOs...</div>
 
     <div class="button-row">
       <button onclick="editSelectedLO()">Edit Existing LO</button>
@@ -341,9 +294,7 @@
   <div class="card">
     <div class="section-title">LO Information</div>
 
-    <div class="green-box" id="editingLabel">
-      Creating NEW LO
-    </div>
+    <div class="green-box" id="editingLabel">Creating NEW LO</div>
 
     <div class="two-col">
       <div>
@@ -385,7 +336,6 @@ Reacts to form a peptide bond between the two amino acids"></textarea>
           <th>Unacceptable Answers</th>
         </tr>
       </thead>
-
       <tbody id="keywordBody"></tbody>
     </table>
 
@@ -469,7 +419,6 @@ async function loadTopics(){
   topics = data.topics || [];
 
   const select = document.getElementById("topicSelect");
-
   select.innerHTML = "";
 
   topics.forEach(t => {
@@ -489,7 +438,6 @@ async function loadTopics(){
 
 function updateTopicFields(){
   const selected = document.getElementById("topicSelect").value;
-
   if(!selected) return;
 
   const parts = selected.split("|");
@@ -539,6 +487,37 @@ function deriveTopicCode(topicName){
 }
 
 /************************************
+ * CREATE NEW LO
+ ************************************/
+function startNewLO(){
+  currentEditingLO = null;
+  selectedTestLO = null;
+
+  document.getElementById("editingLabel").innerHTML =
+    `Creating NEW LO for ${escapeHtml(val("topicName"))}`;
+
+  [
+    "loNumber",
+    "generatedLoId",
+    "loQuestion",
+    "answerBullets",
+    "hints",
+    "blankTemplates",
+    "commonQuestions"
+  ].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+
+  document.getElementById("keywordBody").innerHTML = "";
+  addKeywordRow();
+
+  document.getElementById("detailsPanel").style.display = "none";
+  document.getElementById("teacherTestPanel").style.display = "none";
+
+  document.getElementById("loNumber").scrollIntoView({behavior:"smooth"});
+}
+
+/************************************
  * GENERATED LO ID
  ************************************/
 document
@@ -558,7 +537,6 @@ function updateGeneratedLOId(){
  ************************************/
 async function loadExistingLOs(){
   const topicId = val("topicId");
-
   if(!topicId) return;
 
   const res = await fetch(
@@ -694,7 +672,6 @@ async function viewLODetails(loId){
 
   document.getElementById("detailsPanel").style.display = "block";
   document.getElementById("detailsOutput").innerHTML = html;
-
   document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
 }
 
@@ -741,63 +718,93 @@ async function runTeacherTest(){
 function renderTeacherTestOutput(data){
   let html = "";
 
-  if(data.mode === "self" || data.mode === "remediation"){
-    html += `<div class="readonly-box"><strong>Feedback Preview</strong><br><br>`;
+  /***** Feedback section for all modes where available *****/
+  if(data.bulletResults && data.bulletResults.length){
+    html += `<div class="readonly-box"><strong>Feedback on your submission</strong><br><br>`;
 
-    (data.bulletResults || []).forEach((b, i) => {
+    data.bulletResults.forEach((b, i) => {
+      let responseLine = escapeHtml(b.responseText || "(blank)");
+
+      (b.highlights || []).forEach(h => {
+        const regex = new RegExp(escapeRegExp(h), "gi");
+        responseLine = responseLine.replace(
+          regex,
+          match => `<span class="wrong">${match}</span>`
+        );
+      });
+
+      const labels = (b.feedbackLabels || []).map(label =>
+        `<span class="feedback-label">${escapeHtml(label)}</span>`
+      ).join(" ");
+
       html += `
-        <div style="margin-bottom:12px;">
+        <div style="margin-bottom:14px;">
           <strong>Bullet ${i + 1}</strong><br>
-          • ${escapeHtml(b.responseText || "(blank)")}
-          <br>
-          <span class="hint">${escapeHtml((b.feedbackLabels || []).join(", "))}</span>
+          • ${responseLine}<br>
+          ${labels}
         </div>
       `;
     });
 
     html += `</div>`;
-
-    if(data.hintOutput && data.hintOutput.length){
-      html += `<div class="readonly-box"><strong>Answer Structure Hint</strong><br><br>`;
-
-      data.hintOutput.forEach(h => {
-        html += `
-          <strong>Bullet ${escapeHtml(h.bulletOrder)}</strong><br>
-          ${escapeHtml(h.conceptualHint || "")}
-          <div class="green-box">${escapeHtml(h.reconstruction || "")}</div>
-          <br>
-        `;
-      });
-
-      html += `</div>`;
-    }
-
-    if(data.remediationScaffold && data.remediationScaffold.length){
-      html += `<div class="readonly-box"><strong>Remediation Scaffold</strong><br><br>`;
-
-      data.remediationScaffold.forEach(s => {
-        html += `
-          <strong>Bullet ${escapeHtml(s.bulletOrder)}</strong>
-          <div class="green-box">${escapeHtml(s.scaffold || "")}</div>
-          <br>
-        `;
-      });
-
-      html += `</div>`;
-    }
   }
 
-  if(data.mode === "builder"){
+  /***** Self-review / Remediation hint output *****/
+  if(data.hintOutput && data.hintOutput.length){
+    html += `<div class="readonly-box"><strong>Answer Structure Hint</strong><br><br>`;
+
+    data.hintOutput.forEach(h => {
+      html += `
+        <strong>Bullet ${escapeHtml(h.bulletOrder)}</strong><br>
+        ${escapeHtml(h.conceptualHint || "")}
+        <div class="green-box">${escapeHtml(h.reconstruction || "")}</div>
+        <br>
+      `;
+    });
+
+    html += `</div>`;
+  }
+
+  /***** Remediation scaffold *****/
+  if(data.remediationScaffold && data.remediationScaffold.length){
+    html += `<div class="readonly-box"><strong>Remediation Scaffold</strong><br><br>`;
+
+    data.remediationScaffold.forEach(s => {
+      html += `
+        <strong>Bullet ${escapeHtml(s.bulletOrder)}</strong>
+        <div class="green-box">${escapeHtml(s.scaffold || "")}</div>
+        <br>
+      `;
+    });
+
+    html += `</div>`;
+  }
+
+  /***** LO Builder Model Answer Suggestion, after feedback *****/
+  if(data.mode === "builder" && data.builderOutput && data.builderOutput.length){
     html += `<div class="readonly-box"><strong>Model Answer Suggestion</strong><br><br>`;
 
-    (data.builderOutput || []).forEach(b => {
+    data.builderOutput.forEach(b => {
       html += `• ${escapeHtml(b.text)}<br><br>`;
     });
 
     html += `</div>`;
   }
 
+  /***** Next step *****/
+  html += `
+    <div class="readonly-box">
+      <strong>Next step</strong><br><br>
+      ${escapeHtml(data.message || "")}
+    </div>
+  `;
+
   document.getElementById("testOutput").innerHTML = html;
+}
+
+function escapeRegExp(text){
+  return String(text || "")
+    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 }
 
 /************************************
@@ -1039,26 +1046,7 @@ function previewRows(){
 }
 
 function resetForm(){
-  currentEditingLO = null;
-
-  document.getElementById("editingLabel").innerHTML =
-    "Creating NEW LO";
-
-  [
-    "loNumber",
-    "generatedLoId",
-    "loQuestion",
-    "answerBullets",
-    "hints",
-    "blankTemplates",
-    "commonQuestions"
-  ].forEach(id => {
-    document.getElementById(id).value = "";
-  });
-
-  document.getElementById("keywordBody").innerHTML = "";
-  document.getElementById("detailsPanel").style.display = "none";
-  document.getElementById("teacherTestPanel").style.display = "none";
+  startNewLO();
 }
 
 /************************************
