@@ -631,7 +631,7 @@ function renderAnswerArea(){
     currentLOPackage.answerBullets || [];
 
   const prompts =
-    bullets.map(()=> "• ").join("\n");
+    bullets.map(() => "• ").join("\n");
 
   document
     .getElementById("answerArea")
@@ -639,8 +639,13 @@ function renderAnswerArea(){
 
       <textarea
         id="singleResponse"
-        rows="${Math.max(5,bullets.length*2)}"
+        rows="${Math.max(5, bullets.length * 2)}"
+        placeholder="Write one point per bullet."
       >${prompts}</textarea>
+
+      <p class="hint">
+        Please answer using the bullet points provided. Each bullet should correspond to one expected answer point.
+      </p>
     `;
 }
 
