@@ -1642,6 +1642,153 @@ function renderFinalLeaderboardCelebration(result){
     </div>
   `;
 }
+
+  /************************************
+ * FINISH REMEDIATION TOPIC
+ ************************************/
+async function finishRemediationTopic(){
+
+  try{
+
+    const result =
+      await logTopicCompletion();
+
+    renderFinalLeaderboardCelebration(result);
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Unable to load leaderboard celebration.");
+  }
+}
+
+/************************************
+ * FINAL LEADERBOARD CELEBRATION
+ ************************************/
+function renderFinalLeaderboardCelebration(result){
+
+  const rows = result.leaderboard || [];
+
+  const firstCompletionMessage =
+    result.firstCompletion
+      ? "🌟 Your first completion has been entered into the leaderboard!"
+      : "🌿 This topic was already completed previously, so this attempt was saved but not ranked again.";
+
+  let leaderboardRows = "";
+
+  rows.forEach(r => {
+
+    let medal = "🌟";
+
+    if(r.rank === 1) medal = "🥇";
+    if(r.rank === 2) medal = "🥈";
+    if(r.rank === 3) medal = "🥉";
+
+    leaderboardRows += `
+      <tr>
+        <td style="padding:16px;border:1px solid #ddd;text-align:center;font-size:22px;">
+          ${medal} ${r.rank}
+        </td>
+
+        <td style="padding:16px;border:1px solid #ddd;font-size:20px;">
+          ${escapeHtml(r.name)}
+        </td>
+
+        <td style="padding:16px;border:1px solid #ddd;text-align:center;font-size:20px;">
+          ${escapeHtml(r.className)}
+        </td>
+
+        <td style="padding:16px;border:1px solid #ddd;text-align:center;font-size:20px;">
+          ${escapeHtml(r.time)}
+        </td>
+      </tr>
+    `;
+  });
+
+  document.body.innerHTML = `
+    <div style="
+      min-height:100vh;
+      width:100vw;
+      background:linear-gradient(180deg,#fff7cf 0%,#eaffea 35%,#f7efff 100%);
+      padding:40px 20px;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+      overflow-x:hidden;
+    ">
+
+      <div style="width:100%;max-width:1400px;margin:0 auto;">
+
+        <div style="text-align:center;font-size:56px;line-height:1.7;">
+          🎆✨🌞😎🌸🌺🌻🌷🪻🌼🌿✨🎆
+        </div>
+
+        <div style="text-align:center;font-size:64px;font-weight:bold;margin-top:12px;">
+          TOPIC COMPLETED!
+        </div>
+
+        <div style="text-align:center;font-size:28px;line-height:1.9;margin-top:20px;color:#444;">
+          🌿 Your Biology garden is fully blooming! 🌿
+          <br><br>
+          ${escapeHtml(firstCompletionMessage)}
+        </div>
+
+        <div style="text-align:center;font-size:42px;margin-top:40px;margin-bottom:26px;">
+          🏆 TOP 10 FASTEST FIRST COMPLETIONS 🏆
+        </div>
+
+        <div style="width:100%;overflow-x:auto;">
+          <table style="
+            width:100%;
+            border-collapse:collapse;
+            background:white;
+            border-radius:20px;
+            overflow:hidden;
+            box-shadow:0 8px 30px rgba(0,0,0,0.12);
+          ">
+            <thead>
+              <tr style="background:#ffe78f;">
+                <th style="padding:18px;border:1px solid #ddd;font-size:22px;text-align:center;">Rank</th>
+                <th style="padding:18px;border:1px solid #ddd;font-size:22px;text-align:left;">Student</th>
+                <th style="padding:18px;border:1px solid #ddd;font-size:22px;text-align:center;">Class</th>
+                <th style="padding:18px;border:1px solid #ddd;font-size:22px;text-align:center;">Time</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${leaderboardRows || `
+                <tr>
+                  <td colspan="4" style="padding:24px;border:1px solid #ddd;text-align:center;font-size:22px;">
+                    No leaderboard entries yet.
+                  </td>
+                </tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;font-size:56px;margin-top:40px;line-height:1.8;">
+          🌞😎🌸🌺🌻🌷🪻🌼🌿🎉🎆✨
+        </div>
+
+        <div style="text-align:center;margin-top:34px;">
+          <button onclick="location.reload()" style="
+            font-size:24px;
+            padding:18px 34px;
+            border-radius:18px;
+            border:none;
+            background:#ffffff;
+            cursor:pointer;
+            box-shadow:0 4px 16px rgba(0,0,0,0.12);
+          ">
+            Return to Home
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
 </script>
 
 </body>
