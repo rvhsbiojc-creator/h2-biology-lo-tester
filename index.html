@@ -822,11 +822,32 @@ function renderFinalLeaderboardCelebration(result){
  * HELPERS
  ************************************/
 function highlight(text,arr){
-  let out = escapeHtml(text);
 
-  (arr || []).forEach(h=>{
-    const r = new RegExp(escapeRegExp(h),"gi");
-    out = out.replace(r, match=>`<span class="wrong">${match}</span>`);
+  let out =
+    escapeHtml(text);
+
+  arr.forEach(h=>{
+
+    /************************************
+     * WHOLE-WORD MATCH ONLY
+     ************************************/
+    const escaped =
+      escapeRegExp(h);
+
+    const r =
+      new RegExp(
+        `\\b${escaped}\\b`,
+        "gi"
+      );
+
+    out =
+      out.replace(
+        r,
+        match =>
+          `<span class="wrong">
+            ${match}
+          </span>`
+      );
   });
 
   return out;
