@@ -1031,13 +1031,31 @@ function renderStructuredFeedback(data){
 
         ? " — " +
 
-          b.feedbackLabels.map(label=>
+          b.feedbackLabels.map(label=>{
 
-            `<span class="feedback-label">
-              ${escapeHtml(label)}
-            </span>`
+            const lower =
+              String(label).toLowerCase();
 
-          ).join(" ")
+            /***** SPELLING ERROR LABEL *****/
+            if(lower.includes("spelling")){
+
+              return `
+                <span class="feedback-label"
+                  style="
+                    background:#ffd6d6;
+                    color:#8b0000;
+                  ">
+                  ${escapeHtml(label)}
+                </span>
+              `;
+            }
+
+            return `
+              <span class="feedback-label">
+                ${escapeHtml(label)}
+              </span>
+            `;
+          }).join(" ")
 
         : "";
 
@@ -1057,12 +1075,18 @@ function renderStructuredFeedback(data){
     `;
   });
 
-  /***** HINTS *****/
-  let hints = "";
+  /************************************
+   * SELF-REVIEW ONLY
+   ************************************/
+  let selfHints = "";
 
-  if(!data.correct){
+  if(
+    currentMode==="self"
+    &&
+    !data.correct
+  ){
 
-    hints += `
+    selfHints += `
       <div class="section-box">
 
         <div class="section-title">
@@ -1072,7 +1096,7 @@ function renderStructuredFeedback(data){
 
     data.hintOutput.forEach((h,i)=>{
 
-      hints += `
+      selfHints += `
 
         <div class="hint-line">
 
@@ -1097,51 +1121,112 @@ function renderStructuredFeedback(data){
       `;
     });
 
-    /***** REMEDIATION SCAFFOLD *****/
+    selfHints += `</div>`;
+  }
+
+  /************************************
+   * LO BUILDER ONLY
+   ************************************/
+  let builderSupport = "";
+
+  if(
+    currentMode==="builder"
+    &&
+    !data.correct
+    &&
+    data.remediationScaffold
+    &&
+    data.remediationScaffold.length > 0
+  ){
+
+    builderSupport += `
+
+      <div class="section-box">
+
+        <div class="section-title">
+          Scaffold Support
+        </div>
+    `;
+
+    data.remediationScaffold.forEach((s,i)=>{
+
+      builderSupport += `
+
+        <div>
+
+          <strong>
+            Bullet ${i+1}
+          </strong>
+
+          <div class="green-box">
+            ${escapeHtml(s.scaffold)}
+          </div>
+
+        </div>
+
+        <br>
+      `;
+    });
+
+    builderSupport += `</div>`;
+  }
+
+  /************************************
+   * REMEDIATION MODE
+   ************************************/
+  let remediationNextStep = "";
+
+  if(
+    currentMode==="remediation"
+    &&
+    !data.correct
+  ){
+
+    remediationNextStep += `
+
+      <div class="section-box">
+
+        <div class="section-title">
+          Next Step
+        </div>
+    `;
+
     if(
-      currentMode==="remediation"
-      &&
-      data.remediationScaffold
-      &&
-      data.remediationScaffold.length > 0
+      data.hintOutput &&
+      data.hintOutput.length > 0
     ){
 
-      hints += `
+      data.hintOutput.forEach((h,i)=>{
 
-        <div class="section-box">
+        remediationNextStep += `
 
-          <div class="section-title">
-            Scaffold Support
-          </div>
-      `;
-
-      data.remediationScaffold.forEach((s,i)=>{
-
-        hints += `
-
-          <div>
+          <div style="margin-bottom:16px;">
 
             <strong>
               Bullet ${i+1}
             </strong>
 
-            <div class="green-box">
-              ${escapeHtml(s.scaffold)}
-            </div>
+            <br><br>
+
+            ${escapeHtml(h.conceptualHint)}
 
           </div>
-
-          <br>
         `;
       });
 
-      hints += `</div>`;
+    }else{
+
+      remediationNextStep += `
+        Continue refining your biological phrasing and answer structure.
+      `;
     }
 
-    hints += `</div>`;
+    remediationNextStep += `</div>`;
   }
 
-  /***** COMMON QUESTIONS *****/
+  /************************************
+   * COMMON QUESTIONS
+   ************************************/
   let commonQuestions = "";
 
   if(
@@ -1190,19 +1275,21 @@ function renderStructuredFeedback(data){
 
       </div>
 
-      ${hints}
+      ${selfHints}
+
+      ${builderSupport}
+
+      ${remediationNextStep}
 
       <div class="section-box">
 
         <div class="section-title">
-          Next step
+          System Message
         </div>
 
         ${
           data.correct
-
             ? "Correct."
-
             : escapeHtml(data.message)
         }
 
