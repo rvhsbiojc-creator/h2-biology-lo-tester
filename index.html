@@ -213,10 +213,13 @@
   <p id="modeInstruction"></p>
   <div id="scaffoldArea"></div>
   <div id="answerArea"></div>
-  <button onclick="submitAnswer()">Submit</button>
+  
+<button id="submitBtn" onclick="submitAnswer()">
+  Submit
+</button>
   <div id="feedback" style="display:none;"></div>
 </div>
-
+  
 <script>
 const BASE_URL =
 "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
@@ -416,30 +419,68 @@ function renderAnswerArea(){
  * SUBMIT
  ************************************/
 async function submitAnswer(){
-  const responsePayload = document.getElementById("singleResponse").value;
 
-  const res = await fetch(
-    `${BASE_URL}?action=checkResponse`
-    + `&email=${encodeURIComponent(studentEmail)}`
-    + `&loId=${encodeURIComponent(currentLO)}`
-    + `&mode=${encodeURIComponent(currentMode)}`
-    + `&attemptNo=${attemptNo}`
-    + `&response=${encodeURIComponent(responsePayload)}`
-  );
+  const submitBtn =
+    document.getElementById("submitBtn");
 
-  const data = await res.json();
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Checking...";
 
-  renderStructuredFeedback(data);
+  try{
 
-  if(data.correct){
-    if(currentMode === "remediation"){
-      showRemediationCelebration();
+    const responsePayload =
+      document
+        .getElementById("singleResponse")
+        .value;
+
+    const res =
+      await fetch(
+
+        `${BASE_URL}?action=checkResponse`
+
+        + `&email=${encodeURIComponent(studentEmail)}`
+
+        + `&loId=${encodeURIComponent(currentLO)}`
+
+        + `&mode=${encodeURIComponent(currentMode)}`
+
+        + `&attemptNo=${attemptNo}`
+
+        + `&response=${encodeURIComponent(responsePayload)}`
+      );
+
+    const data =
+      await res.json();
+
+    renderStructuredFeedback(data);
+
+    if(data.correct){
+
+      if(currentMode === "remediation"){
+
+        showRemediationCelebration();
+
+        return;
+      }
+
       return;
     }
-    return;
-  }
 
-  attemptNo++;
+    attemptNo++;
+
+  }catch(err){
+
+    console.error(err);
+
+    alert(
+      "The system took too long or encountered an error. Please try again once."
+    );
+
+  }finally{
+
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit";
+  }
 }
 
 /************************************
