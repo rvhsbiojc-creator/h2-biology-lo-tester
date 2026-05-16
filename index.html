@@ -850,18 +850,6 @@ function renderStructuredFeedback(data){
             return `<span class="feedback-label">${escapeHtml(label)}</span>`;
           }).join(" ");
       }
-        feedback =
-          " — " +
-          b.feedbackLabels.map(label=>{
-            const lower = String(label).toLowerCase();
-
-            if(lower.includes("spelling")){
-              return `<span class="spelling-label">${escapeHtml(label)}</span>`;
-            }
-
-            return `<span class="feedback-label">${escapeHtml(label)}</span>`;
-          }).join(" ");
-      }
 
       bulletFeedback += `
         <div class="student-bullet">
