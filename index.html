@@ -182,7 +182,7 @@
       background:#fff;
       display:flex;
       flex-direction:column;
-      min-height:320px;
+      min-height:300px;
     }
 
     .mode-card h4{margin:0 0 8px 0;}
@@ -808,76 +808,99 @@ async function submitAnswer(){
  * FEEDBACK
  ************************************/
 function renderStructuredFeedback(data){
+
   let bulletFeedback = "";
 
-  if(data.bulletResults && data.bulletResults.length){
-    data.bulletResults.forEach((b,i)=>{
-      const highlighted = highlight(b.responseText || "(blank)", b.highlights || []);
+  /************************************
+   * ALWAYS RENDER STUDENT BULLETS
+   ************************************/
+  const bulletResults =
+    (data.bulletResults && data.bulletResults.length > 0)
+      ? data.bulletResults
+      : buildFallbackBulletResultsFromStudentInput(data);
 
-      let feedback = "";
+  bulletResults.forEach((b,i)=>{
 
-      if(b.correct){
-        feedback = ` — <span class="correct-label">correct</span>`;
-      }
+    const highlighted =
+      highlight(
+        b.responseText || "(blank)",
+        b.highlights || []
+      );
 
+    let feedback = "";
 
-      if(b.wrongBullet){
-        feedback += ` <span class="feedback-label">belongs to Bullet ${b.wrongBullet}</span>`;
-      }
+    if(b.correct){
+      feedback += ` — <span class="correct-label">correct</span>`;
+    }
 
+    if(b.wrongBullet){
+      feedback += ` <span class="feedback-label">belongs to Bullet ${escapeHtml(b.wrongBullet)}</span>`;
+    }
 
-      if(!feedback && b.feedbackLabels && b.feedbackLabels.length > 0){
-        feedback =
-          " — " +
-          b.feedbackLabels.map(label=>{
-            const lower = String(label).toLowerCase();
+    if(b.feedbackLabels && b.feedbackLabels.length > 0){
+      feedback += " " +
+        b.feedbackLabels.map(label=>{
+          const lower = String(label).toLowerCase();
 
-            if(lower.includes("spelling")){
-              return `<span class="spelling-label">${escapeHtml(label)}</span>`;
-            }
+          if(lower.includes("spelling")){
+            return `<span class="spelling-label">${escapeHtml(label)}</span>`;
+          }
 
-            return `<span class="feedback-label">${escapeHtml(label)}</span>`;
-          }).join(" ");
-      }else if(b.feedbackLabels && b.feedbackLabels.length > 0){
-        feedback += " " +
-          b.feedbackLabels.map(label=>{
-            const lower = String(label).toLowerCase();
+          return `<span class="feedback-label">${escapeHtml(label)}</span>`;
+        }).join(" ");
+    }
 
-            if(lower.includes("spelling")){
-              return `<span class="spelling-label">${escapeHtml(label)}</span>`;
-            }
+    if(!feedback && !b.correct){
+      feedback = ` — <span class="feedback-label">review this bullet</span>`;
+    }
 
-            return `<span class="feedback-label">${escapeHtml(label)}</span>`;
-          }).join(" ");
-      }
+    bulletFeedback += `
+      <div class="student-bullet">
+        <strong>Bullet ${i+1}</strong><br>
+        • ${highlighted}${feedback}
+      </div>
+    `;
+  });
 
-      bulletFeedback += `
-        <div class="student-bullet">
-          <strong>Bullet ${i+1}</strong><br>
-          • ${highlighted}${feedback}
-        </div>
-      `;
-    });
-  }
-
+  /************************************
+   * ANSWER STRUCTURE HINTS
+   ************************************/
   let answerStructureHint = "";
 
   if(!data.correct && data.hintOutput && data.hintOutput.length > 0){
+
     answerStructureHint += `
       <div class="section-box">
         <div class="section-title">Answer Structure Hint</div>
     `;
 
     data.hintOutput.forEach((h,i)=>{
+
       answerStructureHint += `
         <div class="hint-line">
-          <strong>Bullet ${i+1}</strong><br><br>
+          <strong>Bullet ${escapeHtml(h.bulletOrder || i+1)}</strong><br><br>
           ${escapeHtml(h.conceptualHint || "")}
-          ${
-            currentMode === "self" || currentMode === "builder"
-              ? `<div class="green-box">${escapeHtml(h.reconstruction || "").replace(/\n/g,"<br>")}</div>`
-              : ""
-          }
+      `;
+
+      /***** Builder gets progressive reconstruction support *****/
+      if(currentMode === "builder"){
+        answerStructureHint += `
+          <div class="green-box">
+            ${escapeHtml(h.reconstruction || "").replace(/\n/g,"<br>")}
+          </div>
+        `;
+      }
+
+      /***** Self-review gets lighter conceptual support only *****/
+      if(currentMode === "self" && h.conceptualHint){
+        answerStructureHint += `
+          <div class="hint">
+            Use this hint to revise your answer independently.
+          </div>
+        `;
+      }
+
+      answerStructureHint += `
         </div>
         <hr>
       `;
@@ -886,21 +909,28 @@ function renderStructuredFeedback(data){
     answerStructureHint += `</div>`;
   }
 
-  let builderModelAnswer = "";
+  /************************************
+   * MODEL ANSWER ONLY AFTER CORRECT
+   ************************************/
+  let modelAnswer = "";
 
-  if(currentMode === "builder" && data.builderOutput && data.builderOutput.length > 0){
-    builderModelAnswer += `
+  if(data.correct && currentLOPackage && currentLOPackage.answerBullets){
+
+    modelAnswer += `
       <div class="section-box">
-        <div class="section-title">✨ Guided Model Answer Support ✨</div>
+        <div class="section-title">✨ Model Answer ✨</div>
     `;
 
-    data.builderOutput.forEach(b=>{
-      builderModelAnswer += `• ${escapeHtml(b.text)}<br><br>`;
+    currentLOPackage.answerBullets.forEach(b=>{
+      modelAnswer += `• ${escapeHtml(b.Canonical_Answer)}<br><br>`;
     });
 
-    builderModelAnswer += `</div>`;
+    modelAnswer += `</div>`;
   }
 
+  /************************************
+   * COMMON QUESTIONS ONLY AFTER CORRECT
+   ************************************/
   let commonQuestions = "";
 
   if(data.correct && data.commonQuestions && data.commonQuestions.length > 0){
@@ -916,6 +946,26 @@ function renderStructuredFeedback(data){
     commonQuestions += `</div>`;
   }
 
+  let nextStepText = "";
+
+  if(data.correct){
+    if(currentMode === "builder"){
+      nextStepText = "Correct. Review the model answer, then choose another LO or return to mode selection.";
+    }else if(currentMode === "self"){
+      nextStepText = "Correct. Review the model answer, then continue self-review with another LO if needed.";
+    }else{
+      nextStepText = "Correct. You may continue to the next remediation LO.";
+    }
+  }else{
+    if(currentMode === "builder"){
+      nextStepText = "Use the feedback and answer structure hints to rewrite your answer and submit again.";
+    }else if(currentMode === "self"){
+      nextStepText = "Use the feedback to identify what is missing or inaccurate, then try rewriting your answer independently.";
+    }else{
+      nextStepText = "Using the feedback provided, rewrite your full answer and submit again.";
+    }
+  }
+
   document.getElementById("feedback").style.display = "block";
   document.getElementById("feedback").innerHTML = `
     <div class="section-box">
@@ -924,15 +974,65 @@ function renderStructuredFeedback(data){
     </div>
 
     ${answerStructureHint}
-    ${builderModelAnswer}
 
     <div class="section-box">
       <div class="section-title">Next Step</div>
-      ${data.correct ? "Correct. Continue refining your biological precision and phrasing." : "Using the feedback provided, rewrite your full answer and submit again."}
+      ${escapeHtml(nextStepText)}
     </div>
 
+    ${modelAnswer}
     ${commonQuestions}
   `;
+}
+
+
+function buildFallbackBulletResultsFromStudentInput(data){
+
+  const expectedCount =
+    currentLOPackage && currentLOPackage.answerBullets
+      ? currentLOPackage.answerBullets.length
+      : 0;
+
+  const rawText =
+    document.getElementById("singleResponse")
+      ? document.getElementById("singleResponse").value
+      : "";
+
+  const lines =
+    String(rawText || "")
+      .split(/\n/)
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map(line => line.replace(/^[-•*]\s*/, "").trim());
+
+  while(lines.length < expectedCount){
+    lines.push("");
+  }
+
+  return lines.slice(0, expectedCount).map((line,index)=>{
+
+    const feedbackLabels = [];
+
+    if(!line){
+      feedbackLabels.push("not answering the question");
+    }else{
+      if(data.issueTypes && data.issueTypes.length){
+        data.issueTypes.forEach(label => feedbackLabels.push(label));
+      }
+
+      if(data.missing && data.missing.length){
+        feedbackLabels.push("missing term/phrase");
+      }
+    }
+
+    return {
+      bulletOrder:index+1,
+      responseText:line,
+      highlights:data.highlights || [],
+      feedbackLabels:[...new Set(feedbackLabels)],
+      correct:false
+    };
+  });
 }
 
 /************************************
@@ -1211,6 +1311,7 @@ function highlight(text,arr){
 
   return out;
 }
+
 
 function shuffleArray(array){
   for(let i=array.length-1;i>0;i--){
