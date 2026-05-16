@@ -180,10 +180,31 @@
       border-radius:12px;
       padding:16px;
       background:#fff;
+      display:flex;
+      flex-direction:column;
+      min-height:320px;
     }
 
     .mode-card h4{margin:0 0 8px 0;}
-    .mode-card p{line-height:1.5;font-size:14px;}
+    .mode-card p{
+      line-height:1.7;
+      font-size:14px;
+      flex-grow:1;
+    }
+
+    .mode-card button{
+      margin-top:auto;
+    }
+
+    ul{
+      line-height:1.9;
+      padding-left:24px;
+      margin-top:10px;
+    }
+
+    li{
+      margin-bottom:10px;
+    }
 
     table{
       width:100%;
@@ -359,6 +380,7 @@
 
   <div class="button-row">
     <button id="submitBtn" onclick="submitAnswer()">Submit</button>
+    <button id="returnLOBtn" onclick="returnToLOSelection()" style="display:none;">Return to LO Selection</button>
     <button id="returnModeBtn" onclick="returnToModeSelection()" style="display:none;">Return to Mode Selection</button>
     <button id="quitRemediationBtn" onclick="showQuitEncouragement()" style="display:none;">Quit Attempt</button>
   </div>
@@ -443,9 +465,24 @@ function returnToModeSelection(){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
+
+function returnToLOSelection(){
+
+  document.getElementById("loSection").style.display = "none";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("feedback").innerHTML = "";
+
+  if(currentMode === "builder" || currentMode === "self"){
+    document.getElementById("loChoiceSection").style.display = "block";
+  }
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
 /************************************
  * TOPICS
  ************************************/
+
 async function loadTopics(){
   const res = await fetch(`${BASE_URL}?action=getTopics`);
   const data = await res.json();
@@ -668,6 +705,10 @@ async function loadLO(i){
   document.getElementById("loQuestion").innerText = lo.LO_Question;
 
   document.getElementById("returnModeBtn").style.display = currentMode === "remediation" ? "none" : "inline-block";
+  document.getElementById("returnLOBtn").style.display =
+    (currentMode === "builder" || currentMode === "self")
+      ? "inline-block"
+      : "none";
   document.getElementById("quitRemediationBtn").style.display = currentMode === "remediation" ? "inline-block" : "none";
 
   if(currentMode === "remediation"){
@@ -777,7 +818,38 @@ function renderStructuredFeedback(data){
 
       if(b.correct){
         feedback = ` — <span class="correct-label">correct</span>`;
+      }
+
+
+      if(b.wrongBullet){
+        feedback += ` <span class="feedback-label">belongs to Bullet ${b.wrongBullet}</span>`;
+      }
+
+
+      if(!feedback && b.feedbackLabels && b.feedbackLabels.length > 0){
+        feedback =
+          " — " +
+          b.feedbackLabels.map(label=>{
+            const lower = String(label).toLowerCase();
+
+            if(lower.includes("spelling")){
+              return `<span class="spelling-label">${escapeHtml(label)}</span>`;
+            }
+
+            return `<span class="feedback-label">${escapeHtml(label)}</span>`;
+          }).join(" ");
       }else if(b.feedbackLabels && b.feedbackLabels.length > 0){
+        feedback += " " +
+          b.feedbackLabels.map(label=>{
+            const lower = String(label).toLowerCase();
+
+            if(lower.includes("spelling")){
+              return `<span class="spelling-label">${escapeHtml(label)}</span>`;
+            }
+
+            return `<span class="feedback-label">${escapeHtml(label)}</span>`;
+          }).join(" ");
+      }
         feedback =
           " — " +
           b.feedbackLabels.map(label=>{
@@ -798,22 +870,6 @@ function renderStructuredFeedback(data){
         </div>
       `;
     });
-  }else if(data.mode === "builder"){
-    const labels = (data.issueTypes || []).map(label =>
-      `<span class="feedback-label">${escapeHtml(label)}</span>`
-    ).join(" ");
-
-    const missing = (data.missing || []).map(m => `• ${escapeHtml(m)}<br>`).join("");
-    const wrong = (data.highlights || []).map(h => `• <span class="wrong">${escapeHtml(h)}</span><br>`).join("");
-
-    bulletFeedback = `
-      <div class="student-bullet">
-        ${labels || "No specific issue labels returned."}
-        <br><br>
-        ${missing ? `<strong>Missing:</strong><br>${missing}<br>` : ""}
-        ${wrong ? `<strong>Incorrect:</strong><br>${wrong}` : ""}
-      </div>
-    `;
   }
 
   let answerStructureHint = "";
@@ -847,7 +903,7 @@ function renderStructuredFeedback(data){
   if(currentMode === "builder" && data.builderOutput && data.builderOutput.length > 0){
     builderModelAnswer += `
       <div class="section-box">
-        <div class="section-title">✨ Model Answer Suggestion ✨</div>
+        <div class="section-title">✨ Guided Model Answer Support ✨</div>
     `;
 
     data.builderOutput.forEach(b=>{
@@ -884,7 +940,7 @@ function renderStructuredFeedback(data){
 
     <div class="section-box">
       <div class="section-title">Next Step</div>
-      ${data.correct ? "Correct." : escapeHtml(data.message || "Using the feedback provided, rewrite your full answer and submit again.")}
+      ${data.correct ? "Correct. Continue refining your biological precision and phrasing." : "Using the feedback provided, rewrite your full answer and submit again."}
     </div>
 
     ${commonQuestions}
