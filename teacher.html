@@ -245,7 +245,7 @@
     </div>
 
     <label>Topic Name</label>
-    <input id="newTopicName" placeholder="e.g. Proteins" oninput="autoFillTopicCode()">
+    <input id="newTopicName" placeholder="e.g. Proteins">
 
     <div class="button-row">
       <button onclick="createTopic()">Save New Topic</button>
@@ -469,8 +469,7 @@ function hideNewTopicForm(){
   document.getElementById("newTopicCard").style.display = "none";
 }
 
-
-async function createTopic(){
+function createTopic(){
   clearStatus();
 
   const payload = {
@@ -479,66 +478,16 @@ async function createTopic(){
     topicCode: val("newTopicCode")
   };
 
-  if(!payload.topicCode){
-    payload.topicCode = deriveTopicCode(payload.topicName);
-  }
+  submitPost(
+    "createTopic",
+    payload,
+    "New topic save request sent. Refreshing topic list shortly..."
+  );
 
-  try{
-
-    const res = await fetch(BASE_URL, {
-      method:"POST",
-      body:new URLSearchParams({
-        action:"createTopic",
-        ...payload
-      })
-    });
-
-    const data = await res.json();
-
-    if(!data.ok){
-      setStatus(data.error || "Unable to create topic.","error");
-      return;
-    }
-
-    setStatus("New topic created successfully.","success");
-
+  setTimeout(async () => {
     await loadTopics();
-
-    const select = document.getElementById("topicSelect");
-
-    const targetValue =
-      `${data.topicId}|${data.topicName}|${data.topicCode}|${payload.topicOrder}`;
-
-    for(const option of select.options){
-      if(option.value === targetValue){
-        select.value = targetValue;
-        break;
-      }
-    }
-
-    updateTopicFields();
-
-    document.getElementById("existingLOsBox").innerHTML =
-      "<div class='hint'>No LOs created yet for this topic.</div>";
-
     hideNewTopicForm();
-
-    document.getElementById("newTopicOrder").value = "";
-    document.getElementById("newTopicName").value = "";
-    document.getElementById("newTopicCode").value = "";
-
-  }catch(err){
-    console.error(err);
-    setStatus("Unable to create topic.","error");
-  }
-}
-
-function autoFillTopicCode(){
-  const topicName =
-    document.getElementById("newTopicName").value;
-
-  document.getElementById("newTopicCode").value =
-    deriveTopicCode(topicName);
+  }, 2500);
 }
 
 function deriveTopicCode(topicName){
