@@ -13,7 +13,6 @@
       max-width:1000px;
       margin:auto;
       background:#fafafa;
-      color:#222;
     }
 
     .card{
@@ -47,24 +46,6 @@
       line-height:1.6;
     }
 
-    .warning-box{
-      background:#fff7df;
-      border:1px solid #f0d28a;
-      border-radius:10px;
-      padding:14px;
-      margin-top:14px;
-      line-height:1.6;
-    }
-
-    .danger-box{
-      background:#fff0f0;
-      border:1px solid #f3b0b0;
-      border-radius:10px;
-      padding:14px;
-      margin-top:14px;
-      line-height:1.6;
-    }
-
     button{
       margin-top:10px;
       padding:9px 14px;
@@ -74,16 +55,6 @@
       background:white;
       min-height:44px;
       font-size:15px;
-    }
-
-    button:hover{background:#f6f6f6;}
-    button:disabled{opacity:0.65;cursor:not-allowed;}
-
-    .button-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:12px;
     }
 
     textarea{
@@ -169,102 +140,9 @@
 
     .hint{color:#666;font-size:14px;line-height:1.5;}
 
-    .mode-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:14px;
-    }
-
-    .mode-card{
-      border:1px solid #ddd;
-      border-radius:12px;
-      padding:16px;
-      background:#fff;
-      display:flex;
-      flex-direction:column;
-      min-height:320px;
-    }
-
-    .mode-card h4{margin:0 0 8px 0;}
-    .mode-card p{
-      line-height:1.7;
-      font-size:14px;
-      flex-grow:1;
-    }
-
-    .mode-card button{
-      margin-top:auto;
-    }
-
-    ul{
-      line-height:1.9;
-      padding-left:24px;
-      margin-top:10px;
-    }
-
-    li{
-      margin-bottom:10px;
-    }
-
     table{
       width:100%;
       border-collapse:collapse;
-    }
-
-    .celebration-stage{
-      position:relative;
-      min-height:130px;
-      overflow:hidden;
-      margin:18px 0;
-      border-radius:18px;
-      background:linear-gradient(180deg,#fff7c2,#e8ffe8);
-      border:1px solid #e6dc98;
-    }
-
-    .capybara{
-      position:absolute;
-      left:-140px;
-      bottom:20px;
-      font-size:46px;
-      animation:walkAcross 9s linear infinite;
-      z-index:2;
-    }
-
-    .flower-trail{
-      position:absolute;
-      bottom:12px;
-      left:0;
-      width:100%;
-      font-size:28px;
-      opacity:0.9;
-      animation:bloomPulse 2.4s ease-in-out infinite alternate;
-      text-align:center;
-    }
-
-    .firework{
-      position:absolute;
-      font-size:28px;
-      animation:fireworkPop 1.8s ease-in-out infinite;
-      opacity:0.8;
-    }
-
-    .fw1{top:12px;left:14%;animation-delay:0s;}
-    .fw2{top:22px;left:48%;animation-delay:0.45s;}
-    .fw3{top:10px;right:12%;animation-delay:0.9s;}
-
-    @keyframes walkAcross{
-      0%{transform:translateX(0) scaleX(1);}
-      100%{transform:translateX(calc(100vw + 260px)) scaleX(1);}
-    }
-
-    @keyframes bloomPulse{
-      0%{transform:scale(0.96);opacity:0.75;}
-      100%{transform:scale(1.02);opacity:1;}
-    }
-
-    @keyframes fireworkPop{
-      0%,100%{transform:scale(0.85);opacity:0.45;}
-      50%{transform:scale(1.25);opacity:1;}
     }
 
     @media (max-width:768px){
@@ -274,11 +152,9 @@
       .section-title{font-size:18px;}
       .context-grid{grid-template-columns:1fr;gap:4px;}
       button{width:100%;text-align:center;margin-top:10px;}
-      .button-row{flex-direction:column;}
       .lo-question-display{font-size:18px;}
       .student-bullet,.hint-line,.green-box{font-size:15px;}
       table{font-size:14px;}
-      .mode-grid{grid-template-columns:1fr;}
     }
 
     @media (max-width:480px){
@@ -305,26 +181,9 @@
 
 <div id="modeSelect" class="card" style="display:none;">
   <h3>Select Mode</h3>
-
-  <div class="mode-grid">
-    <div class="mode-card">
-      <h4>LO Builder Mode</h4>
-      <p>Build up your understanding of all LOs in a topic with guided feedback and scaffolds.</p>
-      <button onclick="selectMode('builder')">Choose LO Builder Mode</button>
-    </div>
-
-    <div class="mode-card">
-      <h4>Self-Review Mode</h4>
-      <p>Test whether you can accurately and completely answer the LOs in a topic.</p>
-      <button onclick="selectMode('self')">Choose Self-Review Mode</button>
-    </div>
-
-    <div class="mode-card">
-      <h4>Remediation Mode</h4>
-      <p>Use this for Remedial Lesson 1. Complete all LOs in one sitting to demonstrate mastery.</p>
-      <button onclick="selectMode('remediation')">Choose Remediation Mode</button>
-    </div>
-  </div>
+  <button onclick="selectMode('builder')">LO Builder Mode</button><br>
+  <button onclick="selectMode('self')">Self-Review Mode</button><br>
+  <button onclick="selectMode('remediation')">Remediation Mode</button>
 </div>
 
 <div id="topics" class="card" style="display:none;">
@@ -332,32 +191,9 @@
   <div id="topicList"></div>
 </div>
 
-<div id="modeBriefing" class="card" style="display:none;">
-  <div id="modeBriefingContent"></div>
-  <div class="button-row">
-    <button onclick="beginSelectedMode()">Begin</button>
-    <button onclick="returnToModeSelection()">Return to Mode Selection</button>
-  </div>
-</div>
-
 <div id="loChoiceSection" class="card" style="display:none;">
   <h3>Select LO Question</h3>
   <div id="loChoiceList"></div>
-  <div class="button-row">
-    <button onclick="returnToModeSelection()">Return to Mode Selection</button>
-  </div>
-</div>
-
-<div id="quitEncouragement" class="card" style="display:none;">
-  <h2 style="text-align:center;">🌱 Don’t give up yet! 💪✨</h2>
-  <div class="green-box" style="text-align:center;font-size:18px;">
-    You are building mastery one LO at a time. Every reattempt strengthens your biological phrasing and recall. 🌻🧬🌿
-    <br><br>
-    Take a breath, read the feedback carefully, and continue your remediation attempt.
-  </div>
-  <div class="button-row" style="justify-content:center;">
-    <button onclick="returnToRemediationAttempt()">Return to Remediation Attempt</button>
-  </div>
 </div>
 
 <div id="loSection" class="card" style="display:none;">
@@ -377,14 +213,7 @@
   <p id="modeInstruction"></p>
   <div id="scaffoldArea"></div>
   <div id="answerArea"></div>
-
-  <div class="button-row">
-    <button id="submitBtn" onclick="submitAnswer()">Submit</button>
-    <button id="returnLOBtn" onclick="returnToLOSelection()" style="display:none;">Return to LO Selection</button>
-    <button id="returnModeBtn" onclick="returnToModeSelection()" style="display:none;">Return to Mode Selection</button>
-    <button id="quitRemediationBtn" onclick="showQuitEncouragement()" style="display:none;">Quit Attempt</button>
-  </div>
-
+  <button onclick="submitAnswer()">Submit</button>
   <div id="feedback" style="display:none;"></div>
 </div>
 
@@ -402,16 +231,12 @@ let currentLO = "";
 let currentLOPackage = null;
 let attemptNo = 1;
 let remediationStartedAt = null;
-let remediationSequenceLocked = false;
 
 /************************************
  * LOGIN
  ************************************/
 async function login(){
   const email = document.getElementById("email").value.trim();
-  const loginMsg = document.getElementById("loginMsg");
-
-  loginMsg.innerText = "Checking login...";
 
   try{
     const res = await fetch(
@@ -422,14 +247,13 @@ async function login(){
 
     if(data.valid){
       studentEmail = email;
-      loginMsg.innerText = "";
       document.getElementById("login").style.display = "none";
       document.getElementById("modeSelect").style.display = "block";
     }else{
-      loginMsg.innerText = "Invalid email";
+      document.getElementById("loginMsg").innerText = "Invalid email";
     }
   }catch(err){
-    loginMsg.innerText = "Unable to connect to backend.";
+    document.getElementById("loginMsg").innerText = "Unable to connect to backend.";
     console.error(err);
   }
 }
@@ -443,46 +267,9 @@ function selectMode(mode){
   loadTopics();
 }
 
-function returnToModeSelection(){
-  currentMode = "";
-  currentTopicId = "";
-  currentTopicName = "";
-  currentLOs = [];
-  currentLOIndex = 0;
-  currentLO = "";
-  currentLOPackage = null;
-  attemptNo = 1;
-  remediationStartedAt = null;
-  remediationSequenceLocked = false;
-
-  ["topics","modeBriefing","loChoiceSection","loSection","quitEncouragement"].forEach(id=>{
-    document.getElementById(id).style.display = "none";
-  });
-
-  document.getElementById("feedback").style.display = "none";
-  document.getElementById("feedback").innerHTML = "";
-  document.getElementById("modeSelect").style.display = "block";
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-
-function returnToLOSelection(){
-
-  document.getElementById("loSection").style.display = "none";
-  document.getElementById("feedback").style.display = "none";
-  document.getElementById("feedback").innerHTML = "";
-
-  if(currentMode === "builder" || currentMode === "self"){
-    document.getElementById("loChoiceSection").style.display = "block";
-  }
-
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
 /************************************
  * TOPICS
  ************************************/
-
 async function loadTopics(){
   const res = await fetch(`${BASE_URL}?action=getTopics`);
   const data = await res.json();
@@ -517,91 +304,15 @@ async function loadTopic(id,name){
   );
 
   const data = await res.json();
-  currentLOs = (data.los || []).filter(lo => lo && lo.LO_ID);
-
-  if(currentLOs.length === 0){
-    alert("No active LOs were found for this topic.");
-    return;
-  }
+  currentLOs = data.los || [];
 
   document.getElementById("topics").style.display = "none";
-  showModeBriefing();
-}
-
-/************************************
- * MODE BRIEFING
- ************************************/
-function showModeBriefing(){
-  document.getElementById("modeBriefing").style.display = "block";
-  document.getElementById("modeBriefingContent").innerHTML = getModeBriefingHtml(currentMode);
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function getModeBriefingHtml(mode){
-  if(mode === "builder"){
-    return `
-      <h3>LO Builder Mode</h3>
-      <div class="section-box"><div class="section-title">Purpose</div>Use this to build up your understanding of all LOs in a topic.</div>
-      <div class="section-box"><div class="section-title">Instructions</div>
-        <ul>
-          <li>Attempt each LO using the bullet structure provided.</li>
-          <li>The system will progressively guide you towards a complete answer.</li>
-          <li>Use the feedback and scaffolds for the key terms / phrases.</li>
-        </ul>
-      </div>
-      <div class="green-box"><strong>Important</strong><br>
-        This mode is designed for learning and guided practice.<br>
-        Your progress in this mode is not recorded.<br>
-        You may leave the mode at any time.
-      </div>
-    `;
-  }
-
-  if(mode === "self"){
-    return `
-      <h3>Self-Review Mode</h3>
-      <div class="section-box"><div class="section-title">Purpose</div>Use this to test whether you can accurately and completely answer the LOs in a topic.</div>
-      <div class="section-box"><div class="section-title">Instructions</div>
-        <ul>
-          <li>Attempt each LO using the bullet structure provided.</li>
-          <li>Recall biological keywords and accurate phrasing.</li>
-          <li>Use the feedback to identify missing terms, concepts or weak phrasing.</li>
-        </ul>
-      </div>
-      <div class="green-box"><strong>Important</strong><br>
-        This mode is designed for self-testing and retrieval practice.<br>
-        Your progress in this mode is not recorded or saved.<br>
-        You may leave the mode at any time.
-      </div>
-    `;
-  }
-
-  return `
-    <h3>Remediation Mode</h3>
-    <div class="section-box"><div class="section-title">Purpose</div>Use this for Remedial Lesson 1. Demonstrate full mastery of a topic by completing all LOs in one sitting.</div>
-    <div class="section-box"><div class="section-title">Instructions</div>
-      <ul>
-        <li>Complete every LO in the topic before ending the session.</li>
-        <li>LOs will be presented in a random order.</li>
-        <li>Rewrite and improve your answer until mastery is achieved for each LO.</li>
-        <li>Read the feedback carefully before each reattempt.</li>
-        <li>Maintain accurate biological keywords and precise scientific phrasing throughout.</li>
-      </ul>
-    </div>
-    <div class="danger-box"><strong>Important</strong><br>
-      Your attempt will only be recorded after all LOs are completed.<br>
-      Do not refresh the page, close the tab, or leave the page during the session.<br>
-      If the session is interrupted, your remediation attempt will not be saved, and you must wait 5 minutes before reattempting.<br>
-      Only first completions are entered into the leaderboard.
-    </div>
-  `;
-}
-
-function beginSelectedMode(){
-  document.getElementById("modeBriefing").style.display = "none";
 
   if(currentMode === "remediation"){
-    startRemediationSequence();
+    shuffleArray(currentLOs);
+    remediationStartedAt = new Date();
+    currentLOIndex = 0;
+    loadLO(currentLOIndex);
     return;
   }
 
@@ -629,59 +340,12 @@ function showLOChoice(){
 }
 
 /************************************
- * REMEDIATION SEQUENCE
- ************************************/
-function startRemediationSequence(){
-  currentLOs = currentLOs.filter(lo => lo && lo.LO_ID);
-
-  if(currentLOs.length === 0){
-    alert("Unable to start remediation because no LOs were loaded.");
-    returnToModeSelection();
-    return;
-  }
-
-  shuffleArray(currentLOs);
-  remediationStartedAt = new Date();
-  currentLOIndex = 0;
-  remediationSequenceLocked = true;
-  loadLO(currentLOIndex);
-}
-
-function continueRemediationLO(){
-  currentLOIndex++;
-
-  if(currentLOIndex >= currentLOs.length){
-    showFinalRemediationCompletion();
-    return;
-  }
-
-  loadLO(currentLOIndex);
-}
-
-function showQuitEncouragement(){
-  document.getElementById("loSection").style.display = "none";
-  document.getElementById("quitEncouragement").style.display = "block";
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function returnToRemediationAttempt(){
-  document.getElementById("quitEncouragement").style.display = "none";
-  document.getElementById("loSection").style.display = "block";
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-/************************************
  * LOAD LO
  ************************************/
 async function loadLO(i){
   const lo = currentLOs[i];
 
   if(!lo){
-    if(currentMode === "remediation"){
-      showFinalRemediationCompletion();
-      return;
-    }
-
     alert("No LO found.");
     return;
   }
@@ -704,20 +368,10 @@ async function loadLO(i){
   document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
   document.getElementById("loQuestion").innerText = lo.LO_Question;
 
-  document.getElementById("returnModeBtn").style.display = currentMode === "remediation" ? "none" : "inline-block";
-  document.getElementById("returnLOBtn").style.display =
-    (currentMode === "builder" || currentMode === "self")
-      ? "inline-block"
-      : "none";
-  document.getElementById("quitRemediationBtn").style.display = currentMode === "remediation" ? "inline-block" : "none";
-
   if(currentMode === "remediation"){
-    const safeTotal = currentLOs.length;
-    const safeCurrent = Math.min(currentLOIndex + 1, safeTotal);
-
     document.getElementById("remediationProgress").innerHTML = `
       <div class="section-box">
-        LO ${safeCurrent} of ${safeTotal}
+        LO ${currentLOIndex + 1} of ${currentLOs.length}
       </div>
     `;
   }else{
@@ -736,8 +390,6 @@ async function loadLO(i){
     document.getElementById("modeInstruction").innerText =
       "Rewrite the full answer until mastery is achieved.";
   }
-
-  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 /************************************
@@ -764,44 +416,30 @@ function renderAnswerArea(){
  * SUBMIT
  ************************************/
 async function submitAnswer(){
-  const submitBtn = document.getElementById("submitBtn");
+  const responsePayload = document.getElementById("singleResponse").value;
 
-  submitBtn.disabled = true;
-  submitBtn.innerText = "Checking...";
+  const res = await fetch(
+    `${BASE_URL}?action=checkResponse`
+    + `&email=${encodeURIComponent(studentEmail)}`
+    + `&loId=${encodeURIComponent(currentLO)}`
+    + `&mode=${encodeURIComponent(currentMode)}`
+    + `&attemptNo=${attemptNo}`
+    + `&response=${encodeURIComponent(responsePayload)}`
+  );
 
-  try{
-    const responsePayload = document.getElementById("singleResponse").value;
+  const data = await res.json();
 
-    const res = await fetch(
-      `${BASE_URL}?action=checkResponse`
-      + `&email=${encodeURIComponent(studentEmail)}`
-      + `&loId=${encodeURIComponent(currentLO)}`
-      + `&mode=${encodeURIComponent(currentMode)}`
-      + `&attemptNo=${attemptNo}`
-      + `&response=${encodeURIComponent(responsePayload)}`
-    );
+  renderStructuredFeedback(data);
 
-    const data = await res.json();
-
-    renderStructuredFeedback(data);
-
-    if(data.correct){
-      if(currentMode === "remediation"){
-        showRemediationCelebration();
-        return;
-      }
+  if(data.correct){
+    if(currentMode === "remediation"){
+      showRemediationCelebration();
       return;
     }
-
-    attemptNo++;
-
-  }catch(err){
-    console.error(err);
-    alert("The system took too long or encountered an error. Please try again once.");
-  }finally{
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Submit";
+    return;
   }
+
+  attemptNo++;
 }
 
 /************************************
@@ -818,38 +456,7 @@ function renderStructuredFeedback(data){
 
       if(b.correct){
         feedback = ` — <span class="correct-label">correct</span>`;
-      }
-
-
-      if(b.wrongBullet){
-        feedback += ` <span class="feedback-label">belongs to Bullet ${b.wrongBullet}</span>`;
-      }
-
-
-      if(!feedback && b.feedbackLabels && b.feedbackLabels.length > 0){
-        feedback =
-          " — " +
-          b.feedbackLabels.map(label=>{
-            const lower = String(label).toLowerCase();
-
-            if(lower.includes("spelling")){
-              return `<span class="spelling-label">${escapeHtml(label)}</span>`;
-            }
-
-            return `<span class="feedback-label">${escapeHtml(label)}</span>`;
-          }).join(" ");
       }else if(b.feedbackLabels && b.feedbackLabels.length > 0){
-        feedback += " " +
-          b.feedbackLabels.map(label=>{
-            const lower = String(label).toLowerCase();
-
-            if(lower.includes("spelling")){
-              return `<span class="spelling-label">${escapeHtml(label)}</span>`;
-            }
-
-            return `<span class="feedback-label">${escapeHtml(label)}</span>`;
-          }).join(" ");
-      }
         feedback =
           " — " +
           b.feedbackLabels.map(label=>{
@@ -870,6 +477,22 @@ function renderStructuredFeedback(data){
         </div>
       `;
     });
+  }else if(data.mode === "builder"){
+    const labels = (data.issueTypes || []).map(label =>
+      `<span class="feedback-label">${escapeHtml(label)}</span>`
+    ).join(" ");
+
+    const missing = (data.missing || []).map(m => `• ${escapeHtml(m)}<br>`).join("");
+    const wrong = (data.highlights || []).map(h => `• <span class="wrong">${escapeHtml(h)}</span><br>`).join("");
+
+    bulletFeedback = `
+      <div class="student-bullet">
+        ${labels || "No specific issue labels returned."}
+        <br><br>
+        ${missing ? `<strong>Missing:</strong><br>${missing}<br>` : ""}
+        ${wrong ? `<strong>Incorrect:</strong><br>${wrong}` : ""}
+      </div>
+    `;
   }
 
   let answerStructureHint = "";
@@ -903,7 +526,7 @@ function renderStructuredFeedback(data){
   if(currentMode === "builder" && data.builderOutput && data.builderOutput.length > 0){
     builderModelAnswer += `
       <div class="section-box">
-        <div class="section-title">✨ Guided Model Answer Support ✨</div>
+        <div class="section-title">✨ Model Answer Suggestion ✨</div>
     `;
 
     data.builderOutput.forEach(b=>{
@@ -940,7 +563,7 @@ function renderStructuredFeedback(data){
 
     <div class="section-box">
       <div class="section-title">Next Step</div>
-      ${data.correct ? "Correct. Continue refining your biological precision and phrasing." : "Using the feedback provided, rewrite your full answer and submit again."}
+      ${data.correct ? "Correct." : escapeHtml(data.message || "Using the feedback provided, rewrite your full answer and submit again.")}
     </div>
 
     ${commonQuestions}
@@ -1030,9 +653,12 @@ function showRemediationCelebration(){
     finalMessage + modelAnswer + commonQuestions;
 }
 
-function showFinalRemediationCompletion(){
-  currentLOIndex = currentLOs.length - 1;
-  showRemediationCelebration();
+/************************************
+ * CONTINUE REMEDIATION
+ ************************************/
+function continueRemediationLO(){
+  currentLOIndex++;
+  loadLO(currentLOIndex);
 }
 
 /************************************
@@ -1053,6 +679,7 @@ async function finishRemediationTopic(){
  ************************************/
 async function logTopicCompletion(){
   const completedAt = new Date();
+
   const durationSeconds = Math.floor((completedAt - remediationStartedAt) / 1000);
   const durationDisplay = formatDuration(durationSeconds);
 
@@ -1120,14 +747,8 @@ function renderFinalLeaderboardCelebration(result){
       padding:22px;
       box-sizing:border-box;
       font-family:Arial,sans-serif;
-      position:relative;
-      overflow:hidden;
     ">
-      <div class="firework fw1">🎆</div>
-      <div class="firework fw2">✨</div>
-      <div class="firework fw3">🎇</div>
-
-      <div style="width:100%;position:relative;z-index:1;">
+      <div style="width:100%;">
         <div style="text-align:center;font-size:clamp(22px,4vw,34px);line-height:1.7;">
           🎆✨🌞🌸🌺🌻🌷🪻🌼🌿✨🎉✨🌈💐🎊🌸🌼🌿✨🎆
         </div>
@@ -1139,14 +760,6 @@ function renderFinalLeaderboardCelebration(result){
         <div style="text-align:center;font-size:clamp(16px,2.2vw,20px);line-height:1.7;margin-bottom:22px;">
           🌿 Your Biology garden is now fully blooming! 🌿<br><br>
           ${escapeHtml(firstCompletionMessage)}
-        </div>
-
-        <div class="celebration-stage">
-          <div class="capybara">🦫🌸</div>
-          <div class="flower-trail">🌱 🌸 🌼 🌷 🌻 🌺 🌿 🌸 🌼 🌷 🌻 🌺 🌿</div>
-          <div class="firework fw1">🎆</div>
-          <div class="firework fw2">✨</div>
-          <div class="firework fw3">🎇</div>
         </div>
 
         <h2 style="text-align:center;font-size:clamp(20px,3vw,28px);margin:18px 0;">
@@ -1211,14 +824,9 @@ function renderFinalLeaderboardCelebration(result){
 function highlight(text,arr){
   let out = escapeHtml(text);
 
-  arr.forEach(h=>{
-    const escaped = escapeRegExp(h);
-    const r = new RegExp(`\\b${escaped}\\b`,"gi");
-
-    out = out.replace(
-      r,
-      match => `<span class="wrong">${match}</span>`
-    );
+  (arr || []).forEach(h=>{
+    const r = new RegExp(escapeRegExp(h),"gi");
+    out = out.replace(r, match=>`<span class="wrong">${match}</span>`);
   });
 
   return out;
