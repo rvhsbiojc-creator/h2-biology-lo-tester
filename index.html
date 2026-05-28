@@ -2,1360 +2,1346 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teacher LO Builder</title>
+  <title>H2 Biology LO Tester</title>
 
   <style>
     *{box-sizing:border-box;}
 
     body{
       font-family:Arial,sans-serif;
-      background:#f5f7fb;
-      margin:0;
       padding:24px;
+      max-width:1000px;
+      margin:auto;
+      background:#fafafa;
       color:#222;
     }
 
-    .page{max-width:1400px;margin:auto;}
-
-    h1{margin-top:0;margin-bottom:18px;font-size:34px;}
-
     .card{
       background:white;
-      border-radius:14px;
-      padding:22px;
-      margin-bottom:20px;
-      box-shadow:0 2px 10px rgba(0,0,0,0.06);
-      border:1px solid #e5e7eb;
+      border:1px solid #ddd;
+      border-radius:12px;
+      padding:20px;
+      margin-top:16px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05);
     }
 
-    .section-title{font-size:22px;font-weight:bold;margin-bottom:14px;}
-
-    .hint{color:#666;font-size:14px;line-height:1.5;}
-
-    label{font-weight:bold;display:block;margin-top:14px;margin-bottom:6px;}
-
-    input,textarea,select{
-      width:100%;
-      padding:10px;
-      border-radius:10px;
-      border:1px solid #cfd6df;
-      font-size:15px;
-      background:white;
-    }
-
-    textarea{min-height:110px;resize:vertical;line-height:1.5;}
-
-    button{
-      background:#ffffff;
-      border:1px solid #ccd3dc;
-      border-radius:10px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-size:14px;
-      transition:0.2s;
-    }
-
-    button:hover{background:#f3f6fa;}
-
-    .button-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
-
-    table{width:100%;border-collapse:collapse;margin-top:14px;}
-
-    th{
-      background:#f2f5f8;
-      text-align:left;
-      padding:12px;
-      border-bottom:1px solid #dbe1e8;
-      font-size:14px;
-    }
-
-    td{
-      padding:12px;
-      border-bottom:1px solid #edf1f5;
-      vertical-align:top;
-    }
-
-    tr:hover{background:#fafcff;}
-
-    .checkbox-col{width:60px;text-align:center;}
-
-    .action-buttons{display:flex;flex-wrap:wrap;gap:8px;}
-
-    .small-button{padding:7px 10px;font-size:13px;}
-
-    .success{
-      background:#e8f7e8;
-      border:1px solid #9dd39d;
-      color:#246624;
-      padding:12px;
-      border-radius:10px;
-      margin-bottom:18px;
-    }
-
-    .error{
-      background:#ffeaea;
-      border:1px solid #ffb3b3;
-      color:#8a1f1f;
-      padding:12px;
-      border-radius:10px;
-      margin-bottom:18px;
-    }
-
-    .green-box{
-      background:#e7f8e7;
-      border-radius:10px;
-      padding:12px;
-      line-height:1.7;
-      margin-top:8px;
-    }
-
-    .readonly-box{
-      background:#fafafa;
+    .section-box{
       border:1px solid #ddd;
       border-radius:10px;
       padding:14px;
-      margin-top:10px;
-      line-height:1.7;
+      margin-top:14px;
+      background:#fcfcfc;
     }
 
-    .feedback-label{
-      display:inline-block;
-      background:#fff3a6;
-      padding:3px 7px;
-      border-radius:7px;
-      margin:3px 3px 3px 0;
-      font-size:13px;
+    .section-title{
+      font-weight:bold;
+      margin-bottom:8px;
+    }
+
+    .green-box{
+      background:#eaf8ea;
+      border:1px solid #c8e6c9;
+      border-radius:8px;
+      padding:12px;
+      margin-top:10px;
+      line-height:1.6;
+    }
+
+    .warning-box{
+      background:#fff7df;
+      border:1px solid #f0d28a;
+      border-radius:10px;
+      padding:14px;
+      margin-top:14px;
+      line-height:1.6;
+    }
+
+    .danger-box{
+      background:#fff0f0;
+      border:1px solid #f3b0b0;
+      border-radius:10px;
+      padding:14px;
+      margin-top:14px;
+      line-height:1.6;
+    }
+
+    button{
+      margin-top:10px;
+      padding:9px 14px;
+      border-radius:8px;
+      border:1px solid #aaa;
+      cursor:pointer;
+      background:white;
+      min-height:44px;
+      font-size:15px;
+    }
+
+    button:hover{background:#f6f6f6;}
+    button:disabled{opacity:0.65;cursor:not-allowed;}
+
+    .button-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    textarea{
+      width:100%;
+      max-width:100%;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #bbb;
+      font-size:16px;
+      margin-top:6px;
+      line-height:1.5;
+    }
+
+    input,select{
+      padding:8px;
+      border-radius:8px;
+      border:1px solid #bbb;
+      width:100%;
+      max-width:100%;
+      font-size:16px;
     }
 
     .wrong{
       text-decoration:line-through;
       text-decoration-thickness:2px;
+      color:#b00020;
+      font-weight:bold;
     }
 
-    .two-col{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:20px;
+    .feedback-label{
+      background:#fff3a6;
+      padding:2px 6px;
+      border-radius:6px;
+      display:inline-block;
+      margin:2px 2px;
     }
 
-    .keyword-table input,
-    .keyword-table textarea{
-      width:100%;
-      height:42px;
-      min-height:42px;
-      max-height:42px;
-      resize:none;
-      overflow:auto;
-      font-size:14px;
-      line-height:1.3;
-      padding:8px;
+    .correct-label{
+      background:#d8f5d1;
+      color:#1b6b22;
+      padding:2px 6px;
+      border-radius:6px;
+      display:inline-block;
+      margin:2px 2px;
     }
 
-    .keyword-table td{vertical-align:middle;}
+    .spelling-label{
+      background:#ffd6d6;
+      color:#8b0000;
+      padding:2px 6px;
+      border-radius:6px;
+      display:inline-block;
+      margin:2px 2px;
+    }
 
-    .bullet-col{width:80px;min-width:80px;}
-
-    .bullet-col input{text-align:center;}
-
-    pre{
-      white-space:pre-wrap;
+    .context-box{
       background:#f7f7f7;
-      border:1px solid #ddd;
       border-radius:10px;
       padding:12px;
+      margin-bottom:14px;
+      border:1px solid #e0e0e0;
     }
 
-    @media (max-width:900px){
-      .two-col{grid-template-columns:1fr;}
-      .action-buttons{flex-direction:column;}
-      button{width:100%;}
+    .context-grid{
+      display:grid;
+      grid-template-columns:120px 1fr;
+      gap:8px 14px;
     }
 
-    @media (max-width:600px){
-      body{padding:10px;}
-      h1{font-size:28px;}
-      .card{padding:16px;}
-      table{display:block;overflow-x:auto;}
+    .label{font-weight:bold;}
+
+    .lo-question-display{
+      font-size:20px;
+      font-weight:bold;
+      line-height:1.4;
+      margin:10px 0 8px 0;
+    }
+
+    .student-bullet{
+      margin:10px 0;
+      line-height:1.5;
+    }
+
+    .hint{color:#666;font-size:14px;line-height:1.5;}
+
+    .mode-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .mode-card{
+      border:1px solid #ddd;
+      border-radius:12px;
+      padding:16px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      min-height:300px;
+    }
+
+    .mode-card h4{margin:0 0 8px 0;}
+    .mode-card p{
+      line-height:1.7;
+      font-size:14px;
+      flex-grow:1;
+    }
+
+    .mode-card button{
+      margin-top:auto;
+    }
+
+    ul{
+      line-height:1.9;
+      padding-left:24px;
+      margin-top:10px;
+    }
+
+    li{
+      margin-bottom:10px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    .celebration-stage{
+      position:relative;
+      min-height:130px;
+      overflow:hidden;
+      margin:18px 0;
+      border-radius:18px;
+      background:linear-gradient(180deg,#fff7c2,#e8ffe8);
+      border:1px solid #e6dc98;
+    }
+
+    .capybara{
+      position:absolute;
+      left:-140px;
+      bottom:20px;
+      font-size:46px;
+      animation:walkAcross 9s linear infinite;
+      z-index:2;
+    }
+
+    .flower-trail{
+      position:absolute;
+      bottom:12px;
+      left:0;
+      width:100%;
+      font-size:28px;
+      opacity:0.9;
+      animation:bloomPulse 2.4s ease-in-out infinite alternate;
+      text-align:center;
+    }
+
+    .firework{
+      position:absolute;
+      font-size:28px;
+      animation:fireworkPop 1.8s ease-in-out infinite;
+      opacity:0.8;
+    }
+
+    .fw1{top:12px;left:14%;animation-delay:0s;}
+    .fw2{top:22px;left:48%;animation-delay:0.45s;}
+    .fw3{top:10px;right:12%;animation-delay:0.9s;}
+
+    @keyframes walkAcross{
+      0%{transform:translateX(0) scaleX(1);}
+      100%{transform:translateX(calc(100vw + 260px)) scaleX(1);}
+    }
+
+    @keyframes bloomPulse{
+      0%{transform:scale(0.96);opacity:0.75;}
+      100%{transform:scale(1.02);opacity:1;}
+    }
+
+    @keyframes fireworkPop{
+      0%,100%{transform:scale(0.85);opacity:0.45;}
+      50%{transform:scale(1.25);opacity:1;}
+    }
+
+    @media (max-width:768px){
+      body{padding:12px;max-width:100%;}
+      h1,h2{font-size:24px;}
+      .card{padding:14px;border-radius:10px;}
+      .section-title{font-size:18px;}
+      .context-grid{grid-template-columns:1fr;gap:4px;}
+      button{width:100%;text-align:center;margin-top:10px;}
+      .button-row{flex-direction:column;}
+      .lo-question-display{font-size:18px;}
+      .student-bullet,.hint-line,.green-box{font-size:15px;}
+      table{font-size:14px;}
+      .mode-grid{grid-template-columns:1fr;}
+    }
+
+    @media (max-width:480px){
+      body{padding:8px;}
+      h1,h2{font-size:22px;}
+      .card{padding:12px;}
+      textarea{min-height:120px;}
+      .lo-question-display{font-size:17px;}
+      .green-box{padding:8px;}
     }
   </style>
 </head>
 
 <body>
 
-<div class="page">
+<h2>H2 Biology LO Tester</h2>
 
-<h1>Teacher LO Builder</h1>
-
-<div id="status"></div>
-
-<div id="teacherLogin" class="card">
-  <div class="section-title">Teacher Login</div>
-
-  <p class="hint">Enter your teacher email to access the authoring interface.</p>
-
-  <label>Teacher Email</label>
-<input id="teacherEmail" placeholder="e.g. teacher@moe.edu.sg">
-
-<label>Password</label>
-<input id="teacherPassword" type="password" placeholder="Enter password">
-
-<div class="button-row">
-  <button onclick="teacherLogin()">Enter Teacher Interface</button>
+<div id="login" class="card">
+  <h3>Login</h3>
+  <input id="email" placeholder="Enter email">
+  <button onclick="login()">Enter</button>
+  <p id="loginMsg"></p>
 </div>
 
-  <p id="teacherLoginMsg" class="hint"></p>
+<div id="modeSelect" class="card" style="display:none;">
+  <h3>Select Mode</h3>
+
+  <div class="mode-grid">
+    <div class="mode-card">
+      <h4>LO Builder Mode</h4>
+      <p>Build up your understanding of all LOs in a topic with guided feedback and scaffolds.</p>
+      <button onclick="selectMode('builder')">Choose LO Builder Mode</button>
+    </div>
+
+    <div class="mode-card">
+      <h4>Self-Review Mode</h4>
+      <p>Test whether you can accurately and completely answer the LOs in a topic.</p>
+      <button onclick="selectMode('self')">Choose Self-Review Mode</button>
+    </div>
+
+    <div class="mode-card">
+      <h4>Remediation Mode</h4>
+      <p>Use this for Remedial Lesson 1. Complete all LOs in one sitting to demonstrate mastery.</p>
+      <button onclick="selectMode('remediation')">Choose Remediation Mode</button>
+    </div>
+  </div>
 </div>
 
-<div id="teacherApp" style="display:none;">
+<div id="topics" class="card" style="display:none;">
+  <h3>Select Topic</h3>
+  <div id="topicList"></div>
+</div>
 
-  <div class="card">
-    <div class="section-title">Topic</div>
+<div id="modeBriefing" class="card" style="display:none;">
+  <div id="modeBriefingContent"></div>
+  <div class="button-row">
+    <button onclick="beginSelectedMode()">Begin</button>
+    <button onclick="returnToModeSelection()">Return to Mode Selection</button>
+  </div>
+</div>
 
-    <label>Select Topic</label>
-    <select id="topicSelect" onchange="updateTopicFields()"></select>
+<div id="loChoiceSection" class="card" style="display:none;">
+  <h3>Select LO Question</h3>
+  <div id="loChoiceList"></div>
+  <div class="button-row">
+    <button onclick="returnToModeSelection()">Return to Mode Selection</button>
+  </div>
+</div>
 
-    <input id="topicId" hidden>
-    <input id="topicCode" hidden>
-    <input id="topicName" hidden>
+<div id="quitEncouragement" class="card" style="display:none;">
+  <h2 style="text-align:center;">🌱 Don’t give up yet! 💪✨</h2>
+  <div class="green-box" style="text-align:center;font-size:18px;">
+    You are building mastery one LO at a time. Every reattempt strengthens your biological phrasing and recall. 🌻🧬🌿
+    <br><br>
+    Take a breath, read the feedback carefully, and continue your remediation attempt.
+  </div>
+  <div class="button-row" style="justify-content:center;">
+    <button onclick="returnToRemediationAttempt()">Return to Remediation Attempt</button>
+  </div>
+</div>
 
-    <div class="button-row">
-      <button onclick="showNewTopicForm()">+ Create New Topic</button>
-      <button onclick="startNewLO()">+ Create New LO for This Topic</button>
+<div id="loSection" class="card" style="display:none;">
+  <div class="context-box">
+    <div class="context-grid">
+      <div class="label">Topic</div>
+      <div id="currentTopicName"></div>
+      <div class="label">Mode</div>
+      <div id="currentModeName"></div>
     </div>
   </div>
 
-  <div id="newTopicCard" class="card" style="display:none;">
-    <div class="section-title">Create New Topic</div>
+  <div id="remediationProgress"></div>
 
-    <p class="hint">
-      Topic order is the order taught in school. Example: Topic 4 = Proteins.
-      Topic code is used internally to generate LO IDs, e.g. PRO.
-    </p>
+  <h3>LO Question</h3>
+  <div id="loQuestion" class="lo-question-display"></div>
+  <p id="modeInstruction"></p>
+  <div id="scaffoldArea"></div>
+  <div id="answerArea"></div>
 
-    <div class="two-col">
-      <div>
-        <label>Topic Order</label>
-        <input id="newTopicOrder" placeholder="e.g. 4">
-      </div>
-
-      <div>
-        <label>Topic Code</label>
-        <input id="newTopicCode" placeholder="e.g. PRO">
-      </div>
-    </div>
-
-    <label>Topic Name</label>
-    <input id="newTopicName" placeholder="e.g. Proteins">
-
-    <div class="button-row">
-      <button onclick="createTopic()">Save New Topic</button>
-      <button onclick="hideNewTopicForm()">Cancel</button>
-    </div>
+  <div class="button-row">
+    <button id="submitBtn" onclick="submitAnswer()">Submit</button>
+    <button id="returnLOBtn" onclick="returnToLOSelection()" style="display:none;">Return to LO Selection</button>
+    <button id="returnModeBtn" onclick="returnToModeSelection()" style="display:none;">Return to Mode Selection</button>
+    <button id="quitRemediationBtn" onclick="showQuitEncouragement()" style="display:none;">Quit Attempt</button>
   </div>
 
-  <div class="card">
-    <div class="section-title">Existing LOs for Topic</div>
-
-    <div id="existingLOsBox">Loading existing LOs...</div>
-
-    <div class="button-row">
-      <button onclick="editSelectedLO()">Edit Existing LO</button>
-      <button onclick="deleteSelectedLO()">Delete LO</button>
-    </div>
-  </div>
-
-  <div id="detailsPanel" class="card" style="display:none;">
-    <div class="section-title">LO Details</div>
-    <div id="detailsOutput"></div>
-  </div>
-
-  <div id="teacherTestPanel" class="card" style="display:none;">
-    <div class="section-title">Teacher Test Preview</div>
-
-    <div id="testLoLabel" class="green-box">No LO selected.</div>
-
-    <label>Mode</label>
-    <select id="testMode">
-      <option value="self">Self-Review Mode</option>
-      <option value="builder">LO Builder Mode</option>
-      <option value="remediation">Remediation Mode</option>
-    </select>
-
-    <label>Attempt Number</label>
-    <input id="testAttemptNo" value="1">
-
-    <label>Sample Student Answer</label>
-<p class="hint">
-  The expected number of bullet points will be inserted automatically when you choose an LO to test.
-</p>
-<textarea id="testAnswer" placeholder="Type a sample answer here..."></textarea>
-
-    <div class="button-row">
-      <button onclick="runTeacherTest()">Check Response</button>
-    </div>
-
-    <div id="testReference"></div>
-
-<div id="testOutput"></div>
-  </div>
-
-  <div class="card">
-    <div class="section-title">LO Information</div>
-
-    <div class="green-box" id="editingLabel">Creating NEW LO</div>
-
-    <div class="two-col">
-      <div>
-        <label>LO Number</label>
-        <input id="loNumber" placeholder="e.g. 4">
-      </div>
-
-      <div>
-        <label>Generated LO ID</label>
-        <input id="generatedLoId" readonly>
-      </div>
-    </div>
-
-    <label>LO Question</label>
-    <textarea id="loQuestion" placeholder="e.g. Describe the formation of peptide bond"></textarea>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Answer Bullets</div>
-
-    <textarea id="answerBullets" placeholder="Amino group of one amino acid
-And carboxyl group of another amino acid
-Reacts to form a peptide bond between the two amino acids"></textarea>
-
-    <label>Hints</label>
-    <textarea id="hints" placeholder="[Reacting group] Identify the first functional group involved.
-[Product] State what bond is formed."></textarea>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Keywords, Accepted Variants & Unacceptable Answers</div>
-
-    <table class="keyword-table">
-      <thead>
-        <tr>
-          <th class="bullet-col">Bullet</th>
-          <th>Keyword / Phrase</th>
-          <th>Accepted Variants</th>
-          <th>Unacceptable Answers</th>
-        </tr>
-      </thead>
-      <tbody id="keywordBody"></tbody>
-    </table>
-
-    <div class="button-row">
-      <button onclick="addKeywordRow()">+ Add keyword row</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Blank Templates</div>
-
-    <textarea id="blankTemplates" placeholder="1 | _______ _____ of ____ amino acid | amino group; one
-2 | _______ _____ of ________ amino acid | carboxyl group; another"></textarea>
-  </div>
-
-  <div class="card">
-    <div class="section-title">Common Questions</div>
-
-    <textarea id="commonQuestions" placeholder="Explain why condensation reaction forms a peptide bond.
-State the bond formed between amino acids."></textarea>
-  </div>
-
-  <div class="card">
-    <div class="button-row">
-      <button onclick="previewRows()">Preview Payload</button>
-      <button onclick="saveNewLO()">Save New LO</button>
-      <button onclick="updateExistingLO()">Update Existing LO</button>
-      <button onclick="resetForm()">Reset Form</button>
-    </div>
-  </div>
-
-  <div id="output" style="display:none;">
-    <div class="card">
-      <div class="section-title">Preview Payload</div>
-      <pre id="previewPayload"></pre>
-    </div>
-  </div>
-
+  <div id="feedback" style="display:none;"></div>
 </div>
 
 <script>
 const BASE_URL =
 "https://script.google.com/macros/s/AKfycbwr1KNigX2URrSrlaE9oJ9WzBjoGT1glTziLb2l3Yb67hkIvGeVG3TZrkF7pwMbTJdyXg/exec";
 
-let topics = [];
-let existingLOs = [];
-let currentEditingLO = null;
-let selectedTestLO = null;
+let studentEmail = "";
+let currentMode = "";
+let currentTopicId = "";
+let currentTopicName = "";
+let currentLOs = [];
+let currentLOIndex = 0;
+let currentLO = "";
+let currentLOPackage = null;
+let attemptNo = 1;
+let remediationStartedAt = null;
+let remediationSequenceLocked = false;
 
 /************************************
- * TEACHER LOGIN
+ * LOGIN
  ************************************/
-async function teacherLogin(){
-  clearStatus();
+async function login(){
+  const email = document.getElementById("email").value.trim();
+  const loginMsg = document.getElementById("loginMsg");
 
-  const email = val("teacherEmail");
-  const password = val("teacherPassword");
+  loginMsg.innerText = "Checking login...";
 
-  const res = await fetch(
-    `${BASE_URL}?action=validateTeacher`
-    + `&email=${encodeURIComponent(email)}`
-    + `&password=${encodeURIComponent(password)}`
-  );
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=validateStudent&email=${encodeURIComponent(email)}`
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if(data.valid){
-    document.getElementById("teacherLogin").style.display = "none";
-    document.getElementById("teacherApp").style.display = "block";
-    await loadTopics();
-  }else{
-    document.getElementById("teacherLoginMsg").innerText =
-      "Invalid teacher email/password or inactive account.";
+    if(data.valid){
+      studentEmail = email;
+      loginMsg.innerText = "";
+      document.getElementById("login").style.display = "none";
+      document.getElementById("modeSelect").style.display = "block";
+    }else{
+      loginMsg.innerText = "Invalid email";
+    }
+  }catch(err){
+    loginMsg.innerText = "Unable to connect to backend.";
+    console.error(err);
   }
+}
+
+/************************************
+ * MODE
+ ************************************/
+function selectMode(mode){
+  currentMode = mode;
+  document.getElementById("modeSelect").style.display = "none";
+  loadTopics();
+}
+
+function returnToModeSelection(){
+  currentMode = "";
+  currentTopicId = "";
+  currentTopicName = "";
+  currentLOs = [];
+  currentLOIndex = 0;
+  currentLO = "";
+  currentLOPackage = null;
+  attemptNo = 1;
+  remediationStartedAt = null;
+  remediationSequenceLocked = false;
+
+  ["topics","modeBriefing","loChoiceSection","loSection","quitEncouragement"].forEach(id=>{
+    document.getElementById(id).style.display = "none";
+  });
+
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("modeSelect").style.display = "block";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+
+function returnToLOSelection(){
+
+  document.getElementById("loSection").style.display = "none";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("feedback").innerHTML = "";
+
+  if(currentMode === "builder" || currentMode === "self"){
+    document.getElementById("loChoiceSection").style.display = "block";
+  }
+
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 /************************************
  * TOPICS
  ************************************/
+
 async function loadTopics(){
   const res = await fetch(`${BASE_URL}?action=getTopics`);
   const data = await res.json();
 
-  topics = data.topics || [];
+  document.getElementById("topics").style.display = "block";
 
-  const select = document.getElementById("topicSelect");
-  select.innerHTML = "";
+  let html = "";
 
-  topics.forEach(t => {
-    const option = document.createElement("option");
+  (data.topics || []).forEach(t => {
+    const topicLabel = t.Topic_Order ? `Topic ${t.Topic_Order}: ${t.Topic_Name}` : t.Topic_Name;
 
-    option.value =
-      `${t.Topic_ID}|${t.Topic_Name}|${t.Topic_Code || deriveTopicCode(t.Topic_Name)}|${t.Topic_Order}`;
-
-    option.textContent =
-      `Topic ${t.Topic_Order}: ${t.Topic_Name}`;
-
-    select.appendChild(option);
+    html += `
+      <button onclick="loadTopic('${escapeJs(t.Topic_ID)}','${escapeJs(t.Topic_Name)}')">
+        ${escapeHtml(topicLabel)}
+      </button>
+      <br>
+    `;
   });
 
-  updateTopicFields();
-}
-
-function updateTopicFields(){
-  const selected = document.getElementById("topicSelect").value;
-  if(!selected) return;
-
-  const parts = selected.split("|");
-
-  document.getElementById("topicId").value = parts[0];
-  document.getElementById("topicName").value = parts[1];
-  document.getElementById("topicCode").value = parts[2];
-
-  updateGeneratedLOId();
-  loadExistingLOs();
-}
-
-function showNewTopicForm(){
-  document.getElementById("newTopicCard").style.display = "block";
-}
-
-function hideNewTopicForm(){
-  document.getElementById("newTopicCard").style.display = "none";
-}
-
-function createTopic(){
-  clearStatus();
-
-  const payload = {
-    topicOrder: val("newTopicOrder"),
-    topicName: val("newTopicName"),
-    topicCode: val("newTopicCode")
-  };
-
-  submitPost(
-    "createTopic",
-    payload,
-    "New topic save request sent. Refreshing topic list shortly..."
-  );
-
-  setTimeout(async () => {
-    await loadTopics();
-    hideNewTopicForm();
-  }, 2500);
-}
-
-function deriveTopicCode(topicName){
-  return String(topicName || "")
-    .replace(/[^A-Za-z]/g,"")
-    .slice(0,3)
-    .toUpperCase();
+  document.getElementById("topicList").innerHTML = html;
 }
 
 /************************************
- * CREATE NEW LO
+ * LOAD TOPIC
  ************************************/
-function startNewLO(){
-  currentEditingLO = null;
-  selectedTestLO = null;
-
-  document.getElementById("editingLabel").innerHTML =
-    `Creating NEW LO for ${escapeHtml(val("topicName"))}`;
-
-  [
-    "loNumber",
-    "generatedLoId",
-    "loQuestion",
-    "answerBullets",
-    "hints",
-    "blankTemplates",
-    "commonQuestions"
-  ].forEach(id => {
-    document.getElementById(id).value = "";
-  });
-
-  document.getElementById("keywordBody").innerHTML = "";
-  addKeywordRow();
-
-  document.getElementById("detailsPanel").style.display = "none";
-  document.getElementById("teacherTestPanel").style.display = "none";
-
-  document.getElementById("loNumber").scrollIntoView({behavior:"smooth"});
-}
-
-/************************************
- * GENERATED LO ID
- ************************************/
-document
-  .getElementById("loNumber")
-  .addEventListener("input", updateGeneratedLOId);
-
-function updateGeneratedLOId(){
-  const code = val("topicCode");
-  const number = val("loNumber");
-
-  document.getElementById("generatedLoId").value =
-    number ? `${code}_LO${number}` : "";
-}
-
-/************************************
- * EXISTING LOS
- ************************************/
-async function loadExistingLOs(){
-  const topicId = val("topicId");
-  if(!topicId) return;
+async function loadTopic(id,name){
+  currentTopicId = id;
+  currentTopicName = name;
 
   const res = await fetch(
-    `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(topicId)}`
+    `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}`
   );
 
   const data = await res.json();
-  existingLOs = data.los || [];
+  currentLOs = (data.los || []).filter(lo => lo && lo.LO_ID);
 
-  renderExistingLOs();
-}
-
-function renderExistingLOs(){
-  const box = document.getElementById("existingLOsBox");
-
-  if(existingLOs.length === 0){
-    box.innerHTML = `<p class="hint">No LOs found for this topic.</p>`;
+  if(currentLOs.length === 0){
+    alert("No active LOs were found for this topic.");
     return;
   }
 
-  let html = `
-    <table>
-      <thead>
-        <tr>
-          <th class="checkbox-col">Select</th>
-          <th>LO</th>
-          <th>LO Question</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  existingLOs.forEach(lo => {
-    const loNumber = String(lo.LO_ID || "").split("_LO")[1] || "";
-
-    html += `
-      <tr>
-        <td class="checkbox-col">
-          <input type="checkbox" class="loCheckbox" value="${escapeHtml(lo.LO_ID)}">
-        </td>
-
-        <td>LO${escapeHtml(loNumber)}</td>
-
-        <td>${escapeHtml(lo.LO_Question)}</td>
-
-        <td>
-          <div class="action-buttons">
-            <button class="small-button" onclick="viewLODetails('${escapeJs(lo.LO_ID)}')">
-              View LO Details
-            </button>
-
-            <button class="small-button" onclick="testThisLO('${escapeJs(lo.LO_ID)}')">
-              Test This LO
-            </button>
-          </div>
-        </td>
-      </tr>
-    `;
-  });
-
-  html += `</tbody></table>`;
-  box.innerHTML = html;
-}
-
-function getSelectedLOs(){
-  return Array.from(document.querySelectorAll(".loCheckbox:checked"))
-    .map(x => x.value);
+  document.getElementById("topics").style.display = "none";
+  showModeBriefing();
 }
 
 /************************************
- * VIEW DETAILS
+ * MODE BRIEFING
  ************************************/
-async function viewLODetails(loId){
-  const res = await fetch(
-    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
-  );
+function showModeBriefing(){
+  document.getElementById("modeBriefing").style.display = "block";
+  document.getElementById("modeBriefingContent").innerHTML = getModeBriefingHtml(currentMode);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 
-  const data = await res.json();
-  const lo = existingLOs.find(x => x.LO_ID === loId);
+function getModeBriefingHtml(mode){
+  if(mode === "builder"){
+    return `
+      <h3>LO Builder Mode</h3>
+      <div class="section-box"><div class="section-title">Purpose</div>Use this to build up your understanding of all LOs in a topic.</div>
+      <div class="section-box"><div class="section-title">Instructions</div>
+        <ul>
+          <li>Attempt each LO using the bullet structure provided.</li>
+          <li>The system will progressively guide you towards a complete answer.</li>
+          <li>Use the feedback and scaffolds for the key terms / phrases.</li>
+        </ul>
+      </div>
+      <div class="green-box"><strong>Important</strong><br>
+        This mode is designed for learning and guided practice.<br>
+        Your progress in this mode is not recorded.<br>
+        You may leave the mode at any time.
+      </div>
+    `;
+  }
 
-  let html = `
-    <div class="readonly-box">
-      <strong>LO Question</strong><br><br>
-      ${escapeHtml(lo?.LO_Question || loId)}
+  if(mode === "self"){
+    return `
+      <h3>Self-Review Mode</h3>
+      <div class="section-box"><div class="section-title">Purpose</div>Use this to test whether you can accurately and completely answer the LOs in a topic.</div>
+      <div class="section-box"><div class="section-title">Instructions</div>
+        <ul>
+          <li>Attempt each LO using the bullet structure provided.</li>
+          <li>Recall biological keywords and accurate phrasing.</li>
+          <li>Use the feedback to identify missing terms, concepts or weak phrasing.</li>
+        </ul>
+      </div>
+      <div class="green-box"><strong>Important</strong><br>
+        This mode is designed for self-testing and retrieval practice.<br>
+        Your progress in this mode is not recorded or saved.<br>
+        You may leave the mode at any time.
+      </div>
+    `;
+  }
+
+  return `
+    <h3>Remediation Mode</h3>
+    <div class="section-box"><div class="section-title">Purpose</div>Use this for Remedial Lesson 1. Demonstrate full mastery of a topic by completing all LOs in one sitting.</div>
+    <div class="section-box"><div class="section-title">Instructions</div>
+      <ul>
+        <li>Complete every LO in the topic before ending the session.</li>
+        <li>LOs will be presented in a random order.</li>
+        <li>Rewrite and improve your answer until mastery is achieved for each LO.</li>
+        <li>Read the feedback carefully before each reattempt.</li>
+        <li>Maintain accurate biological keywords and precise scientific phrasing throughout.</li>
+      </ul>
     </div>
-
-    <div class="readonly-box">
-      <strong>Answer Bullets</strong><br><br>
-  `;
-
-  (data.answerBullets || []).forEach(b => {
-    html += `• ${escapeHtml(b.Canonical_Answer)}<br>`;
-  });
-
-  html += `</div><div class="readonly-box"><strong>Hints</strong><br><br>`;
-
-  (data.answerBullets || []).forEach(b => {
-    html += `• ${escapeHtml(b.Hint || "")}<br>`;
-  });
-
-  html += `</div><div class="readonly-box"><strong>Keywords</strong><br><br>`;
-
-  (data.keywords || []).forEach(k => {
-    html += `• Bullet ${escapeHtml(k.Bullet_Order)} — ${escapeHtml(k.Keyword_or_Phrase)}<br>`;
-  });
-
-  html += `</div><div class="readonly-box"><strong>Accepted Variants</strong><br><br>`;
-
-  (data.variants || []).forEach(v => {
-    html += `• ${escapeHtml(v.Keyword_ID)} — ${escapeHtml(v.Accepted_Variant)}<br>`;
-  });
-
-  html += `</div><div class="readonly-box"><strong>Unacceptable Answers</strong><br><br>`;
-
-  (data.unacceptable || []).forEach(u => {
-    html += `• ${escapeHtml(u.Keyword_ID || "")} — ${escapeHtml(u.Phrase)}<br>`;
-  });
-
-  html += `</div><div class="readonly-box"><strong>Blank Templates</strong><br><br>`;
-
-  (data.blankTemplates || []).forEach(b => {
-    html += `• Bullet ${escapeHtml(b.Bullet_Order)} — ${escapeHtml(b.Teacher_Final_Blank || "")}<br>`;
-  });
-
-  html += `</div><div class="readonly-box"><strong>Common Questions</strong><br><br>`;
-
-  (data.commonQuestions || []).forEach(q => {
-    html += `• ${escapeHtml(q.Common_Question)}<br>`;
-  });
-
-  html += `</div>`;
-
-  document.getElementById("detailsPanel").style.display = "block";
-  document.getElementById("detailsOutput").innerHTML = html;
-  document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
-}
-
-/************************************
- * TEST THIS LO
- ************************************/
-async function testThisLO(loId){
-
-  selectedTestLO = loId;
-
-  const lo =
-    existingLOs.find(x => x.LO_ID === loId);
-
-  const pkgRes =
-    await fetch(
-      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
-    );
-
-  const pkg =
-    await pkgRes.json();
-
-  const bulletCount =
-    (pkg.answerBullets || []).length;
-
-  const scaffold =
-    Array.from(
-      { length: bulletCount },
-      () => "• "
-    ).join("\n");
-
-  document
-    .getElementById("teacherTestPanel")
-    .style.display = "block";
-
-  document
-    .getElementById("testLoLabel")
-    .innerHTML =
-      `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
-
-  document
-    .getElementById("testAnswer")
-    .value = scaffold;
-
-  document
-    .getElementById("testReference")
-    .innerHTML = "";
-
-  document
-    .getElementById("testOutput")
-    .innerHTML = "";
-
-  renderTeacherTestReference(pkg);
-
-  document
-    .getElementById("teacherTestPanel")
-    .scrollIntoView({behavior:"smooth"});
-}
-
-function renderTeacherTestReference(pkg){
-
-  let html = `
-
-    <div class="readonly-box">
-
-      <strong>
-        Marking Reference
-      </strong>
-
-      <br><br>
-
-      <table class="keyword-table">
-
-        <thead>
-
-          <tr>
-            <th class="bullet-col">Bullet</th>
-            <th>Keyword / Phrase</th>
-            <th>Accepted Variants</th>
-            <th>Unacceptable Answers</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-  `;
-
-  (pkg.keywords || []).forEach(k => {
-
-    const variants =
-      (pkg.variants || [])
-
-        .filter(v =>
-          v.Keyword_ID === k.Keyword_ID
-        )
-
-        .map(v =>
-          v.Accepted_Variant
-        )
-
-        .join("; ");
-
-    const unacceptable =
-      (pkg.unacceptable || [])
-
-        .filter(u =>
-          u.Keyword_ID === k.Keyword_ID
-        )
-
-        .map(u =>
-          u.Phrase
-        )
-
-        .join("; ");
-
-    html += `
-
-      <tr>
-
-        <td class="bullet-col">
-          ${escapeHtml(k.Bullet_Order)}
-        </td>
-
-        <td>
-          ${escapeHtml(k.Keyword_or_Phrase)}
-        </td>
-
-        <td>
-          ${escapeHtml(variants)}
-        </td>
-
-        <td>
-          ${escapeHtml(unacceptable)}
-        </td>
-
-      </tr>
-    `;
-  });
-
-  html += `
-
-        </tbody>
-
-      </table>
-
+    <div class="danger-box"><strong>Important</strong><br>
+      Your attempt will only be recorded after all LOs are completed.<br>
+      Do not refresh the page, close the tab, or leave the page during the session.<br>
+      If the session is interrupted, your remediation attempt will not be saved, and you must wait 5 minutes before reattempting.<br>
+      Only first completions are entered into the leaderboard.
     </div>
   `;
-
-  document
-  .getElementById("testReference")
-  .innerHTML = html;
 }
 
-async function runTeacherTest(){
-  if(!selectedTestLO){
-    showError("Please choose an LO to test first.");
+function beginSelectedMode(){
+  document.getElementById("modeBriefing").style.display = "none";
+
+  if(currentMode === "remediation"){
+    startRemediationSequence();
     return;
   }
 
-  const mode = val("testMode");
-  const attemptNo = val("testAttemptNo") || "1";
-  const responseText = val("testAnswer");
-
-  const res = await fetch(
-    `${BASE_URL}?action=checkResponse`
-    + `&email=teacher_preview@local`
-    + `&loId=${encodeURIComponent(selectedTestLO)}`
-    + `&mode=${encodeURIComponent(mode)}`
-    + `&attemptNo=${encodeURIComponent(attemptNo)}`
-    + `&response=${encodeURIComponent(responseText)}`
-  );
-
-  const data = await res.json();
-
-  renderTeacherTestOutput(data);
-}
-
-function renderTeacherTestOutput(data){
-
-  const existingReference =
-    document
-      .getElementById("testOutput")
-      .innerHTML;
-
-  let html = existingReference;
-
-  /***** Feedback section for all modes where available *****/
-  if(data.bulletResults && data.bulletResults.length){
-
-    html += `
-
-      <div class="readonly-box">
-
-        <strong>
-          Feedback on your submission
-        </strong>
-
-        <br><br>
-    `;
-
-    data.bulletResults.forEach((b, i) => {
-
-      let responseLine =
-        escapeHtml(b.responseText || "(blank)");
-
-      (b.highlights || []).forEach(h => {
-
-        const regex =
-          new RegExp(
-            escapeRegExp(h),
-            "gi"
-          );
-
-        responseLine =
-          responseLine.replace(
-            regex,
-            match =>
-              `<span class="wrong">${match}</span>`
-          );
-      });
-
-      const labels =
-        (b.feedbackLabels || [])
-
-          .map(label =>
-            `<span class="feedback-label">${escapeHtml(label)}</span>`
-          )
-
-          .join(" ");
-
-      html += `
-
-        <div style="margin-bottom:14px;">
-
-          <strong>
-            Bullet ${i + 1}
-          </strong>
-
-          <br>
-
-          • ${responseLine}
-
-          <br>
-
-          ${labels}
-
-        </div>
-      `;
-    });
-
-    html += `</div>`;
-  }
-
-  /***** Self-review / Remediation hint output *****/
-  if(data.hintOutput && data.hintOutput.length){
-
-    html += `
-
-      <div class="readonly-box">
-
-        <strong>
-          Answer Structure Hint
-        </strong>
-
-        <br><br>
-    `;
-
-    data.hintOutput.forEach(h => {
-
-      html += `
-
-        <strong>
-          Bullet ${escapeHtml(h.bulletOrder)}
-        </strong>
-
-        <br>
-
-        ${escapeHtml(h.conceptualHint || "")}
-
-        <div class="green-box">
-          ${escapeHtml(h.reconstruction || "")}
-        </div>
-
-        <br>
-      `;
-    });
-
-    html += `</div>`;
-  }
-
-  /***** Remediation scaffold *****/
-  if(data.remediationScaffold && data.remediationScaffold.length){
-
-    html += `
-
-      <div class="readonly-box">
-
-        <strong>
-          Remediation Scaffold
-        </strong>
-
-        <br><br>
-    `;
-
-    data.remediationScaffold.forEach(s => {
-
-      html += `
-
-        <strong>
-          Bullet ${escapeHtml(s.bulletOrder)}
-        </strong>
-
-        <div class="green-box">
-          ${escapeHtml(s.scaffold || "")}
-        </div>
-
-        <br>
-      `;
-    });
-
-    html += `</div>`;
-  }
-
-  /***** LO Builder Model Answer Suggestion, after feedback *****/
-  if(data.mode === "builder" && data.builderOutput && data.builderOutput.length){
-
-    html += `
-
-      <div class="readonly-box">
-
-        <strong>
-          Model Answer Suggestion
-        </strong>
-
-        <br><br>
-    `;
-
-    data.builderOutput.forEach(b => {
-
-      html += `
-        • ${escapeHtml(b.text)}
-        <br><br>
-      `;
-    });
-
-    html += `</div>`;
-  }
-
-  /***** Next step *****/
-  html += `
-
-    <div class="readonly-box">
-
-      <strong>
-        Next step
-      </strong>
-
-      <br><br>
-
-      ${escapeHtml(data.message || "")}
-
-    </div>
-  `;
-
-  document
-    .getElementById("testOutput")
-    .innerHTML = html;
+  showLOChoice();
 }
 
 /************************************
- * EDIT / DELETE
+ * LO CHOICE
  ************************************/
-async function editSelectedLO(){
-  const selected = getSelectedLOs();
+function showLOChoice(){
+  document.getElementById("loChoiceSection").style.display = "block";
 
-  if(selected.length !== 1){
-    showError("Please select exactly ONE LO to edit.");
-    return;
-  }
+  let html = "";
 
-  await loadLOIntoForm(selected[0]);
-}
-
-async function deleteSelectedLO(){
-  const selected = getSelectedLOs();
-
-  if(selected.length === 0){
-    showError("Please select at least one LO.");
-    return;
-  }
-
-  const confirmDelete =
-    confirm(`Are you sure you want to delete ${selected.length} LO(s)? Students will no longer see them.`);
-
-  if(!confirmDelete) return;
-
-  submitPost(
-    "deleteLOs",
-    {loIds:selected},
-    `Delete request sent for ${selected.length} LO(s).`
-  );
-
-  setTimeout(loadExistingLOs, 2500);
-}
-
-async function loadLOIntoForm(loId){
-  currentEditingLO = loId;
-
-  const res = await fetch(
-    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
-  );
-
-  const data = await res.json();
-  const lo = existingLOs.find(x => x.LO_ID === loId);
-
-  document.getElementById("editingLabel").innerHTML =
-    `Editing LO${escapeHtml(String(loId).split("_LO")[1] || "")}`;
-
-  document.getElementById("loNumber").value =
-    String(loId).split("_LO")[1] || "";
-
-  updateGeneratedLOId();
-
-  document.getElementById("loQuestion").value =
-    lo?.LO_Question || "";
-
-  document.getElementById("answerBullets").value =
-    (data.answerBullets || []).map(x => x.Canonical_Answer).join("\n");
-
-  document.getElementById("hints").value =
-    (data.answerBullets || []).map(x => x.Hint || "").join("\n");
-
-  renderKeywordRows(data);
-
-  document.getElementById("blankTemplates").value =
-    (data.blankTemplates || [])
-      .map(x => `${x.Bullet_Order} | ${x.Teacher_Final_Blank} | ${x.Blank_Targets}`)
-      .join("\n");
-
-  document.getElementById("commonQuestions").value =
-    (data.commonQuestions || []).map(x => x.Common_Question).join("\n");
-
-  document.getElementById("loQuestion").scrollIntoView({behavior:"smooth"});
-}
-
-/************************************
- * KEYWORD ROWS
- ************************************/
-function renderKeywordRows(data){
-  const body = document.getElementById("keywordBody");
-  body.innerHTML = "";
-
-  (data.keywords || []).forEach(k => {
-    const variants = (data.variants || [])
-      .filter(v => v.Keyword_ID === k.Keyword_ID)
-      .map(v => v.Accepted_Variant)
-      .join("; ");
-
-    const unacceptable = (data.unacceptable || [])
-      .filter(u => u.Keyword_ID === k.Keyword_ID)
-      .map(u => u.Phrase)
-      .join("; ");
-
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td class="bullet-col">
-        <input value="${escapeHtml(k.Bullet_Order)}" placeholder="1">
-      </td>
-      <td>
-        <input value="${escapeHtml(k.Keyword_or_Phrase)}" placeholder="amino group">
-      </td>
-      <td>
-        <textarea placeholder="amino functional group">${escapeHtml(variants)}</textarea>
-      </td>
-      <td>
-        <textarea placeholder="amine group; hydroxyl group">${escapeHtml(unacceptable)}</textarea>
-      </td>
+  currentLOs.forEach((lo,i)=>{
+    html += `
+      <button onclick="loadLO(${i})">
+        LO${i+1}: ${escapeHtml(lo.LO_Question)}
+      </button>
+      <br>
     `;
-
-    body.appendChild(row);
   });
-}
 
-function addKeywordRow(){
-  const body = document.getElementById("keywordBody");
-  const row = document.createElement("tr");
-
-  row.innerHTML = `
-    <td class="bullet-col">
-      <input placeholder="1">
-    </td>
-    <td>
-      <input placeholder="amino group">
-    </td>
-    <td>
-      <textarea placeholder="amino functional group"></textarea>
-    </td>
-    <td>
-      <textarea placeholder="amine group; hydroxyl group"></textarea>
-    </td>
-  `;
-
-  body.appendChild(row);
+  document.getElementById("loChoiceList").innerHTML = html;
 }
 
 /************************************
- * SAVE / UPDATE LO
+ * REMEDIATION SEQUENCE
  ************************************/
-function saveNewLO(){
-  submitPost("saveLOPackage", buildPayload(), "New LO save request sent.");
-}
+function startRemediationSequence(){
+  currentLOs = currentLOs.filter(lo => lo && lo.LO_ID);
 
-function updateExistingLO(){
-  if(!currentEditingLO){
-    showError("Please load an existing LO first.");
+  if(currentLOs.length === 0){
+    alert("Unable to start remediation because no LOs were loaded.");
+    returnToModeSelection();
     return;
   }
 
-  submitPost("updateLOPackage", buildPayload(), "LO update request sent.");
-  setTimeout(loadExistingLOs, 2500);
+  shuffleArray(currentLOs);
+  remediationStartedAt = new Date();
+  currentLOIndex = 0;
+  remediationSequenceLocked = true;
+  loadLO(currentLOIndex);
 }
 
-function submitPost(action, payload, successMessage){
-  clearStatus();
+function continueRemediationLO(){
+  currentLOIndex++;
+
+  if(currentLOIndex >= currentLOs.length){
+    showFinalRemediationCompletion();
+    return;
+  }
+
+  loadLO(currentLOIndex);
+}
+
+function showQuitEncouragement(){
+  document.getElementById("loSection").style.display = "none";
+  document.getElementById("quitEncouragement").style.display = "block";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function returnToRemediationAttempt(){
+  document.getElementById("quitEncouragement").style.display = "none";
+  document.getElementById("loSection").style.display = "block";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/************************************
+ * LOAD LO
+ ************************************/
+async function loadLO(i){
+  const lo = currentLOs[i];
+
+  if(!lo){
+    if(currentMode === "remediation"){
+      showFinalRemediationCompletion();
+      return;
+    }
+
+    alert("No LO found.");
+    return;
+  }
+
+  currentLO = lo.LO_ID;
+  attemptNo = 1;
+
+  const pkgRes = await fetch(
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}`
+  );
+
+  currentLOPackage = await pkgRes.json();
+
+  document.getElementById("loChoiceSection").style.display = "none";
+  document.getElementById("loSection").style.display = "block";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("feedback").innerHTML = "";
+
+  document.getElementById("currentTopicName").innerText = currentTopicName;
+  document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
+  document.getElementById("loQuestion").innerText = lo.LO_Question;
+
+  document.getElementById("returnModeBtn").style.display = currentMode === "remediation" ? "none" : "inline-block";
+  document.getElementById("returnLOBtn").style.display =
+    (currentMode === "builder" || currentMode === "self")
+      ? "inline-block"
+      : "none";
+  document.getElementById("quitRemediationBtn").style.display = currentMode === "remediation" ? "inline-block" : "none";
+
+  if(currentMode === "remediation"){
+    const safeTotal = currentLOs.length;
+    const safeCurrent = Math.min(currentLOIndex + 1, safeTotal);
+
+    document.getElementById("remediationProgress").innerHTML = `
+      <div class="section-box">
+        LO ${safeCurrent} of ${safeTotal}
+      </div>
+    `;
+  }else{
+    document.getElementById("remediationProgress").innerHTML = "";
+  }
+
+  renderAnswerArea();
+
+  if(currentMode === "builder"){
+    document.getElementById("modeInstruction").innerText =
+      "Use the bullet points to build your answer. The LO Builder will guide your thinking.";
+  }else if(currentMode === "self"){
+    document.getElementById("modeInstruction").innerText =
+      "Retrieve and organise your answer independently using the bullet points.";
+  }else{
+    document.getElementById("modeInstruction").innerText =
+      "Rewrite the full answer until mastery is achieved.";
+  }
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/************************************
+ * ANSWER AREA
+ ************************************/
+function renderAnswerArea(){
+  const bullets = currentLOPackage.answerBullets || [];
+  const prompts = bullets.map(() => "• ").join("\n");
+
+  document.getElementById("answerArea").innerHTML = `
+    <textarea
+      id="singleResponse"
+      rows="${Math.max(5, bullets.length * 2)}"
+      placeholder="Write one point per bullet."
+    >${prompts}</textarea>
+
+    <p class="hint">
+      Please answer using the bullet points provided. Each bullet should correspond to one expected answer point.
+    </p>
+  `;
+}
+
+/************************************
+ * SUBMIT
+ ************************************/
+async function submitAnswer(){
+  const submitBtn = document.getElementById("submitBtn");
+
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Checking...";
 
   try{
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = BASE_URL;
-    form.target = "hiddenFrame";
-    form.style.display = "none";
+    const responsePayload = document.getElementById("singleResponse").value;
 
-    const actionInput = document.createElement("input");
-    actionInput.name = "action";
-    actionInput.value = action;
+    const res = await fetch(
+      `${BASE_URL}?action=checkResponse`
+      + `&email=${encodeURIComponent(studentEmail)}`
+      + `&loId=${encodeURIComponent(currentLO)}`
+      + `&mode=${encodeURIComponent(currentMode)}`
+      + `&attemptNo=${attemptNo}`
+      + `&response=${encodeURIComponent(responsePayload)}`
+    );
 
-    const payloadInput = document.createElement("input");
-    payloadInput.name = "payload";
-    payloadInput.value = JSON.stringify(payload);
+    const data = await res.json();
 
-    form.appendChild(actionInput);
-    form.appendChild(payloadInput);
+    renderStructuredFeedback(data);
 
-    document.body.appendChild(form);
-    form.submit();
+    if(data.correct){
+      if(currentMode === "remediation"){
+        showRemediationCelebration();
+        return;
+      }
+      return;
+    }
 
-    showSuccess(successMessage);
-
-    setTimeout(() => {
-      form.remove();
-      loadExistingLOs();
-    }, 2500);
+    attemptNo++;
 
   }catch(err){
-    showError(err.message);
+    console.error(err);
+    alert("The system took too long or encountered an error. Please try again once.");
+  }finally{
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit";
   }
 }
 
-function buildPayload(){
-  const topicId = val("topicId");
-  const topicCode = val("topicCode");
-  const loNumber = val("loNumber");
-  const loQuestion = val("loQuestion");
-  const loId = `${topicCode}_LO${loNumber}`;
+/************************************
+ * FEEDBACK
+ ************************************/
+function renderStructuredFeedback(data){
 
-  const hintLines = lines("hints");
+  let bulletFeedback = "";
 
-  const answerBullets =
-    lines("answerBullets").map((line, i) => ({
-      bulletOrder: i + 1,
-      canonicalAnswer: line,
-      hint: hintLines[i] || ""
-    }));
+  /************************************
+   * ALWAYS RENDER STUDENT BULLETS
+   ************************************/
+  const bulletResults =
+    (data.bulletResults && data.bulletResults.length > 0)
+      ? data.bulletResults
+      : buildFallbackBulletResultsFromStudentInput(data);
 
-  const keywords = readKeywordTable();
+  bulletResults.forEach((b,i)=>{
 
-  const blankTemplates =
-    lines("blankTemplates").map(line => {
-      const parts = splitPipe(line);
-      return {
-        bulletOrder: parts[0] || "",
-        template: parts[1] || "",
-        targets: parts[2] || ""
-      };
+    const highlighted =
+      highlight(
+        b.responseText || "(blank)",
+        b.highlights || []
+      );
+
+    let feedback = "";
+
+    if(b.correct){
+      feedback += ` — <span class="correct-label">correct</span>`;
+    }
+
+    if(b.wrongBullet){
+      feedback += ` <span class="feedback-label">belongs to Bullet ${escapeHtml(b.wrongBullet)}</span>`;
+    }
+
+    if(b.feedbackLabels && b.feedbackLabels.length > 0){
+      feedback += " " +
+        b.feedbackLabels.map(label=>{
+          const lower = String(label).toLowerCase();
+
+          if(lower.includes("spelling")){
+            return `<span class="spelling-label">${escapeHtml(label)}</span>`;
+          }
+
+          return `<span class="feedback-label">${escapeHtml(label)}</span>`;
+        }).join(" ");
+    }
+
+    if(!feedback && !b.correct){
+      feedback = ` — <span class="feedback-label">review this bullet</span>`;
+    }
+
+    bulletFeedback += `
+      <div class="student-bullet">
+        <strong>Bullet ${i+1}</strong><br>
+        • ${highlighted}${feedback}
+      </div>
+    `;
+  });
+
+  /************************************
+   * ANSWER STRUCTURE HINTS
+   ************************************/
+  let answerStructureHint = "";
+
+  if(!data.correct && data.hintOutput && data.hintOutput.length > 0){
+
+    answerStructureHint += `
+      <div class="section-box">
+        <div class="section-title">Answer Structure Hint</div>
+    `;
+
+    data.hintOutput.forEach((h,i)=>{
+
+      answerStructureHint += `
+        <div class="hint-line">
+          <strong>Bullet ${escapeHtml(h.bulletOrder || i+1)}</strong><br><br>
+          ${escapeHtml(h.conceptualHint || "")}
+      `;
+
+      /***** Builder gets progressive reconstruction support *****/
+      if(currentMode === "builder"){
+        answerStructureHint += `
+          <div class="green-box">
+            ${escapeHtml(h.reconstruction || "").replace(/\n/g,"<br>")}
+          </div>
+        `;
+      }
+
+      /***** Self-review gets lighter conceptual support only *****/
+      if(currentMode === "self" && h.conceptualHint){
+        answerStructureHint += `
+          <div class="hint">
+            Use this hint to revise your answer independently.
+          </div>
+        `;
+      }
+
+      answerStructureHint += `
+        </div>
+        <hr>
+      `;
     });
 
-  const commonQuestions = lines("commonQuestions");
+    answerStructureHint += `</div>`;
+  }
 
-  return {
-    topicId,
-    loId,
-    loOrder: loNumber,
-    loQuestion,
-    answerBullets,
-    keywords,
-    blankTemplates,
-    commonQuestions
-  };
+  /************************************
+   * MODEL ANSWER ONLY AFTER CORRECT
+   ************************************/
+  let modelAnswer = "";
+
+  if(data.correct && currentLOPackage && currentLOPackage.answerBullets){
+
+    modelAnswer += `
+      <div class="section-box">
+        <div class="section-title">✨ Model Answer ✨</div>
+    `;
+
+    currentLOPackage.answerBullets.forEach(b=>{
+      modelAnswer += `• ${escapeHtml(b.Canonical_Answer)}<br><br>`;
+    });
+
+    modelAnswer += `</div>`;
+  }
+
+  /************************************
+   * COMMON QUESTIONS ONLY AFTER CORRECT
+   ************************************/
+  let commonQuestions = "";
+
+  if(data.correct && data.commonQuestions && data.commonQuestions.length > 0){
+    commonQuestions += `
+      <div class="section-box">
+        <div class="section-title">Additional common questions</div>
+    `;
+
+    data.commonQuestions.forEach(q=>{
+      commonQuestions += `• ${escapeHtml(q.Common_Question)}<br>`;
+    });
+
+    commonQuestions += `</div>`;
+  }
+
+  let nextStepText = "";
+
+  if(data.correct){
+    if(currentMode === "builder"){
+      nextStepText = "Correct. Review the model answer, then choose another LO or return to mode selection.";
+    }else if(currentMode === "self"){
+      nextStepText = "Correct. Review the model answer, then continue self-review with another LO if needed.";
+    }else{
+      nextStepText = "Correct. You may continue to the next remediation LO.";
+    }
+  }else{
+    if(currentMode === "builder"){
+      nextStepText = "Use the feedback and answer structure hints to rewrite your answer and submit again.";
+    }else if(currentMode === "self"){
+      nextStepText = "Use the feedback to identify what is missing or inaccurate, then try rewriting your answer independently.";
+    }else{
+      nextStepText = "Using the feedback provided, rewrite your full answer and submit again.";
+    }
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML = `
+    <div class="section-box">
+      <div class="section-title">Feedback on your submission</div>
+      ${bulletFeedback}
+    </div>
+
+    ${answerStructureHint}
+
+    <div class="section-box">
+      <div class="section-title">Next Step</div>
+      ${escapeHtml(nextStepText)}
+    </div>
+
+    ${modelAnswer}
+    ${commonQuestions}
+  `;
 }
 
-function previewRows(){
-  document.getElementById("output").style.display = "block";
-  document.getElementById("previewPayload").innerText =
-    JSON.stringify(buildPayload(), null, 2);
-}
 
-function resetForm(){
-  startNewLO();
+function buildFallbackBulletResultsFromStudentInput(data){
+
+  const expectedCount =
+    currentLOPackage && currentLOPackage.answerBullets
+      ? currentLOPackage.answerBullets.length
+      : 0;
+
+  const rawText =
+    document.getElementById("singleResponse")
+      ? document.getElementById("singleResponse").value
+      : "";
+
+  const lines =
+    String(rawText || "")
+      .split(/\n/)
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map(line => line.replace(/^[-•*]\s*/, "").trim());
+
+  while(lines.length < expectedCount){
+    lines.push("");
+  }
+
+  return lines.slice(0, expectedCount).map((line,index)=>{
+
+    const feedbackLabels = [];
+
+    if(!line){
+      feedbackLabels.push("not answering the question");
+    }else{
+      if(data.issueTypes && data.issueTypes.length){
+        data.issueTypes.forEach(label => feedbackLabels.push(label));
+      }
+
+      if(data.missing && data.missing.length){
+        feedbackLabels.push("missing term/phrase");
+      }
+    }
+
+    return {
+      bulletOrder:index+1,
+      responseText:line,
+      highlights:data.highlights || [],
+      feedbackLabels:[...new Set(feedbackLabels)],
+      correct:false
+    };
+  });
 }
 
 /************************************
- * READ TABLES / HELPERS
+ * REMEDIATION CELEBRATION
  ************************************/
-function readKeywordTable(){
-  const rows = document.querySelectorAll("#keywordBody tr");
-  const output = [];
+function showRemediationCelebration(){
+  const completed = currentLOIndex + 1;
+  const total = currentLOs.length;
+  const garden = getGardenProgress(completed,total);
 
-  rows.forEach(row => {
-    const inputs = row.querySelectorAll("input");
-    const textareas = row.querySelectorAll("textarea");
+  let finalMessage = "";
 
-    const bulletNo = inputs[0].value.trim();
-    const keyword = inputs[1].value.trim();
-    const variants = splitSemicolon(textareas[0].value);
-    const unacceptable = splitSemicolon(textareas[1].value);
+  if(completed >= total){
+    finalMessage = `
+      <div class="section-box">
+        <div style="font-size:30px;text-align:center;line-height:1.8;">
+          🌞😎🌸🌺🌻🌷🪻🌼🌿
+        </div>
 
-    if(bulletNo && keyword){
-      output.push({
-        bulletNo,
-        keyword,
-        variants,
-        unacceptable
-      });
-    }
+        <h2 style="text-align:center;">TOPIC COMPLETED!</h2>
+
+        <div style="text-align:center;font-size:18px;line-height:1.8;">
+          Your Biology garden is now fully blooming!<br><br>
+          Excellent perseverance — your remediation session has been successfully completed and saved.
+        </div>
+
+        <div style="font-size:30px;text-align:center;line-height:1.8;margin-top:12px;">
+          🌞😎🌸🌺🌻🌷🪻🌼🌿
+        </div>
+
+        <div style="text-align:center;margin-top:18px;">
+          <button onclick="finishRemediationTopic()">Finish Session</button>
+        </div>
+      </div>
+    `;
+  }else{
+    finalMessage = `
+      <div class="section-box">
+        <div style="text-align:center;font-size:30px;line-height:1.8;">${garden}</div>
+
+        <h2 style="text-align:center;">🎉 LO COMPLETED!</h2>
+
+        <div style="text-align:center;line-height:1.8;">
+          Well done — your Biology garden has grown.<br><br>
+          You must complete all LOs in this topic before your remediation attempt can be saved.
+        </div>
+
+        <div style="text-align:center;margin-top:18px;">
+          <button onclick="continueRemediationLO()">Continue to Next LO</button>
+        </div>
+      </div>
+    `;
+  }
+
+  let modelAnswer = `
+    <div class="section-box">
+      <div class="section-title">✨ Model Answer ✨</div>
+  `;
+
+  (currentLOPackage.answerBullets || []).forEach(b=>{
+    modelAnswer += `• ${escapeHtml(b.Canonical_Answer)}<br><br>`;
   });
 
-  return output;
+  modelAnswer += `</div>`;
+
+  let commonQuestions = "";
+
+  if(currentLOPackage.commonQuestions && currentLOPackage.commonQuestions.length > 0){
+    commonQuestions += `
+      <div class="section-box">
+        <div class="section-title">Additional common questions</div>
+    `;
+
+    currentLOPackage.commonQuestions.forEach(q=>{
+      commonQuestions += `• ${escapeHtml(q.Common_Question)}<br>`;
+    });
+
+    commonQuestions += `</div>`;
+  }
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("feedback").innerHTML =
+    finalMessage + modelAnswer + commonQuestions;
 }
 
-function clearStatus(){
-  document.getElementById("status").innerHTML = "";
+function showFinalRemediationCompletion(){
+  currentLOIndex = currentLOs.length - 1;
+  showRemediationCelebration();
 }
 
-function showSuccess(msg){
-  document.getElementById("status").innerHTML =
-    `<div class="success">${escapeHtml(msg)}</div>`;
+/************************************
+ * FINISH REMEDIATION TOPIC
+ ************************************/
+async function finishRemediationTopic(){
+  try{
+    const result = await logTopicCompletion();
+    renderFinalLeaderboardCelebration(result);
+  }catch(err){
+    console.error(err);
+    alert("Unable to load leaderboard celebration.");
+  }
 }
 
-function showError(msg){
-  document.getElementById("status").innerHTML =
-    `<div class="error">${escapeHtml(msg)}</div>`;
+/************************************
+ * LOG TOPIC COMPLETION
+ ************************************/
+async function logTopicCompletion(){
+  const completedAt = new Date();
+  const durationSeconds = Math.floor((completedAt - remediationStartedAt) / 1000);
+  const durationDisplay = formatDuration(durationSeconds);
+
+  const res = await fetch(
+    `${BASE_URL}?action=logTopicCompletion`
+    + `&email=${encodeURIComponent(studentEmail)}`
+    + `&topicId=${encodeURIComponent(currentTopicId)}`
+    + `&topicName=${encodeURIComponent(currentTopicName)}`
+    + `&mode=${encodeURIComponent(currentMode)}`
+    + `&startedAt=${encodeURIComponent(remediationStartedAt.toISOString())}`
+    + `&completedAt=${encodeURIComponent(completedAt.toISOString())}`
+    + `&durationSeconds=${encodeURIComponent(durationSeconds)}`
+    + `&durationDisplay=${encodeURIComponent(durationDisplay)}`
+    + `&loCount=${currentLOs.length}`
+  );
+
+  return await res.json();
 }
 
-function val(id){
-  return document.getElementById(id).value.trim();
+/************************************
+ * FINAL LEADERBOARD CELEBRATION
+ ************************************/
+function renderFinalLeaderboardCelebration(result){
+  const rows = result.leaderboard || [];
+
+  const firstCompletionMessage =
+    result.firstCompletion
+      ? "🌟 Your first completion has been entered into the leaderboard!"
+      : "🌿 This topic was already completed previously, so this attempt was saved but not ranked again.";
+
+  let leaderboardRows = "";
+
+  rows.forEach(r => {
+    let medal = "🌸";
+    if(r.rank === 1) medal = "🥇";
+    if(r.rank === 2) medal = "🥈";
+    if(r.rank === 3) medal = "🥉";
+
+    leaderboardRows += `
+      <tr>
+        <td>${medal} ${r.rank}</td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${escapeHtml(r.className)}</td>
+        <td>${escapeHtml(r.time)}</td>
+      </tr>
+    `;
+  });
+
+  document.documentElement.style.margin = "0";
+  document.documentElement.style.padding = "0";
+  document.documentElement.style.width = "100%";
+  document.documentElement.style.maxWidth = "none";
+
+  document.body.style.margin = "0";
+  document.body.style.padding = "0";
+  document.body.style.maxWidth = "none";
+  document.body.style.width = "100%";
+  document.body.style.background = "transparent";
+
+  document.body.innerHTML = `
+    <div style="
+      min-height:100vh;
+      width:100%;
+      background:linear-gradient(180deg,#fff8d6 0%,#eaffea 45%,#f7efff 100%);
+      padding:22px;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+      position:relative;
+      overflow:hidden;
+    ">
+      <div class="firework fw1">🎆</div>
+      <div class="firework fw2">✨</div>
+      <div class="firework fw3">🎇</div>
+
+      <div style="width:100%;position:relative;z-index:1;">
+        <div style="text-align:center;font-size:clamp(22px,4vw,34px);line-height:1.7;">
+          🎆✨🌞🌸🌺🌻🌷🪻🌼🌿✨🎉✨🌈💐🎊🌸🌼🌿✨🎆
+        </div>
+
+        <h1 style="text-align:center;font-size:clamp(26px,4vw,36px);margin:16px 0 8px 0;">
+          TOPIC COMPLETED!
+        </h1>
+
+        <div style="text-align:center;font-size:clamp(16px,2.2vw,20px);line-height:1.7;margin-bottom:22px;">
+          🌿 Your Biology garden is now fully blooming! 🌿<br><br>
+          ${escapeHtml(firstCompletionMessage)}
+        </div>
+
+        <div class="celebration-stage">
+          <div class="capybara">🦫🌸</div>
+          <div class="flower-trail">🌱 🌸 🌼 🌷 🌻 🌺 🌿 🌸 🌼 🌷 🌻 🌺 🌿</div>
+          <div class="firework fw1">🎆</div>
+          <div class="firework fw2">✨</div>
+          <div class="firework fw3">🎇</div>
+        </div>
+
+        <h2 style="text-align:center;font-size:clamp(20px,3vw,28px);margin:18px 0;">
+          🏆 TOP 10 FASTEST FIRST COMPLETIONS 🏆
+        </h2>
+
+        <div style="width:100%;overflow-x:auto;">
+          <table style="
+            width:100%;
+            min-width:720px;
+            border-collapse:collapse;
+            background:white;
+            box-shadow:0 6px 22px rgba(0,0,0,0.10);
+            table-layout:fixed;
+            font-size:clamp(14px,1.6vw,16px);
+          ">
+            <thead>
+              <tr style="background:#ffe78f;">
+                <th style="width:15%;padding:12px;border:1px solid #ddd;">Rank</th>
+                <th style="width:45%;padding:12px;border:1px solid #ddd;text-align:left;">Student</th>
+                <th style="width:20%;padding:12px;border:1px solid #ddd;">Class</th>
+                <th style="width:20%;padding:12px;border:1px solid #ddd;">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${leaderboardRows || `
+                <tr>
+                  <td colspan="4" style="padding:18px;border:1px solid #ddd;text-align:center;">
+                    No leaderboard entries yet.
+                  </td>
+                </tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;font-size:clamp(22px,4vw,34px);margin-top:26px;line-height:1.7;">
+          🌞🌸🌺🌻🌷🪻🌼🌿🎉🎆✨🌈💐🎊🌸🌼🌿✨
+        </div>
+
+        <div style="text-align:center;margin-top:22px;">
+          <button onclick="location.reload()" style="
+            font-size:16px;
+            padding:12px 22px;
+            border-radius:12px;
+            border:none;
+            background:#ffffff;
+            cursor:pointer;
+            box-shadow:0 4px 14px rgba(0,0,0,0.10);
+          ">
+            Return to Home
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
-function lines(id){
-  return document.getElementById(id).value
-    .split("\n")
-    .map(x => x.trim())
-    .filter(Boolean);
+/************************************
+ * HELPERS
+ ************************************/
+function highlight(text,arr){
+  let out = escapeHtml(text);
+
+  arr.forEach(h=>{
+    const escaped = escapeRegExp(h);
+    const r = new RegExp(`\\b${escaped}\\b`,"gi");
+
+    out = out.replace(
+      r,
+      match => `<span class="wrong">${match}</span>`
+    );
+  });
+
+  return out;
 }
 
-function splitPipe(line){
-  return line.split("|").map(x => x.trim());
+
+function shuffleArray(array){
+  for(let i=array.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [array[i],array[j]] = [array[j],array[i]];
+  }
 }
 
-function splitSemicolon(text){
-  return String(text || "")
-    .split(";")
-    .map(x => x.trim())
-    .filter(Boolean);
+function getModeDisplayName(mode){
+  if(mode === "builder") return "LO Builder Mode";
+  if(mode === "self") return "Self-Review Mode";
+  if(mode === "remediation") return "Remediation Mode";
+  return mode;
+}
+
+function getGardenProgress(completed,total){
+  const ratio = completed / total;
+  if(ratio < 0.34) return "🌱";
+  if(ratio < 0.67) return "🌱🌿🌼";
+  if(ratio < 1) return "🌿🌸🌼🌷";
+  return "🌞😎🌸🌺🌻🌷🪻🌼🌿";
+}
+
+function formatDuration(totalSeconds){
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+
+  if(h > 0) return `${h}h ${m}m ${s}s`;
+  return `${m}m ${s}s`;
 }
 
 function escapeHtml(text){
@@ -1365,16 +1351,17 @@ function escapeHtml(text){
     .replaceAll(">","&gt;");
 }
 
+function escapeRegExp(text){
+  return String(text || "")
+    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+}
+
 function escapeJs(text){
   return String(text || "")
     .replaceAll("\\","\\\\")
     .replaceAll("'","\\'");
 }
 </script>
-
-<iframe name="hiddenFrame" style="display:none;"></iframe>
-
-</div>
 
 </body>
 </html>
