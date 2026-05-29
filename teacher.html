@@ -248,11 +248,11 @@
     <div class="section-title">Edit Selected Topic</div>
 
     <p class="hint">
-      Topic ID is locked to protect existing LO links. If you change the topic code, existing LO IDs under this topic will be renamed automatically.
+      Topic ID, order, name and code can be edited. If Topic ID or Topic Code changes, existing linked records will be updated automatically.
     </p>
 
     <label>Topic ID</label>
-    <input id="editTopicId" disabled>
+    <input id="editTopicId">
 
     <div class="two-col">
       <div>
@@ -588,17 +588,19 @@ async function updateSelectedTopic(){
   setButtonLoading(btn, true, "Saving changes...");
   showLoading("Saving topic changes...");
 
+  const currentTopicId = val("topicId");
   const currentTopicCode = val("topicCode");
 
   const payload = {
-    topicId: val("editTopicId"),
+    oldTopicId: currentTopicId,
+    newTopicId: val("editTopicId"),
     topicOrder: val("editTopicOrder"),
     topicName: val("editTopicName"),
     topicCode: val("editTopicCode")
   };
 
-  if(!payload.topicId || !payload.topicOrder || !payload.topicName){
-    showError("Please enter topic order and topic name.");
+  if(!payload.newTopicId || !payload.topicOrder || !payload.topicName){
+    showError("Please enter topic ID, topic order and topic name.");
     setButtonLoading(btn, false, "Save Topic Changes");
     return;
   }
@@ -609,16 +611,20 @@ async function updateSelectedTopic(){
   }
 
   if(
-    currentTopicCode &&
-    payload.topicCode &&
+    currentTopicId !== payload.newTopicId ||
     currentTopicCode !== payload.topicCode
   ){
     const proceed = confirm(
-      "You are changing the Topic Code from "
+      "You are changing topic identifiers. Existing linked records will be updated automatically."
+      + "\\n\\nTopic ID: "
+      + currentTopicId
+      + " → "
+      + payload.newTopicId
+      + "\\nTopic Code: "
       + currentTopicCode
-      + " to "
+      + " → "
       + payload.topicCode
-      + ". Existing LO IDs under this topic will be renamed automatically. Proceed?"
+      + "\\n\\nProceed?"
     );
 
     if(!proceed){
@@ -649,9 +655,10 @@ async function updateSelectedTopic(){
     await loadTopics();
 
     const select = document.getElementById("topicSelect");
+    const newTopicId = data.topicId || payload.newTopicId;
 
     for(const option of select.options){
-      if(option.value.startsWith(payload.topicId + "|")){
+      if(option.value.startsWith(newTopicId + "|")){
         select.value = option.value;
         break;
       }
