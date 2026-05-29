@@ -495,7 +495,7 @@ async function teacherLogin(){
  ************************************/
 
 async function loadTopics(){
-  const res = await fetch(`${BASE_URL}?action=getTopics`);
+  const res = await fetch(`${BASE_URL}?action=getTopics&_=${Date.now()}`);
   const data = await res.json();
 
   topics = data.topics || [];
@@ -656,12 +656,32 @@ async function updateSelectedTopic(){
 
     const select = document.getElementById("topicSelect");
     const newTopicId = data.topicId || payload.newTopicId;
+    const newTopicName = data.topicName || payload.topicName;
+    const newTopicCode = data.topicCode || payload.topicCode;
+    const newTopicOrder = data.topicOrder || payload.topicOrder;
+
+    let found = false;
 
     for(const option of select.options){
       if(option.value.startsWith(newTopicId + "|")){
+        option.value =
+          `${newTopicId}|${newTopicName}|${newTopicCode}|${newTopicOrder}`;
+        option.textContent =
+          `Topic ${newTopicOrder}: ${newTopicName}`;
         select.value = option.value;
+        found = true;
         break;
       }
+    }
+
+    if(!found){
+      const option = document.createElement("option");
+      option.value =
+        `${newTopicId}|${newTopicName}|${newTopicCode}|${newTopicOrder}`;
+      option.textContent =
+        `Topic ${newTopicOrder}: ${newTopicName}`;
+      select.appendChild(option);
+      select.value = option.value;
     }
 
     updateTopicFields();
