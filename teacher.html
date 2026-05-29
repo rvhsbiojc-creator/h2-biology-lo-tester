@@ -101,6 +101,20 @@
       margin-bottom:18px;
     }
 
+    .loading{
+      background:#eef5ff;
+      border:1px solid #9fc5ff;
+      color:#1d4f91;
+      padding:12px;
+      border-radius:10px;
+      margin-bottom:18px;
+    }
+
+    button:disabled{
+      opacity:0.65;
+      cursor:not-allowed;
+    }
+
     .green-box{
       background:#e7f8e7;
       border-radius:10px;
@@ -200,7 +214,7 @@
 <input id="teacherPassword" type="password" placeholder="Enter password">
 
 <div class="button-row">
-  <button onclick="teacherLogin()">Enter Teacher Interface</button>
+  <button id="teacherLoginBtn" onclick="teacherLogin()">Enter Teacher Interface</button>
 </div>
 
   <p id="teacherLoginMsg" class="hint"></p>
@@ -248,7 +262,7 @@
     <input id="newTopicName" placeholder="e.g. Proteins" oninput="autoFillTopicCode()">
 
     <div class="button-row">
-      <button onclick="createTopic()">Save New Topic</button>
+      <button id="saveTopicBtn" onclick="createTopic()">Save New Topic</button>
       <button onclick="hideNewTopicForm()">Cancel</button>
     </div>
   </div>
@@ -291,7 +305,7 @@
 <textarea id="testAnswer" placeholder="Type a sample answer here..."></textarea>
 
     <div class="button-row">
-      <button onclick="runTeacherTest()">Check Response</button>
+      <button id="teacherTestBtn" onclick="runTeacherTest()">Check Response</button>
     </div>
 
     <div id="testReference"></div>
@@ -369,8 +383,8 @@ State the bond formed between amino acids."></textarea>
   <div class="card">
     <div class="button-row">
       <button onclick="previewRows()">Preview Payload</button>
-      <button onclick="saveNewLO()">Save New LO</button>
-      <button onclick="updateExistingLO()">Update Existing LO</button>
+      <button id="saveNewLOBtn" onclick="saveNewLO()">Save New LO</button>
+      <button id="updateLOBtn" onclick="updateExistingLO()">Update Existing LO</button>
       <button onclick="resetForm()">Reset Form</button>
     </div>
   </div>
@@ -399,30 +413,50 @@ let selectedTestLO = null;
 async function teacherLogin(){
   clearStatus();
 
+  const btn = document.getElementById("teacherLoginBtn");
+  setButtonLoading(btn, true, "Checking login...");
+
   const email = val("teacherEmail");
   const password = val("teacherPassword");
 
-  const res = await fetch(
-    `${BASE_URL}?action=validateTeacher`
-    + `&email=${encodeURIComponent(email)}`
-    + `&password=${encodeURIComponent(password)}`
-  );
+  document.getElementById("teacherLoginMsg").innerText =
+    "Checking login...";
 
-  const data = await res.json();
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=validateTeacher`
+      + `&email=${encodeURIComponent(email)}`
+      + `&password=${encodeURIComponent(password)}`
+    );
 
-  if(data.valid){
-    document.getElementById("teacherLogin").style.display = "none";
-    document.getElementById("teacherApp").style.display = "block";
-    await loadTopics();
-  }else{
+    const data = await res.json();
+
+    if(data.valid){
+      document.getElementById("teacherLoginMsg").innerText = "";
+      showSuccess("Teacher login successful. Loading topics...");
+      document.getElementById("teacherLogin").style.display = "none";
+      document.getElementById("teacherApp").style.display = "block";
+      await loadTopics();
+      showSuccess("Teacher interface loaded.");
+    }else{
+      document.getElementById("teacherLoginMsg").innerText =
+        "Invalid teacher email/password or inactive account.";
+      showError("Invalid teacher email/password or inactive account.");
+    }
+  }catch(err){
+    console.error(err);
     document.getElementById("teacherLoginMsg").innerText =
-      "Invalid teacher email/password or inactive account.";
+      "Unable to connect to backend.";
+    showError("Unable to connect to backend. Please try again.");
+  }finally{
+    setButtonLoading(btn, false, "Enter Teacher Interface");
   }
 }
 
 /************************************
  * TOPICS
  ************************************/
+
 async function loadTopics(){
   const res = await fetch(`${BASE_URL}?action=getTopics`);
   const data = await res.json();
@@ -473,18 +507,28 @@ function hideNewTopicForm(){
 async function createTopic(){
   clearStatus();
 
+  const btn = document.getElementById("saveTopicBtn");
+  setButtonLoading(btn, true, "Saving topic...");
+  showLoading("Saving new topic... Please wait.");
+
   const payload = {
     topicOrder: val("newTopicOrder"),
     topicName: val("newTopicName"),
     topicCode: val("newTopicCode")
   };
 
+  if(!payload.topicOrder || !payload.topicName){
+    showError("Please enter both topic order and topic name.");
+    setButtonLoading(btn, false, "Save New Topic");
+    return;
+  }
+
   if(!payload.topicCode){
     payload.topicCode = deriveTopicCode(payload.topicName);
+    document.getElementById("newTopicCode").value = payload.topicCode;
   }
 
   try{
-
     const res = await fetch(BASE_URL, {
       method:"POST",
       body:new URLSearchParams({
@@ -496,22 +540,22 @@ async function createTopic(){
     const data = await res.json();
 
     if(!data.ok){
-      setStatus(data.error || "Unable to create topic.","error");
+      showError(data.error || "Unable to create topic.");
       return;
     }
 
-    setStatus("New topic created successfully.","success");
+    showSuccess("New topic created successfully. Refreshing topic list...");
 
     await loadTopics();
 
     const select = document.getElementById("topicSelect");
 
-    const targetValue =
-      `${data.topicId}|${data.topicName}|${data.topicCode}|${payload.topicOrder}`;
+    const targetTopicId =
+      data.topicId || `T${String(payload.topicOrder).padStart(2,"0")}`;
 
     for(const option of select.options){
-      if(option.value === targetValue){
-        select.value = targetValue;
+      if(option.value.startsWith(targetTopicId + "|")){
+        select.value = option.value;
         break;
       }
     }
@@ -527,9 +571,13 @@ async function createTopic(){
     document.getElementById("newTopicName").value = "";
     document.getElementById("newTopicCode").value = "";
 
+    showSuccess("New topic created and selected. You may now create LOs for this topic.");
+
   }catch(err){
     console.error(err);
-    setStatus("Unable to create topic.","error");
+    showError("Unable to create topic. Please check your connection or Apps Script deployment.");
+  }finally{
+    setButtonLoading(btn, false, "Save New Topic");
   }
 }
 
@@ -802,22 +850,35 @@ async function runTeacherTest(){
     return;
   }
 
+  const btn = document.getElementById("teacherTestBtn");
+  setButtonLoading(btn, true, "Checking...");
+  showLoading("Checking test response...");
+
   const mode = val("testMode");
   const attemptNo = val("testAttemptNo") || "1";
   const responseText = val("testAnswer");
 
-  const res = await fetch(
-    `${BASE_URL}?action=checkResponse`
-    + `&email=teacher_preview@local`
-    + `&loId=${encodeURIComponent(selectedTestLO)}`
-    + `&mode=${encodeURIComponent(mode)}`
-    + `&attemptNo=${encodeURIComponent(attemptNo)}`
-    + `&response=${encodeURIComponent(responseText)}`
-  );
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=checkResponse`
+      + `&email=teacher_preview@local`
+      + `&loId=${encodeURIComponent(selectedTestLO)}`
+      + `&mode=${encodeURIComponent(mode)}`
+      + `&attemptNo=${encodeURIComponent(attemptNo)}`
+      + `&response=${encodeURIComponent(responseText)}`
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  renderTeacherTestOutput(data);
+    renderTeacherTestOutput(data);
+    showSuccess("Test response checked.");
+
+  }catch(err){
+    console.error(err);
+    showError("Unable to check response. Please try again.");
+  }finally{
+    setButtonLoading(btn, false, "Check Response");
+  }
 }
 
 function renderTeacherTestOutput(data){
@@ -1164,6 +1225,22 @@ function updateExistingLO(){
 function submitPost(action, payload, successMessage){
   clearStatus();
 
+  let btn = null;
+  let originalText = "";
+
+  if(action === "saveLOPackage"){
+    btn = document.getElementById("saveNewLOBtn");
+    originalText = "Save New LO";
+  }
+
+  if(action === "updateLOPackage"){
+    btn = document.getElementById("updateLOBtn");
+    originalText = "Update Existing LO";
+  }
+
+  setButtonLoading(btn, true, "Saving...");
+  showLoading("Saving... Please wait.");
+
   try{
     const form = document.createElement("form");
     form.method = "POST";
@@ -1185,15 +1262,19 @@ function submitPost(action, payload, successMessage){
     document.body.appendChild(form);
     form.submit();
 
-    showSuccess(successMessage);
+    showSuccess(successMessage + " Refreshing LO list shortly...");
 
     setTimeout(() => {
       form.remove();
       loadExistingLOs();
+      setButtonLoading(btn, false, originalText);
+      showSuccess(successMessage + " If the item does not appear, wait a few seconds and refresh the topic.");
     }, 2500);
 
   }catch(err){
-    showError(err.message);
+    console.error(err);
+    setButtonLoading(btn, false, originalText);
+    showError(err.message || "Unable to save.");
   }
 }
 
@@ -1282,6 +1363,25 @@ function clearStatus(){
   document.getElementById("status").innerHTML = "";
 }
 
+function setStatus(msg,type){
+  if(type === "success"){
+    showSuccess(msg);
+    return;
+  }
+
+  if(type === "error"){
+    showError(msg);
+    return;
+  }
+
+  showLoading(msg);
+}
+
+function showLoading(msg){
+  document.getElementById("status").innerHTML =
+    `<div class="loading">${escapeHtml(msg)}</div>`;
+}
+
 function showSuccess(msg){
   document.getElementById("status").innerHTML =
     `<div class="success">${escapeHtml(msg)}</div>`;
@@ -1290,6 +1390,27 @@ function showSuccess(msg){
 function showError(msg){
   document.getElementById("status").innerHTML =
     `<div class="error">${escapeHtml(msg)}</div>`;
+}
+
+function setButtonLoading(btn, isLoading, buttonText){
+  if(!btn) return;
+
+  if(isLoading){
+    if(!btn.dataset.originalText){
+      btn.dataset.originalText = btn.innerText;
+    }
+    btn.disabled = true;
+    btn.innerText = buttonText || "Loading...";
+    return;
+  }
+
+  btn.disabled = false;
+  btn.innerText =
+    buttonText ||
+    btn.dataset.originalText ||
+    "Submit";
+
+  btn.dataset.originalText = "";
 }
 
 function val(id){
