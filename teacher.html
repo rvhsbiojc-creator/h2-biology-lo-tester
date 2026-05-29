@@ -234,7 +234,44 @@
 
     <div class="button-row">
       <button onclick="showNewTopicForm()">+ Create New Topic</button>
+      <button onclick="showEditTopicForm()">Edit Selected Topic</button>
+      <button onclick="deleteSelectedTopic()">Delete Selected Topic</button>
       <button onclick="startNewLO()">+ Create New LO for This Topic</button>
+    </div>
+
+    <div id="topicSummary" class="readonly-box">
+      Loading topic summary...
+    </div>
+  </div>
+
+  <div id="editTopicCard" class="card" style="display:none;">
+    <div class="section-title">Edit Selected Topic</div>
+
+    <p class="hint">
+      Topic ID is locked to protect existing LO links. If you change the topic code, existing LO IDs under this topic will be renamed automatically.
+    </p>
+
+    <label>Topic ID</label>
+    <input id="editTopicId" disabled>
+
+    <div class="two-col">
+      <div>
+        <label>Topic Order</label>
+        <input id="editTopicOrder">
+      </div>
+
+      <div>
+        <label>Topic Code</label>
+        <input id="editTopicCode">
+      </div>
+    </div>
+
+    <label>Topic Name</label>
+    <input id="editTopicName" oninput="autoFillEditTopicCode()">
+
+    <div class="button-row">
+      <button id="saveTopicChangesBtn" onclick="updateSelectedTopic()">Save Topic Changes</button>
+      <button onclick="hideEditTopicForm()">Cancel</button>
     </div>
   </div>
 
@@ -491,8 +528,10 @@ function updateTopicFields(){
   document.getElementById("topicName").value = parts[1];
   document.getElementById("topicCode").value = parts[2];
 
+  hideEditTopicForm();
   updateGeneratedLOId();
   loadExistingLOs();
+  updateTopicSummary();
 }
 
 function showNewTopicForm(){
@@ -502,6 +541,234 @@ function showNewTopicForm(){
 function hideNewTopicForm(){
   document.getElementById("newTopicCard").style.display = "none";
 }
+
+
+function showEditTopicForm(){
+  const selected = document.getElementById("topicSelect").value;
+
+  if(!selected){
+    showError("Please select a topic first.");
+    return;
+  }
+
+  const parts = selected.split("|");
+
+  document.getElementById("editTopicId").value = parts[0];
+  document.getElementById("editTopicName").value = parts[1];
+  document.getElementById("editTopicCode").value = parts[2];
+  document.getElementById("editTopicOrder").value = parts[3];
+
+  document.getElementById("editTopicCard").style.display = "block";
+  document.getElementById("editTopicCard").scrollIntoView({behavior:"smooth"});
+}
+
+function hideEditTopicForm(){
+  const card = document.getElementById("editTopicCard");
+
+  if(card){
+    card.style.display = "none";
+  }
+}
+
+function autoFillEditTopicCode(){
+  const currentCode = val("editTopicCode");
+
+  if(currentCode){
+    return;
+  }
+
+  document.getElementById("editTopicCode").value =
+    deriveTopicCode(val("editTopicName"));
+}
+
+async function updateSelectedTopic(){
+  clearStatus();
+
+  const btn = document.getElementById("saveTopicChangesBtn");
+  setButtonLoading(btn, true, "Saving changes...");
+  showLoading("Saving topic changes...");
+
+  const currentTopicCode = val("topicCode");
+
+  const payload = {
+    topicId: val("editTopicId"),
+    topicOrder: val("editTopicOrder"),
+    topicName: val("editTopicName"),
+    topicCode: val("editTopicCode")
+  };
+
+  if(!payload.topicId || !payload.topicOrder || !payload.topicName){
+    showError("Please enter topic order and topic name.");
+    setButtonLoading(btn, false, "Save Topic Changes");
+    return;
+  }
+
+  if(!payload.topicCode){
+    payload.topicCode = deriveTopicCode(payload.topicName);
+    document.getElementById("editTopicCode").value = payload.topicCode;
+  }
+
+  if(
+    currentTopicCode &&
+    payload.topicCode &&
+    currentTopicCode !== payload.topicCode
+  ){
+    const proceed = confirm(
+      "You are changing the Topic Code from "
+      + currentTopicCode
+      + " to "
+      + payload.topicCode
+      + ". Existing LO IDs under this topic will be renamed automatically. Proceed?"
+    );
+
+    if(!proceed){
+      setButtonLoading(btn, false, "Save Topic Changes");
+      showError("Topic update cancelled.");
+      return;
+    }
+  }
+
+  try{
+    const res = await fetch(BASE_URL, {
+      method:"POST",
+      body:new URLSearchParams({
+        action:"updateTopic",
+        payload: JSON.stringify(payload)
+      })
+    });
+
+    const data = await res.json();
+
+    if(!data.ok){
+      showError(data.error || "Unable to update topic.");
+      return;
+    }
+
+    showSuccess("Topic updated successfully. Refreshing topic list...");
+
+    await loadTopics();
+
+    const select = document.getElementById("topicSelect");
+
+    for(const option of select.options){
+      if(option.value.startsWith(payload.topicId + "|")){
+        select.value = option.value;
+        break;
+      }
+    }
+
+    updateTopicFields();
+    hideEditTopicForm();
+
+    const renamedCount =
+      data.renamedLOs
+        ? Object.keys(data.renamedLOs).length
+        : 0;
+
+    showSuccess(
+      renamedCount > 0
+        ? "Topic updated successfully. " + renamedCount + " LO ID(s) were renamed automatically."
+        : "Topic updated successfully."
+    );
+
+  }catch(err){
+    console.error(err);
+    showError("Unable to update topic. Please try again.");
+  }finally{
+    setButtonLoading(btn, false, "Save Topic Changes");
+  }
+}
+
+async function deleteSelectedTopic(){
+  clearStatus();
+
+  const topicId = val("topicId");
+  const topicName = val("topicName");
+
+  if(!topicId){
+    showError("Please select a topic first.");
+    return;
+  }
+
+  const proceed = confirm(
+    "Delete topic: "
+    + topicName
+    + "? This is only allowed when the topic has no active LOs."
+  );
+
+  if(!proceed){
+    showError("Topic deletion cancelled.");
+    return;
+  }
+
+  showLoading("Checking whether topic can be deleted...");
+
+  try{
+    const res = await fetch(BASE_URL, {
+      method:"POST",
+      body:new URLSearchParams({
+        action:"deleteTopic",
+        payload: JSON.stringify({topicId})
+      })
+    });
+
+    const data = await res.json();
+
+    if(!data.ok){
+      showError(data.error || "Unable to delete topic.");
+      return;
+    }
+
+    showSuccess("Topic deleted successfully. Refreshing topic list...");
+
+    await loadTopics();
+    hideEditTopicForm();
+
+  }catch(err){
+    console.error(err);
+    showError("Unable to delete topic. Please try again.");
+  }
+}
+
+async function updateTopicSummary(){
+  const topicId = val("topicId");
+  const box = document.getElementById("topicSummary");
+
+  if(!box || !topicId){
+    return;
+  }
+
+  box.innerHTML = "Loading topic summary...";
+
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=getTopicSummary&topicId=${encodeURIComponent(topicId)}`
+    );
+
+    const data = await res.json();
+
+    if(!data.ok){
+      box.innerHTML = "Unable to load topic summary.";
+      return;
+    }
+
+    const t = data.topic;
+
+    box.innerHTML = `
+      <strong>Topic Summary</strong><br><br>
+      Topic ID: ${escapeHtml(t.topicId)}<br>
+      Topic Order: ${escapeHtml(t.topicOrder)}<br>
+      Topic Name: ${escapeHtml(t.topicName)}<br>
+      Topic Code: ${escapeHtml(t.topicCode)}<br>
+      Number of active LOs: ${escapeHtml(t.activeLOCount)}
+    `;
+
+  }catch(err){
+    console.error(err);
+    box.innerHTML = "Unable to load topic summary.";
+  }
+}
+
 
 
 async function createTopic(){
