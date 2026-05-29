@@ -489,7 +489,7 @@ async function createTopic(){
       method:"POST",
       body:new URLSearchParams({
         action:"createTopic",
-        ...payload
+        payload: JSON.stringify(payload)
       })
     });
 
@@ -785,105 +785,15 @@ async function testThisLO(loId){
     .getElementById("testOutput")
     .innerHTML = "";
 
-  renderTeacherTestReference(pkg);
-
   document
     .getElementById("teacherTestPanel")
     .scrollIntoView({behavior:"smooth"});
 }
 
 function renderTeacherTestReference(pkg){
-
-  let html = `
-
-    <div class="readonly-box">
-
-      <strong>
-        Marking Reference
-      </strong>
-
-      <br><br>
-
-      <table class="keyword-table">
-
-        <thead>
-
-          <tr>
-            <th class="bullet-col">Bullet</th>
-            <th>Keyword / Phrase</th>
-            <th>Accepted Variants</th>
-            <th>Unacceptable Answers</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-  `;
-
-  (pkg.keywords || []).forEach(k => {
-
-    const variants =
-      (pkg.variants || [])
-
-        .filter(v =>
-          v.Keyword_ID === k.Keyword_ID
-        )
-
-        .map(v =>
-          v.Accepted_Variant
-        )
-
-        .join("; ");
-
-    const unacceptable =
-      (pkg.unacceptable || [])
-
-        .filter(u =>
-          u.Keyword_ID === k.Keyword_ID
-        )
-
-        .map(u =>
-          u.Phrase
-        )
-
-        .join("; ");
-
-    html += `
-
-      <tr>
-
-        <td class="bullet-col">
-          ${escapeHtml(k.Bullet_Order)}
-        </td>
-
-        <td>
-          ${escapeHtml(k.Keyword_or_Phrase)}
-        </td>
-
-        <td>
-          ${escapeHtml(variants)}
-        </td>
-
-        <td>
-          ${escapeHtml(unacceptable)}
-        </td>
-
-      </tr>
-    `;
-  });
-
-  html += `
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
-
   document
-  .getElementById("testReference")
-  .innerHTML = html;
+    .getElementById("testReference")
+    .innerHTML = "";
 }
 
 async function runTeacherTest(){
@@ -912,12 +822,7 @@ async function runTeacherTest(){
 
 function renderTeacherTestOutput(data){
 
-  const existingReference =
-    document
-      .getElementById("testOutput")
-      .innerHTML;
-
-  let html = existingReference;
+  let html = "";
 
   /***** Feedback section for all modes where available *****/
   if(data.bulletResults && data.bulletResults.length){
