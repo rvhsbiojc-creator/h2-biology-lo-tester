@@ -345,7 +345,6 @@
   <div id="loChoiceList"></div>
   <div class="button-row">
     <button onclick="returnToTopicSelection()">Return to Topic Selection</button>
-    <button onclick="returnToModeSelection()">Return to Mode Selection</button>
   </div>
 </div>
 
@@ -869,7 +868,9 @@ function renderStructuredFeedback(data){
 
     const highlighted =
       highlight(
-        b.responseText || "(blank)",
+        b.notAttempted
+          ? "(not attempted)"
+          : (b.responseText || "(blank)"),
         b.highlights || []
       );
 
