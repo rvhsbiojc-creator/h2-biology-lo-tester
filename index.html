@@ -484,10 +484,16 @@ function returnToLOSelection(){
  ************************************/
 
 async function loadTopics(){
-  const res = await fetch(`${BASE_URL}?action=getTopics`);
+  const res = await fetch(`${BASE_URL}?action=getTopics&_=${Date.now()}`);
   const data = await res.json();
 
   document.getElementById("topics").style.display = "block";
+
+  if(!data.ok){
+    document.getElementById("topicList").innerHTML =
+      `<div class="section-box">Unable to load topics. Please refresh and try again.</div>`;
+    return;
+  }
 
   let html = "";
 
