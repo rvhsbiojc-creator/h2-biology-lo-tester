@@ -1035,7 +1035,7 @@ function getSelectedLOs(){
  ************************************/
 async function viewLODetails(loId){
   const res = await fetch(
-    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
   );
 
   const data = await res.json();
@@ -1110,7 +1110,7 @@ async function testThisLO(loId){
 
   const pkgRes =
     await fetch(
-      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
+      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
     );
 
   const pkg =
@@ -1302,64 +1302,6 @@ function renderTeacherTestOutput(data){
     html += `</div>`;
   }
 
-  /***** Remediation scaffold *****/
-  if(data.remediationScaffold && data.remediationScaffold.length){
-
-    html += `
-
-      <div class="readonly-box">
-
-        <strong>
-          Remediation Scaffold
-        </strong>
-
-        <br><br>
-    `;
-
-    data.remediationScaffold.forEach(s => {
-
-      html += `
-
-        <strong>
-          Bullet ${escapeHtml(s.bulletOrder)}
-        </strong>
-
-        <div class="green-box">
-          ${escapeHtml(s.scaffold || "")}
-        </div>
-
-        <br>
-      `;
-    });
-
-    html += `</div>`;
-  }
-
-  /***** LO Builder Model Answer Suggestion, after feedback *****/
-  if(data.mode === "builder" && data.builderOutput && data.builderOutput.length){
-
-    html += `
-
-      <div class="readonly-box">
-
-        <strong>
-          Model Answer Suggestion
-        </strong>
-
-        <br><br>
-    `;
-
-    data.builderOutput.forEach(b => {
-
-      html += `
-        • ${escapeHtml(b.text)}
-        <br><br>
-      `;
-    });
-
-    html += `</div>`;
-  }
-
   /***** Next step *****/
   html += `
 
@@ -1421,7 +1363,7 @@ async function loadLOIntoForm(loId){
   currentEditingLO = loId;
 
   const res = await fetch(
-    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}`
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
   );
 
   const data = await res.json();
@@ -1624,6 +1566,7 @@ function buildPayload(){
   return {
     topicId,
     loId,
+    originalLoId: currentEditingLO || loId,
     loOrder: loNumber,
     loQuestion,
     answerBullets,
