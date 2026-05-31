@@ -313,10 +313,10 @@
       <button onclick="selectMode('builder')">Choose LO Builder Mode</button>
     </div>
 
-    <div class="mode-card">
+    <div class="mode-card disabled-mode">
       <h4>Self-Review Mode</h4>
-      <p>Test whether you can accurately and completely answer the LOs in a topic.</p>
-      <button onclick="selectMode('self')">Choose Self-Review Mode</button>
+      <p>This mode is currently being refined and will be opened later.</p>
+      <button disabled>Self-Review Mode Coming Soon</button>
     </div>
 
     <div class="mode-card">
@@ -344,6 +344,7 @@
   <h3>Select LO Question</h3>
   <div id="loChoiceList"></div>
   <div class="button-row">
+    <button onclick="returnToTopicSelection()">Return to Topic Selection</button>
     <button onclick="returnToModeSelection()">Return to Mode Selection</button>
   </div>
 </div>
@@ -438,6 +439,11 @@ async function login(){
  * MODE
  ************************************/
 function selectMode(mode){
+  if(mode === "self"){
+    alert("Self-Review Mode is currently being refined and will be opened later.");
+    return;
+  }
+
   currentMode = mode;
   document.getElementById("modeSelect").style.display = "none";
   loadTopics();
@@ -644,13 +650,7 @@ function beginSelectedMode(){
 function showLOChoice(){
   document.getElementById("loChoiceSection").style.display = "block";
 
-  let html = `
-    <div class="button-row">
-      <button onclick="returnToTopicSelection()">Return to Topic Selection</button>
-      <button onclick="returnToModeSelection()">Return to Mode Selection</button>
-    </div>
-    <br>
-  `;
+  let html = "";
 
   currentLOs.forEach((lo,i)=>{
     html += `
@@ -786,11 +786,7 @@ function renderAnswerArea(){
 
   const modeSpecificHint =
     currentMode === "builder"
-      ? `
-        Write down anything you understand about the concept in the numbered spaces below.
-        <br>
-        The LO Builder will guide your thinking towards a complete, concise answer with the key words and accurate phrasing.
-      `
+      ? ""
       : `
         Please answer using the numbered points provided. Each number should correspond to one expected answer point.
       `;
@@ -802,9 +798,11 @@ function renderAnswerArea(){
       placeholder="Write one answer point per numbered line."
     >${prompts}</textarea>
 
-    <p class="hint">
-      ${modeSpecificHint}
-    </p>
+    ${
+      modeSpecificHint
+        ? `<p class="hint">${modeSpecificHint}</p>`
+        : ``
+    }
   `;
 }
 
