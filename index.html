@@ -443,6 +443,30 @@ function selectMode(mode){
   loadTopics();
 }
 
+
+function returnToTopicSelection(){
+  currentTopicId = "";
+  currentTopicName = "";
+  currentLOs = [];
+  currentLOIndex = 0;
+  currentLO = "";
+  currentLOPackage = null;
+  attemptNo = 1;
+
+  ["modeBriefing","loChoiceSection","loSection","quitEncouragement"].forEach(id=>{
+    document.getElementById(id).style.display = "none";
+  });
+
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("feedback").innerHTML = "";
+
+  document.getElementById("topics").style.display = "block";
+  loadTopics();
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+
 function returnToModeSelection(){
   currentMode = "";
   currentTopicId = "";
@@ -620,7 +644,13 @@ function beginSelectedMode(){
 function showLOChoice(){
   document.getElementById("loChoiceSection").style.display = "block";
 
-  let html = "";
+  let html = `
+    <div class="button-row">
+      <button onclick="returnToTopicSelection()">Return to Topic Selection</button>
+      <button onclick="returnToModeSelection()">Return to Mode Selection</button>
+    </div>
+    <br>
+  `;
 
   currentLOs.forEach((lo,i)=>{
     html += `
@@ -696,7 +726,7 @@ async function loadLO(i){
   attemptNo = 1;
 
   const pkgRes = await fetch(
-    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}`
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}&_=${Date.now()}`
   );
 
   currentLOPackage = await pkgRes.json();
@@ -734,7 +764,7 @@ async function loadLO(i){
 
   if(currentMode === "builder"){
     document.getElementById("modeInstruction").innerText =
-      "Use the bullet points to build your answer. The LO Builder will guide your thinking.";
+      "Write down anything you understand of the concept below. The LO Builder will guide your thinking towards the complete, concise answer with key words and accurate phrasing.";
   }else if(currentMode === "self"){
     document.getElementById("modeInstruction").innerText =
       "Retrieve and organise your answer independently using the bullet points.";
@@ -751,17 +781,29 @@ async function loadLO(i){
  ************************************/
 function renderAnswerArea(){
   const bullets = currentLOPackage.answerBullets || [];
-  const prompts = bullets.map(() => "• ").join("\n");
+  const prompts =
+    bullets.map((_, index) => `${index + 1}. `).join("\n");
+
+  const modeSpecificHint =
+    currentMode === "builder"
+      ? `
+        Write down anything you understand about the concept in the numbered spaces below.
+        <br>
+        The LO Builder will guide your thinking towards a complete, concise answer with the key words and accurate phrasing.
+      `
+      : `
+        Please answer using the numbered points provided. Each number should correspond to one expected answer point.
+      `;
 
   document.getElementById("answerArea").innerHTML = `
     <textarea
       id="singleResponse"
       rows="${Math.max(5, bullets.length * 2)}"
-      placeholder="Write one point per bullet."
+      placeholder="Write one answer point per numbered line."
     >${prompts}</textarea>
 
     <p class="hint">
-      Please answer using the bullet points provided. Each bullet should correspond to one expected answer point.
+      ${modeSpecificHint}
     </p>
   `;
 }
@@ -856,10 +898,6 @@ function renderStructuredFeedback(data){
         }).join(" ");
     }
 
-    if(!feedback && !b.correct){
-      feedback = ` — <span class="feedback-label">review this bullet</span>`;
-    }
-
     bulletFeedback += `
       <div class="student-bullet">
         <strong>Bullet ${i+1}</strong><br>
@@ -913,37 +951,6 @@ function renderStructuredFeedback(data){
     });
 
     answerStructureHint += `</div>`;
-  }
-
-  /************************************
-   * BUILDER SCAFFOLD SUPPORT
-   ************************************/
-  let scaffoldSupport = "";
-
-  if(
-    currentMode === "builder" &&
-    !data.correct &&
-    data.remediationScaffold &&
-    data.remediationScaffold.length > 0
-  ){
-    scaffoldSupport += `
-      <div class="section-box">
-        <div class="section-title">Scaffold Support</div>
-    `;
-
-    data.remediationScaffold.forEach((s,i)=>{
-      scaffoldSupport += `
-        <div class="hint-line">
-          <strong>Bullet ${escapeHtml(s.bulletOrder || i+1)}</strong>
-          <div class="green-box">
-            ${escapeHtml(s.scaffold || "").replace(/\n/g,"<br>")}
-          </div>
-        </div>
-        <hr>
-      `;
-    });
-
-    scaffoldSupport += `</div>`;
   }
 
   /************************************
@@ -1011,7 +1018,6 @@ function renderStructuredFeedback(data){
     </div>
 
     ${answerStructureHint}
-    ${scaffoldSupport}
 
     <div class="section-box">
       <div class="section-title">Next Step</div>
