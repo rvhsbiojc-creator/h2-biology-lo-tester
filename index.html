@@ -519,7 +519,7 @@ async function loadTopic(id,name){
   currentTopicName = name;
 
   const res = await fetch(
-    `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}`
+    `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}&_=${Date.now()}`
   );
 
   const data = await res.json();
