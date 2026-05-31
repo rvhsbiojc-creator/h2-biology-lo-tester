@@ -495,8 +495,16 @@ async function teacherLogin(){
  ************************************/
 
 async function loadTopics(){
+  const previousValue =
+    document.getElementById("topicSelect").value;
+
   const res = await fetch(`${BASE_URL}?action=getTopics&_=${Date.now()}`);
   const data = await res.json();
+
+  if(!data.ok){
+    showError(data.error || "Unable to load topics.");
+    return;
+  }
 
   topics = data.topics || [];
 
@@ -514,6 +522,17 @@ async function loadTopics(){
 
     select.appendChild(option);
   });
+
+  if(previousValue){
+    const previousTopicId = previousValue.split("|")[0];
+
+    for(const option of select.options){
+      if(option.value.startsWith(previousTopicId + "|")){
+        select.value = option.value;
+        break;
+      }
+    }
+  }
 
   updateTopicFields();
 }
