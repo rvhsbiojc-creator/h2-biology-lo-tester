@@ -474,7 +474,7 @@ async function login(){
 /************************************
  * MODE
  ************************************/
-async function selectMode(mode, btn){
+function selectMode(mode, btn){
   if(mode === "self"){
     alert("Self-Review Mode is currently being refined and will be opened later.");
     return;
@@ -483,15 +483,9 @@ async function selectMode(mode, btn){
   clearPageStatus();
   setButtonLoading(btn, true, "Loading topics...");
   currentMode = mode;
-
-  try{
-    await loadTopics();
-    document.getElementById("modeSelect").style.display = "none";
-  }finally{
-    setButtonLoading(btn, false);
-  }
+  document.getElementById("modeSelect").style.display = "none";
+  loadTopics().finally(() => setButtonLoading(btn, false));
 }
-
 
 
 function returnToTopicSelection(){
@@ -557,33 +551,35 @@ function returnToLOSelection(){
  * TOPICS
  ************************************/
 
-async function loadTopic(id,name, btn){
-  clearPageStatus();
-  setButtonLoading(btn, true, "Loading LOs...");
-  currentTopicId = id;
-  currentTopicName = name;
+async function loadTopics(){
+  showPageLoading("Loading topics...");
+  const res = await fetch(`${BASE_URL}?action=getTopics&_=${Date.now()}`);
+  const data = await res.json();
 
-  try{
-    const res = await fetch(
-      `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}&_=${Date.now()}`
-    );
+  document.getElementById("topics").style.display = "block";
 
-    const data = await res.json();
-    currentLOs = (data.los || []).filter(lo => lo && lo.LO_ID);
-
-    if(currentLOs.length === 0){
-      alert("No active LOs were found for this topic.");
-      return;
-    }
-
-    document.getElementById("topics").style.display = "none";
-    showModeBriefing();
-  }finally{
-    setButtonLoading(btn, false);
+  if(!data.ok){
+    document.getElementById("topicList").innerHTML =
+      `<div class="section-box">Unable to load topics. Please refresh and try again.</div>`;
+    return;
   }
+
+  let html = "";
+
+  (data.topics || []).forEach(t => {
+    const topicLabel = t.Topic_Order ? `Topic ${t.Topic_Order}: ${t.Topic_Name}` : t.Topic_Name;
+
+    html += `
+      <button onclick="loadTopic('${escapeJs(t.Topic_ID)}','${escapeJs(t.Topic_Name)}', this)">
+        ${escapeHtml(topicLabel)}
+      </button>
+      <br>
+    `;
+  });
+
+  document.getElementById("topicList").innerHTML = html;
+  clearPageStatus();
 }
-
-
 
 /************************************
  * LOAD TOPIC
@@ -591,7 +587,7 @@ async function loadTopic(id,name, btn){
 async function loadTopic(id,name, btn){
   clearPageStatus();
   setButtonLoading(btn, true, "Loading LOs...");
-  
+  showPageLoading("Loading LOs for this topic...");
   currentTopicId = id;
   currentTopicName = name;
 
@@ -684,23 +680,20 @@ function getModeBriefingHtml(mode){
   `;
 }
 
-async function beginSelectedMode(btn){
+function beginSelectedMode(btn){
   clearPageStatus();
   setButtonLoading(btn, true, "Starting...");
   document.getElementById("modeBriefing").style.display = "none";
 
-  try{
-    if(currentMode === "remediation"){
-      await startRemediationSequence(btn);
-      return;
-    }
-
-    showLOChoice();
-  }finally{
+  if(currentMode === "remediation"){
+    startRemediationSequence();
     setButtonLoading(btn, false);
+    return;
   }
-}
 
+  showLOChoice();
+  setButtonLoading(btn, false);
+}
 
 /************************************
  * LO CHOICE
@@ -725,7 +718,7 @@ function showLOChoice(){
 /************************************
  * REMEDIATION SEQUENCE
  ************************************/
-async function startRemediationSequence(btn){
+function startRemediationSequence(){
   currentLOs = currentLOs.filter(lo => lo && lo.LO_ID);
 
   if(currentLOs.length === 0){
@@ -738,26 +731,19 @@ async function startRemediationSequence(btn){
   remediationStartedAt = new Date();
   currentLOIndex = 0;
   remediationSequenceLocked = true;
-  await loadLO(currentLOIndex, btn);
+  loadLO(currentLOIndex);
 }
 
-
-async function continueRemediationLO(btn){
-  setButtonLoading(btn, true, "Loading next LO...");
+function continueRemediationLO(){
   currentLOIndex++;
 
-  try{
-    if(currentLOIndex >= currentLOs.length){
-      showFinalRemediationCompletion();
-      return;
-    }
-
-    await loadLO(currentLOIndex, btn);
-  }finally{
-    setButtonLoading(btn, false);
+  if(currentLOIndex >= currentLOs.length){
+    showFinalRemediationCompletion();
+    return;
   }
-}
 
+  loadLO(currentLOIndex);
+}
 
 function showQuitEncouragement(){
   document.getElementById("loSection").style.display = "none";
@@ -777,76 +763,76 @@ function returnToRemediationAttempt(){
 async function loadLO(i, btn){
   clearPageStatus();
   setButtonLoading(btn, true, "Loading LO...");
+  showPageLoading("Loading LO package...");
   const lo = currentLOs[i];
 
-  try{
-    if(!lo){
-      if(currentMode === "remediation"){
-        showFinalRemediationCompletion();
-        return;
-      }
-
-      alert("No LO found.");
+  if(!lo){
+    if(currentMode === "remediation"){
+      showFinalRemediationCompletion();
       return;
     }
 
-    currentLO = lo.LO_ID;
-    attemptNo = 1;
-
-    const pkgRes = await fetch(
-      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}&_=${Date.now()}`
-    );
-
-    currentLOPackage = await pkgRes.json();
-
-    document.getElementById("loChoiceSection").style.display = "none";
-    document.getElementById("loSection").style.display = "block";
-    document.getElementById("feedback").style.display = "none";
-    document.getElementById("feedback").innerHTML = "";
-
-    document.getElementById("currentTopicName").innerText = currentTopicName;
-    document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
-    document.getElementById("loQuestion").innerText = lo.LO_Question;
-
-    document.getElementById("returnModeBtn").style.display = currentMode === "remediation" ? "none" : "inline-block";
-    document.getElementById("returnLOBtn").style.display =
-      (currentMode === "builder" || currentMode === "self")
-        ? "inline-block"
-        : "none";
-    document.getElementById("quitRemediationBtn").style.display = currentMode === "remediation" ? "inline-block" : "none";
-
-    if(currentMode === "remediation"){
-      const safeTotal = currentLOs.length;
-      const safeCurrent = Math.min(currentLOIndex + 1, safeTotal);
-
-      document.getElementById("remediationProgress").innerHTML = `
-        <div class="section-box">
-          LO ${safeCurrent} of ${safeTotal}
-        </div>
-      `;
-    }else{
-      document.getElementById("remediationProgress").innerHTML = "";
-    }
-
-    renderAnswerArea();
-
-    if(currentMode === "builder"){
-      document.getElementById("modeInstruction").innerText =
-        "Write down anything you understand of the concept below. The LO Builder will guide your thinking towards the complete, concise answer with key words and accurate phrasing.";
-    }else if(currentMode === "self"){
-      document.getElementById("modeInstruction").innerText =
-        "Retrieve and organise your answer independently using the bullet points.";
-    }else{
-      document.getElementById("modeInstruction").innerText =
-        "Rewrite the full answer until mastery is achieved.";
-    }
-
-    window.scrollTo({top:0,behavior:"smooth"});
-  }finally{
+    alert("No LO found.");
+    clearPageStatus();
     setButtonLoading(btn, false);
+    return;
   }
-}
 
+  currentLO = lo.LO_ID;
+  attemptNo = 1;
+
+  const pkgRes = await fetch(
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}&_=${Date.now()}`
+  );
+
+  currentLOPackage = await pkgRes.json();
+
+  document.getElementById("loChoiceSection").style.display = "none";
+  document.getElementById("loSection").style.display = "block";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("feedback").innerHTML = "";
+
+  document.getElementById("currentTopicName").innerText = currentTopicName;
+  document.getElementById("currentModeName").innerText = getModeDisplayName(currentMode);
+  document.getElementById("loQuestion").innerText = lo.LO_Question;
+
+  document.getElementById("returnModeBtn").style.display = currentMode === "remediation" ? "none" : "inline-block";
+  document.getElementById("returnLOBtn").style.display =
+    (currentMode === "builder" || currentMode === "self")
+      ? "inline-block"
+      : "none";
+  document.getElementById("quitRemediationBtn").style.display = currentMode === "remediation" ? "inline-block" : "none";
+
+  if(currentMode === "remediation"){
+    const safeTotal = currentLOs.length;
+    const safeCurrent = Math.min(currentLOIndex + 1, safeTotal);
+
+    document.getElementById("remediationProgress").innerHTML = `
+      <div class="section-box">
+        LO ${safeCurrent} of ${safeTotal}
+      </div>
+    `;
+  }else{
+    document.getElementById("remediationProgress").innerHTML = "";
+  }
+
+  renderAnswerArea();
+
+  if(currentMode === "builder"){
+    document.getElementById("modeInstruction").innerText =
+      "Write down anything you understand of the concept below. The LO Builder will guide your thinking towards the complete, concise answer with key words and accurate phrasing.";
+  }else if(currentMode === "self"){
+    document.getElementById("modeInstruction").innerText =
+      "Retrieve and organise your answer independently using the bullet points.";
+  }else{
+    document.getElementById("modeInstruction").innerText =
+      "Rewrite the full answer until mastery is achieved.";
+  }
+
+  clearPageStatus();
+  setButtonLoading(btn, false);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 
 /************************************
  * ANSWER AREA
@@ -885,6 +871,7 @@ async function submitAnswer(){
   const submitBtn = document.getElementById("submitBtn");
 
   setButtonLoading(submitBtn, true, "Checking...");
+  showPageLoading("Checking your answer...");
 
   try{
     const responsePayload = document.getElementById("singleResponse").value;
@@ -901,6 +888,7 @@ async function submitAnswer(){
     const data = await res.json();
 
     renderStructuredFeedback(data);
+    clearPageStatus();
 
     if(data.correct){
       if(currentMode === "remediation"){
@@ -993,7 +981,7 @@ function renderStructuredFeedback(data){
       answerStructureHint += `
         <div class="hint-line">
           <strong>Bullet ${escapeHtml(h.bulletOrder || i+1)}</strong><br><br>
-          ${escapeHtml(h.conceptualHint || "").replace(/\n/g,"<br>")}
+          ${escapeHtml(h.conceptualHint || "")}
       `;
 
       /***** Builder gets progressive reconstruction support *****/
@@ -1128,7 +1116,7 @@ function showRemediationCelebration(){
         </div>
 
         <div style="text-align:center;margin-top:18px;">
-          <button onclick="finishRemediationTopic(this)">Finish Session</button>
+          <button onclick="finishRemediationTopic()">Finish Session</button>
         </div>
       </div>
     `;
@@ -1145,7 +1133,7 @@ function showRemediationCelebration(){
         </div>
 
         <div style="text-align:center;margin-top:18px;">
-          <button onclick="continueRemediationLO(this)">Continue to Next LO</button>
+          <button onclick="continueRemediationLO()">Continue to Next LO</button>
         </div>
       </div>
     `;
@@ -1190,26 +1178,24 @@ function showFinalRemediationCompletion(){
 /************************************
  * FINISH REMEDIATION TOPIC
  ************************************/
-async function finishRemediationTopic(btn){
-  setButtonLoading(btn, true, "Saving...");
-
+async function finishRemediationTopic(){
   try{
+    showPageLoading("Saving your remediation completion...");
     const result = await logTopicCompletion();
 
     if(!result.ok){
+      clearPageStatus();
       alert(result.error || "Unable to save completion. Please try again.");
       return;
     }
 
+    clearPageStatus();
     renderFinalLeaderboardCelebration(result);
   }catch(err){
     console.error(err);
     alert("Unable to load leaderboard celebration.");
-  }finally{
-    setButtonLoading(btn, false);
   }
 }
-
 
 /************************************
  * LOG TOPIC COMPLETION
