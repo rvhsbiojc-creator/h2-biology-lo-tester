@@ -65,6 +65,36 @@
       line-height:1.6;
     }
 
+    .loading-box{
+      background:#eef5ff;
+      border:1px solid #9fc5ff;
+      color:#1d4f91;
+      padding:12px;
+      border-radius:10px;
+      margin-top:12px;
+      line-height:1.5;
+    }
+
+    .success-box{
+      background:#e8f7e8;
+      border:1px solid #9dd39d;
+      color:#246624;
+      padding:12px;
+      border-radius:10px;
+      margin-top:12px;
+      line-height:1.5;
+    }
+
+    .error-box{
+      background:#ffeaea;
+      border:1px solid #ffb3b3;
+      color:#8a1f1f;
+      padding:12px;
+      border-radius:10px;
+      margin-top:12px;
+      line-height:1.5;
+    }
+
     button{
       margin-top:10px;
       padding:9px 14px;
@@ -296,10 +326,12 @@
 
 <h2>H2 Biology LO Tester</h2>
 
+<div id="pageStatus"></div>
+
 <div id="login" class="card">
   <h3>Login</h3>
   <input id="email" placeholder="Enter email">
-  <button onclick="login()">Enter</button>
+  <button id="loginBtn" onclick="login()">Enter</button>
   <p id="loginMsg"></p>
 </div>
 
@@ -310,7 +342,7 @@
     <div class="mode-card">
       <h4>LO Builder Mode</h4>
       <p>Build up your understanding of all LOs in a topic with guided feedback and scaffolds.</p>
-      <button onclick="selectMode('builder')">Choose LO Builder Mode</button>
+      <button onclick="selectMode('builder', this)">Choose LO Builder Mode</button>
     </div>
 
     <div class="mode-card disabled-mode">
@@ -322,7 +354,7 @@
     <div class="mode-card">
       <h4>Remediation Mode</h4>
       <p>Use this for Remedial Lesson 1. Complete all LOs in one sitting to demonstrate mastery.</p>
-      <button onclick="selectMode('remediation')">Choose Remediation Mode</button>
+      <button onclick="selectMode('remediation', this)">Choose Remediation Mode</button>
     </div>
   </div>
 </div>
@@ -335,7 +367,7 @@
 <div id="modeBriefing" class="card" style="display:none;">
   <div id="modeBriefingContent"></div>
   <div class="button-row">
-    <button onclick="beginSelectedMode()">Begin</button>
+    <button id="beginModeBtn" onclick="beginSelectedMode(this)">Begin</button>
     <button onclick="returnToModeSelection()">Return to Mode Selection</button>
   </div>
 </div>
@@ -408,6 +440,9 @@ let remediationSequenceLocked = false;
  * LOGIN
  ************************************/
 async function login(){
+  clearPageStatus();
+  const loginBtn = document.getElementById("loginBtn");
+  setButtonLoading(loginBtn, true, "Checking...");
   const email = document.getElementById("email").value.trim();
   const loginMsg = document.getElementById("loginMsg");
 
@@ -431,21 +466,25 @@ async function login(){
   }catch(err){
     loginMsg.innerText = "Unable to connect to backend.";
     console.error(err);
+  }finally{
+    setButtonLoading(loginBtn, false, "Enter");
   }
 }
 
 /************************************
  * MODE
  ************************************/
-function selectMode(mode){
+function selectMode(mode, btn){
   if(mode === "self"){
     alert("Self-Review Mode is currently being refined and will be opened later.");
     return;
   }
 
+  clearPageStatus();
+  setButtonLoading(btn, true, "Loading topics...");
   currentMode = mode;
   document.getElementById("modeSelect").style.display = "none";
-  loadTopics();
+  loadTopics().finally(() => setButtonLoading(btn, false));
 }
 
 
@@ -513,6 +552,7 @@ function returnToLOSelection(){
  ************************************/
 
 async function loadTopics(){
+  showPageLoading("Loading topics...");
   const res = await fetch(`${BASE_URL}?action=getTopics&_=${Date.now()}`);
   const data = await res.json();
 
@@ -530,7 +570,7 @@ async function loadTopics(){
     const topicLabel = t.Topic_Order ? `Topic ${t.Topic_Order}: ${t.Topic_Name}` : t.Topic_Name;
 
     html += `
-      <button onclick="loadTopic('${escapeJs(t.Topic_ID)}','${escapeJs(t.Topic_Name)}')">
+      <button onclick="loadTopic('${escapeJs(t.Topic_ID)}','${escapeJs(t.Topic_Name)}', this)">
         ${escapeHtml(topicLabel)}
       </button>
       <br>
@@ -538,12 +578,16 @@ async function loadTopics(){
   });
 
   document.getElementById("topicList").innerHTML = html;
+  clearPageStatus();
 }
 
 /************************************
  * LOAD TOPIC
  ************************************/
-async function loadTopic(id,name){
+async function loadTopic(id,name, btn){
+  clearPageStatus();
+  setButtonLoading(btn, true, "Loading LOs...");
+  showPageLoading("Loading LOs for this topic...");
   currentTopicId = id;
   currentTopicName = name;
 
@@ -556,10 +600,14 @@ async function loadTopic(id,name){
 
   if(currentLOs.length === 0){
     alert("No active LOs were found for this topic.");
+    clearPageStatus();
+    setButtonLoading(btn, false);
     return;
   }
 
   document.getElementById("topics").style.display = "none";
+  clearPageStatus();
+  setButtonLoading(btn, false);
   showModeBriefing();
 }
 
@@ -632,15 +680,19 @@ function getModeBriefingHtml(mode){
   `;
 }
 
-function beginSelectedMode(){
+function beginSelectedMode(btn){
+  clearPageStatus();
+  setButtonLoading(btn, true, "Starting...");
   document.getElementById("modeBriefing").style.display = "none";
 
   if(currentMode === "remediation"){
     startRemediationSequence();
+    setButtonLoading(btn, false);
     return;
   }
 
   showLOChoice();
+  setButtonLoading(btn, false);
 }
 
 /************************************
@@ -653,7 +705,7 @@ function showLOChoice(){
 
   currentLOs.forEach((lo,i)=>{
     html += `
-      <button onclick="loadLO(${i})">
+      <button onclick="loadLO(${i}, this)">
         LO${i+1}: ${escapeHtml(lo.LO_Question)}
       </button>
       <br>
@@ -708,7 +760,10 @@ function returnToRemediationAttempt(){
 /************************************
  * LOAD LO
  ************************************/
-async function loadLO(i){
+async function loadLO(i, btn){
+  clearPageStatus();
+  setButtonLoading(btn, true, "Loading LO...");
+  showPageLoading("Loading LO package...");
   const lo = currentLOs[i];
 
   if(!lo){
@@ -718,6 +773,8 @@ async function loadLO(i){
     }
 
     alert("No LO found.");
+    clearPageStatus();
+    setButtonLoading(btn, false);
     return;
   }
 
@@ -772,6 +829,8 @@ async function loadLO(i){
       "Rewrite the full answer until mastery is achieved.";
   }
 
+  clearPageStatus();
+  setButtonLoading(btn, false);
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
@@ -811,8 +870,8 @@ function renderAnswerArea(){
 async function submitAnswer(){
   const submitBtn = document.getElementById("submitBtn");
 
-  submitBtn.disabled = true;
-  submitBtn.innerText = "Checking...";
+  setButtonLoading(submitBtn, true, "Checking...");
+  showPageLoading("Checking your answer...");
 
   try{
     const responsePayload = document.getElementById("singleResponse").value;
@@ -829,6 +888,7 @@ async function submitAnswer(){
     const data = await res.json();
 
     renderStructuredFeedback(data);
+    clearPageStatus();
 
     if(data.correct){
       if(currentMode === "remediation"){
@@ -844,8 +904,7 @@ async function submitAnswer(){
     console.error(err);
     alert("The system took too long or encountered an error. Please try again once.");
   }finally{
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Submit";
+    setButtonLoading(submitBtn, false, "Submit");
   }
 }
 
@@ -1121,7 +1180,16 @@ function showFinalRemediationCompletion(){
  ************************************/
 async function finishRemediationTopic(){
   try{
+    showPageLoading("Saving your remediation completion...");
     const result = await logTopicCompletion();
+
+    if(!result.ok){
+      clearPageStatus();
+      alert(result.error || "Unable to save completion. Please try again.");
+      return;
+    }
+
+    clearPageStatus();
     renderFinalLeaderboardCelebration(result);
   }catch(err){
     console.error(err);
@@ -1289,6 +1357,42 @@ function renderFinalLeaderboardCelebration(result){
 /************************************
  * HELPERS
  ************************************/
+
+function showPageLoading(message){
+  const box = document.getElementById("pageStatus");
+  if(!box) return;
+  box.innerHTML = `<div class="loading-box">⏳ ${escapeHtml(message || "Loading...")}</div>`;
+}
+
+function showPageError(message){
+  const box = document.getElementById("pageStatus");
+  if(!box) return;
+  box.innerHTML = `<div class="error-box">${escapeHtml(message || "Something went wrong.")}</div>`;
+}
+
+function clearPageStatus(){
+  const box = document.getElementById("pageStatus");
+  if(!box) return;
+  box.innerHTML = "";
+}
+
+function setButtonLoading(btn, isLoading, loadingText){
+  if(!btn) return;
+
+  if(isLoading){
+    if(!btn.dataset.originalText){
+      btn.dataset.originalText = btn.innerText;
+    }
+    btn.disabled = true;
+    btn.innerText = loadingText || "Loading...";
+    return;
+  }
+
+  btn.disabled = false;
+  btn.innerText = loadingText || btn.dataset.originalText || btn.innerText || "Submit";
+  btn.dataset.originalText = "";
+}
+
 function highlight(text,arr){
   let out = escapeHtml(text);
 
