@@ -110,13 +110,6 @@
       margin-bottom:18px;
     }
 
-    .loading-under-button{
-      color:#1d4f91;
-      font-size:14px;
-      margin-top:6px;
-      line-height:1.5;
-    }
-
     button:disabled{
       opacity:0.65;
       cursor:not-allowed;
@@ -458,12 +451,13 @@ async function teacherLogin(){
   clearStatus();
 
   const btn = document.getElementById("teacherLoginBtn");
+  setButtonLoading(btn, true, "Checking login...");
+
   const email = val("teacherEmail");
   const password = val("teacherPassword");
-  const loginMsg = document.getElementById("teacherLoginMsg");
 
-  btn.disabled = true;
-  loginMsg.innerText = "⏳ Checking login...";
+  document.getElementById("teacherLoginMsg").innerText =
+    "Checking login...";
 
   try{
     const res = await fetch(
@@ -475,24 +469,24 @@ async function teacherLogin(){
     const data = await res.json();
 
     if(data.valid){
-      loginMsg.innerText = "";
+      document.getElementById("teacherLoginMsg").innerText = "";
       showSuccess("Teacher login successful. Loading topics...");
       document.getElementById("teacherLogin").style.display = "none";
       document.getElementById("teacherApp").style.display = "block";
       await loadTopics();
       showSuccess("Teacher interface loaded.");
     }else{
-      loginMsg.innerText =
+      document.getElementById("teacherLoginMsg").innerText =
         "Invalid teacher email/password or inactive account.";
       showError("Invalid teacher email/password or inactive account.");
     }
   }catch(err){
     console.error(err);
-    loginMsg.innerText =
+    document.getElementById("teacherLoginMsg").innerText =
       "Unable to connect to backend.";
     showError("Unable to connect to backend. Please try again.");
   }finally{
-    btn.disabled = false;
+    setButtonLoading(btn, false, "Enter Teacher Interface");
   }
 }
 
@@ -1312,7 +1306,7 @@ function renderTeacherTestOutput(data){
 
         <br>
 
-        ${escapeHtml(h.conceptualHint || "")}
+        ${escapeHtml(h.conceptualHint || "").replace(/\n/g,"<br>")}
 
         ${h.reconstruction ? `
           <div class="green-box">
@@ -1671,7 +1665,8 @@ function setStatus(msg,type){
 }
 
 function showLoading(msg){
-  // Loading feedback is shown below the clicked button instead of in the top status area.
+  document.getElementById("status").innerHTML =
+    `<div class="loading">${escapeHtml(msg)}</div>`;
 }
 
 function showSuccess(msg){
@@ -1688,38 +1683,21 @@ function setButtonLoading(btn, isLoading, buttonText){
   if(!btn) return;
 
   if(isLoading){
+    if(!btn.dataset.originalText){
+      btn.dataset.originalText = btn.innerText;
+    }
     btn.disabled = true;
-
-    let loadingId = btn.dataset.loadingId;
-
-    if(!loadingId){
-      loadingId = "loading_" + Math.random().toString(36).slice(2);
-      btn.dataset.loadingId = loadingId;
-    }
-
-    let loadingBox = document.getElementById(loadingId);
-
-    if(!loadingBox){
-      loadingBox = document.createElement("div");
-      loadingBox.id = loadingId;
-      loadingBox.className = "loading-under-button";
-
-      const row = btn.closest(".button-row");
-      const insertAfter = row || btn;
-      insertAfter.insertAdjacentElement("afterend", loadingBox);
-    }
-
-    loadingBox.innerHTML = `⏳ ${escapeHtml(buttonText || "Loading...")}`;
+    btn.innerText = buttonText || "Loading...";
     return;
   }
 
   btn.disabled = false;
+  btn.innerText =
+    buttonText ||
+    btn.dataset.originalText ||
+    "Submit";
 
-  if(btn.dataset.loadingId){
-    const loadingBox = document.getElementById(btn.dataset.loadingId);
-    if(loadingBox) loadingBox.remove();
-    delete btn.dataset.loadingId;
-  }
+  btn.dataset.originalText = "";
 }
 
 function val(id){
