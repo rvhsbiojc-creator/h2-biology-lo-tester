@@ -75,13 +75,6 @@
       line-height:1.5;
     }
 
-    .loading-under-button{
-      color:#1d4f91;
-      font-size:14px;
-      margin-top:6px;
-      line-height:1.5;
-    }
-
     .success-box{
       background:#e8f7e8;
       border:1px solid #9dd39d;
@@ -448,13 +441,12 @@ let remediationSequenceLocked = false;
  ************************************/
 async function login(){
   clearPageStatus();
-
   const loginBtn = document.getElementById("loginBtn");
+  setButtonLoading(loginBtn, true, "Checking...");
   const email = document.getElementById("email").value.trim();
   const loginMsg = document.getElementById("loginMsg");
 
-  loginBtn.disabled = true;
-  loginMsg.innerText = "⏳ Checking login...";
+  loginMsg.innerText = "Checking login...";
 
   try{
     const res = await fetch(
@@ -475,7 +467,7 @@ async function login(){
     loginMsg.innerText = "Unable to connect to backend.";
     console.error(err);
   }finally{
-    loginBtn.disabled = false;
+    setButtonLoading(loginBtn, false, "Enter");
   }
 }
 
@@ -562,11 +554,44 @@ function returnToLOSelection(){
 }
 
 /************************************
- * LOAD TOPIC
- ************************************
+ * TOPICS
+ ************************************/
+
 async function loadTopic(id,name, btn){
   clearPageStatus();
   setButtonLoading(btn, true, "Loading LOs...");
+  currentTopicId = id;
+  currentTopicName = name;
+
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=getTopicLOs&topicId=${encodeURIComponent(id)}&_=${Date.now()}`
+    );
+
+    const data = await res.json();
+    currentLOs = (data.los || []).filter(lo => lo && lo.LO_ID);
+
+    if(currentLOs.length === 0){
+      alert("No active LOs were found for this topic.");
+      return;
+    }
+
+    document.getElementById("topics").style.display = "none";
+    showModeBriefing();
+  }finally{
+    setButtonLoading(btn, false);
+  }
+}
+
+
+
+/************************************
+ * LOAD TOPIC
+ ************************************/
+async function loadTopic(id,name, btn){
+  clearPageStatus();
+  setButtonLoading(btn, true, "Loading LOs...");
+  
   currentTopicId = id;
   currentTopicName = name;
 
@@ -968,14 +993,14 @@ function renderStructuredFeedback(data){
       answerStructureHint += `
         <div class="hint-line">
           <strong>Bullet ${escapeHtml(h.bulletOrder || i+1)}</strong><br><br>
-          ${escapeHtml(h.conceptualHint || "")}
+          ${escapeHtml(h.conceptualHint || "").replace(/\n/g,"<br>")}
       `;
 
-      /***** Builder gets progressive reconstruction support only after an attempt *****/
-      if(currentMode === "builder" && h.reconstruction){
+      /***** Builder gets progressive reconstruction support *****/
+      if(currentMode === "builder"){
         answerStructureHint += `
           <div class="green-box">
-            ${escapeHtml(h.reconstruction).replace(/\n/g,"<br>")}
+            ${escapeHtml(h.reconstruction || "").replace(/\n/g,"<br>")}
           </div>
         `;
       }
@@ -1348,7 +1373,9 @@ function renderFinalLeaderboardCelebration(result){
  ************************************/
 
 function showPageLoading(message){
-  clearPageStatus();
+  const box = document.getElementById("pageStatus");
+  if(!box) return;
+  box.innerHTML = `<div class="loading-box">⏳ ${escapeHtml(message || "Loading...")}</div>`;
 }
 
 function showPageError(message){
@@ -1367,38 +1394,17 @@ function setButtonLoading(btn, isLoading, loadingText){
   if(!btn) return;
 
   if(isLoading){
+    if(!btn.dataset.originalText){
+      btn.dataset.originalText = btn.innerText;
+    }
     btn.disabled = true;
-
-    let loadingId = btn.dataset.loadingId;
-
-    if(!loadingId){
-      loadingId = "loading_" + Math.random().toString(36).slice(2);
-      btn.dataset.loadingId = loadingId;
-    }
-
-    let loadingBox = document.getElementById(loadingId);
-
-    if(!loadingBox){
-      loadingBox = document.createElement("div");
-      loadingBox.id = loadingId;
-      loadingBox.className = "loading-under-button";
-
-      const row = btn.closest(".button-row");
-      const insertAfter = row || btn;
-      insertAfter.insertAdjacentElement("afterend", loadingBox);
-    }
-
-    loadingBox.innerHTML = `⏳ ${escapeHtml(loadingText || "Loading...")}`;
+    btn.innerText = loadingText || "Loading...";
     return;
   }
 
   btn.disabled = false;
-
-  if(btn.dataset.loadingId){
-    const loadingBox = document.getElementById(btn.dataset.loadingId);
-    if(loadingBox) loadingBox.remove();
-    delete btn.dataset.loadingId;
-  }
+  btn.innerText = loadingText || btn.dataset.originalText || btn.innerText || "Submit";
+  btn.dataset.originalText = "";
 }
 
 function highlight(text,arr){
