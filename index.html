@@ -433,6 +433,7 @@ let currentLOIndex = 0;
 let currentLO = "";
 let currentLOPackage = null;
 let attemptNo = 1;
+let bulletAttemptCounts = [];
 let remediationStartedAt = null;
 let remediationSequenceLocked = false;
 
@@ -496,6 +497,7 @@ function returnToTopicSelection(){
   currentLO = "";
   currentLOPackage = null;
   attemptNo = 1;
+  bulletAttemptCounts = [];
 
   ["modeBriefing","loChoiceSection","loSection","quitEncouragement"].forEach(id=>{
     document.getElementById(id).style.display = "none";
@@ -520,6 +522,7 @@ function returnToModeSelection(){
   currentLO = "";
   currentLOPackage = null;
   attemptNo = 1;
+  bulletAttemptCounts = [];
   remediationStartedAt = null;
   remediationSequenceLocked = false;
 
@@ -780,12 +783,14 @@ async function loadLO(i, btn){
 
   currentLO = lo.LO_ID;
   attemptNo = 1;
+  bulletAttemptCounts = [];
 
   const pkgRes = await fetch(
     `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(currentLO)}&_=${Date.now()}`
   );
 
   currentLOPackage = await pkgRes.json();
+  bulletAttemptCounts = (currentLOPackage.answerBullets || []).map(() => 0);
 
   document.getElementById("loChoiceSection").style.display = "none";
   document.getElementById("loSection").style.display = "block";
@@ -875,6 +880,7 @@ async function submitAnswer(){
 
   try{
     const responsePayload = document.getElementById("singleResponse").value;
+    updateBulletAttemptCounts(responsePayload);
 
     const res = await fetch(
       `${BASE_URL}?action=checkResponse`
@@ -882,6 +888,7 @@ async function submitAnswer(){
       + `&loId=${encodeURIComponent(currentLO)}`
       + `&mode=${encodeURIComponent(currentMode)}`
       + `&attemptNo=${attemptNo}`
+      + `&bulletAttemptCounts=${encodeURIComponent(JSON.stringify(bulletAttemptCounts))}`
       + `&response=${encodeURIComponent(responsePayload)}`
     );
 
@@ -906,6 +913,44 @@ async function submitAnswer(){
   }finally{
     setButtonLoading(submitBtn, false, "Submit");
   }
+}
+
+
+function updateBulletAttemptCounts(responsePayload){
+  const expectedCount = (currentLOPackage && currentLOPackage.answerBullets)
+    ? currentLOPackage.answerBullets.length
+    : 0;
+
+  if(!Array.isArray(bulletAttemptCounts) || bulletAttemptCounts.length !== expectedCount){
+    bulletAttemptCounts = Array(expectedCount).fill(0);
+  }
+
+  const bulletResponses = parseStudentBulletsForTracking(responsePayload, expectedCount);
+
+  bulletResponses.forEach((text, index)=>{
+    if(String(text || '').trim()){
+      bulletAttemptCounts[index] = Number(bulletAttemptCounts[index] || 0) + 1;
+    }
+  });
+}
+
+function parseStudentBulletsForTracking(responseText, expectedCount){
+  const lines = String(responseText || '')
+    .split(/\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line =>
+      line
+        .replace(/^[-•*]\s*/, '')
+        .replace(/^\d+[\).]\s*/, '')
+        .trim()
+    );
+
+  while(lines.length < expectedCount){
+    lines.push('');
+  }
+
+  return lines.slice(0, expectedCount);
 }
 
 /************************************
