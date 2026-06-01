@@ -1215,7 +1215,11 @@ function renderTeacherTestOutput(data){
     data.bulletResults.forEach((b, i) => {
 
       let responseLine =
-        escapeHtml(b.responseText || "(blank)");
+        escapeHtml(
+          b.notAttempted
+            ? "(not attempted)"
+            : (b.responseText || "(blank)")
+        );
 
       (b.highlights || []).forEach(h => {
 
@@ -1696,6 +1700,11 @@ function escapeHtml(text){
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;");
+}
+
+function escapeRegExp(text){
+  return String(text || "")
+    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 }
 
 function escapeJs(text){
