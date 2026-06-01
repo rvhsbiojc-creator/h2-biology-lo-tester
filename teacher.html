@@ -1718,7 +1718,7 @@ function escapeHtml(text){
 
 function escapeRegExp(text){
   return String(text || "")
-    .replace(/[.*+?^${}()|[\]\]/g,"\$&");
+    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 }
 
 function escapeJs(text){
