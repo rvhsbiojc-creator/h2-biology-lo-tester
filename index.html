@@ -448,12 +448,13 @@ let remediationSequenceLocked = false;
  ************************************/
 async function login(){
   clearPageStatus();
+
   const loginBtn = document.getElementById("loginBtn");
-  setButtonLoading(loginBtn, true, "Checking...");
   const email = document.getElementById("email").value.trim();
   const loginMsg = document.getElementById("loginMsg");
 
-  loginMsg.innerText = "";
+  loginBtn.disabled = true;
+  loginMsg.innerText = "⏳ Checking login...";
 
   try{
     const res = await fetch(
@@ -474,7 +475,7 @@ async function login(){
     loginMsg.innerText = "Unable to connect to backend.";
     console.error(err);
   }finally{
-    setButtonLoading(loginBtn, false, "Enter");
+    loginBtn.disabled = false;
   }
 }
 
