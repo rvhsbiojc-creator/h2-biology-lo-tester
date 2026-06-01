@@ -976,16 +976,28 @@ function renderStructuredFeedback(data){
         <div class="section-title">Answer Structure Hint</div>
     `;
 
+    const hasUnattemptedHints =
+      data.hintOutput.some(h => h.notAttempted);
+
+    if(hasUnattemptedHints){
+      answerStructureHint += `
+        <div class="warning-box">
+          <strong>Blank bullets</strong><br>
+          Attempt the blank bullet first to unlock the blank-template guide.
+        </div>
+      `;
+    }
+
     data.hintOutput.forEach((h,i)=>{
 
       answerStructureHint += `
         <div class="hint-line">
           <strong>Bullet ${escapeHtml(h.bulletOrder || i+1)}</strong><br><br>
-          ${escapeHtml(h.conceptualHint || "")}
+          ${escapeHtml(h.conceptualHint || "").replace(/\n/g,"<br>")}
       `;
 
-      /***** Builder gets progressive reconstruction support *****/
-      if(currentMode === "builder"){
+      /***** Builder gets progressive reconstruction support only after an attempt *****/
+      if(currentMode === "builder" && h.reconstruction){
         answerStructureHint += `
           <div class="green-box">
             ${escapeHtml(h.reconstruction || "").replace(/\n/g,"<br>")}
@@ -994,7 +1006,7 @@ function renderStructuredFeedback(data){
       }
 
       /***** Self-review gets lighter conceptual support only *****/
-      if(currentMode === "self" && h.conceptualHint){
+      if(currentMode === "self" && h.conceptualHint && !h.notAttempted){
         answerStructureHint += `
           <div class="hint">
             Use this hint to revise your answer independently.
