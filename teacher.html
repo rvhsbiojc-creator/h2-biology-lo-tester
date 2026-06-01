@@ -110,6 +110,13 @@
       margin-bottom:18px;
     }
 
+    .loading-under-button{
+      color:#1d4f91;
+      font-size:14px;
+      margin-top:6px;
+      line-height:1.5;
+    }
+
     button:disabled{
       opacity:0.65;
       cursor:not-allowed;
@@ -235,7 +242,7 @@
     <div class="button-row">
       <button onclick="showNewTopicForm()">+ Create New Topic</button>
       <button onclick="showEditTopicForm()">Edit Selected Topic</button>
-      <button onclick="deleteSelectedTopic()">Delete Selected Topic</button>
+      <button onclick="deleteSelectedTopic(this)">Delete Selected Topic</button>
       <button onclick="startNewLO()">+ Create New LO for This Topic</button>
     </div>
 
@@ -310,8 +317,8 @@
     <div id="existingLOsBox">Loading existing LOs...</div>
 
     <div class="button-row">
-      <button onclick="editSelectedLO()">Edit Existing LO</button>
-      <button onclick="deleteSelectedLO()">Delete LO</button>
+      <button onclick="editSelectedLO(this)">Edit Existing LO</button>
+      <button onclick="deleteSelectedLO(this)">Delete LO</button>
     </div>
   </div>
 
@@ -456,8 +463,7 @@ async function teacherLogin(){
   const email = val("teacherEmail");
   const password = val("teacherPassword");
 
-  document.getElementById("teacherLoginMsg").innerText =
-    "Checking login...";
+  document.getElementById("teacherLoginMsg").innerText = "";
 
   try{
     const res = await fetch(
@@ -605,7 +611,6 @@ async function updateSelectedTopic(){
 
   const btn = document.getElementById("saveTopicChangesBtn");
   setButtonLoading(btn, true, "Saving changes...");
-  showLoading("Saving topic changes...");
 
   const currentTopicId = val("topicId");
   const currentTopicCode = val("topicCode");
@@ -725,7 +730,7 @@ async function updateSelectedTopic(){
   }
 }
 
-async function deleteSelectedTopic(){
+async function deleteSelectedTopic(btn){
   clearStatus();
 
   const topicId = val("topicId");
@@ -747,7 +752,7 @@ async function deleteSelectedTopic(){
     return;
   }
 
-  showLoading("Checking whether topic can be deleted...");
+  setButtonLoading(btn, true, "Checking...");
 
   try{
     const res = await fetch(BASE_URL, {
@@ -773,8 +778,11 @@ async function deleteSelectedTopic(){
   }catch(err){
     console.error(err);
     showError("Unable to delete topic. Please try again.");
+  }finally{
+    setButtonLoading(btn, false);
   }
 }
+
 
 async function updateTopicSummary(){
   const topicId = val("topicId");
@@ -822,7 +830,6 @@ async function createTopic(){
 
   const btn = document.getElementById("saveTopicBtn");
   setButtonLoading(btn, true, "Saving topic...");
-  showLoading("Saving new topic... Please wait.");
 
   const payload = {
     topicOrder: val("newTopicOrder"),
@@ -1008,11 +1015,11 @@ function renderExistingLOs(){
 
         <td>
           <div class="action-buttons">
-            <button class="small-button" onclick="viewLODetails('${escapeJs(lo.LO_ID)}')">
+            <button class="small-button" onclick="viewLODetails('${escapeJs(lo.LO_ID)}', this)">
               View LO Details
             </button>
 
-            <button class="small-button" onclick="testThisLO('${escapeJs(lo.LO_ID)}')">
+            <button class="small-button" onclick="testThisLO('${escapeJs(lo.LO_ID)}', this)">
               Test This LO
             </button>
           </div>
@@ -1033,130 +1040,136 @@ function getSelectedLOs(){
 /************************************
  * VIEW DETAILS
  ************************************/
-async function viewLODetails(loId){
-  clearStatus();
-  showLoading("Loading LO details...");
-  const res = await fetch(
-    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
-  );
+async function viewLODetails(loId, btn){
+  setButtonLoading(btn, true, "Loading...");
 
-  const data = await res.json();
-  const lo = existingLOs.find(x => x.LO_ID === loId);
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
+    );
 
-  let html = `
-    <div class="readonly-box">
-      <strong>LO Question</strong><br><br>
-      ${escapeHtml(lo?.LO_Question || loId)}
-    </div>
+    const data = await res.json();
+    const lo = existingLOs.find(x => x.LO_ID === loId);
 
-    <div class="readonly-box">
-      <strong>Answer Bullets</strong><br><br>
-  `;
+    let html = `
+      <div class="readonly-box">
+        <strong>LO Question</strong><br><br>
+        ${escapeHtml(lo?.LO_Question || loId)}
+      </div>
 
-  (data.answerBullets || []).forEach(b => {
-    html += `• ${escapeHtml(b.Canonical_Answer)}<br>`;
-  });
+      <div class="readonly-box">
+        <strong>Answer Bullets</strong><br><br>
+    `;
 
-  html += `</div><div class="readonly-box"><strong>Hints</strong><br><br>`;
+    (data.answerBullets || []).forEach(b => {
+      html += `• ${escapeHtml(b.Canonical_Answer)}<br>`;
+    });
 
-  (data.answerBullets || []).forEach(b => {
-    html += `• ${escapeHtml(b.Hint || "")}<br>`;
-  });
+    html += `</div><div class="readonly-box"><strong>Hints</strong><br><br>`;
 
-  html += `</div><div class="readonly-box"><strong>Keywords</strong><br><br>`;
+    (data.answerBullets || []).forEach(b => {
+      html += `• ${escapeHtml(b.Hint || "")}<br>`;
+    });
 
-  (data.keywords || []).forEach(k => {
-    html += `• Bullet ${escapeHtml(k.Bullet_Order)} — ${escapeHtml(k.Keyword_or_Phrase)}<br>`;
-  });
+    html += `</div><div class="readonly-box"><strong>Keywords</strong><br><br>`;
 
-  html += `</div><div class="readonly-box"><strong>Accepted Variants</strong><br><br>`;
+    (data.keywords || []).forEach(k => {
+      html += `• Bullet ${escapeHtml(k.Bullet_Order)} — ${escapeHtml(k.Keyword_or_Phrase)}<br>`;
+    });
 
-  (data.variants || []).forEach(v => {
-    html += `• ${escapeHtml(v.Keyword_ID)} — ${escapeHtml(v.Accepted_Variant)}<br>`;
-  });
+    html += `</div><div class="readonly-box"><strong>Accepted Variants</strong><br><br>`;
 
-  html += `</div><div class="readonly-box"><strong>Unacceptable Answers</strong><br><br>`;
+    (data.variants || []).forEach(v => {
+      html += `• ${escapeHtml(v.Keyword_ID)} — ${escapeHtml(v.Accepted_Variant)}<br>`;
+    });
 
-  (data.unacceptable || []).forEach(u => {
-    html += `• ${escapeHtml(u.Keyword_ID || "")} — ${escapeHtml(u.Phrase)}<br>`;
-  });
+    html += `</div><div class="readonly-box"><strong>Unacceptable Answers</strong><br><br>`;
 
-  html += `</div><div class="readonly-box"><strong>Blank Templates</strong><br><br>`;
+    (data.unacceptable || []).forEach(u => {
+      html += `• ${escapeHtml(u.Keyword_ID || "")} — ${escapeHtml(u.Phrase)}<br>`;
+    });
 
-  (data.blankTemplates || []).forEach(b => {
-    html += `• Bullet ${escapeHtml(b.Bullet_Order)} — ${escapeHtml(b.Teacher_Final_Blank || "")}<br>`;
-  });
+    html += `</div><div class="readonly-box"><strong>Blank Templates</strong><br><br>`;
 
-  html += `</div><div class="readonly-box"><strong>Common Questions</strong><br><br>`;
+    (data.blankTemplates || []).forEach(b => {
+      html += `• Bullet ${escapeHtml(b.Bullet_Order)} — ${escapeHtml(b.Teacher_Final_Blank || "")}<br>`;
+    });
 
-  (data.commonQuestions || []).forEach(q => {
-    html += `• ${escapeHtml(q.Common_Question)}<br>`;
-  });
+    html += `</div><div class="readonly-box"><strong>Common Questions</strong><br><br>`;
 
-  html += `</div>`;
+    (data.commonQuestions || []).forEach(q => {
+      html += `• ${escapeHtml(q.Common_Question)}<br>`;
+    });
 
-  document.getElementById("detailsPanel").style.display = "block";
-  document.getElementById("detailsOutput").innerHTML = html;
-  document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
-  showSuccess("LO details loaded.");
+    html += `</div>`;
+
+    document.getElementById("detailsPanel").style.display = "block";
+    document.getElementById("detailsOutput").innerHTML = html;
+    document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
+  }finally{
+    setButtonLoading(btn, false);
+  }
 }
+
 
 /************************************
  * TEST THIS LO
  ************************************/
-async function testThisLO(loId){
-  clearStatus();
-  showLoading("Loading teacher test preview...");
+async function testThisLO(loId, btn){
 
+  setButtonLoading(btn, true, "Loading...");
   selectedTestLO = loId;
 
-  const lo =
-    existingLOs.find(x => x.LO_ID === loId);
+  try{
+    const lo =
+      existingLOs.find(x => x.LO_ID === loId);
 
-  const pkgRes =
-    await fetch(
-      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
-    );
+    const pkgRes =
+      await fetch(
+        `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
+      );
 
-  const pkg =
-    await pkgRes.json();
+    const pkg =
+      await pkgRes.json();
 
-  const bulletCount =
-    (pkg.answerBullets || []).length;
+    const bulletCount =
+      (pkg.answerBullets || []).length;
 
-  const scaffold =
-    Array.from(
-      { length: bulletCount },
-      () => "• "
-    ).join("\n");
+    const scaffold =
+      Array.from(
+        { length: bulletCount },
+        () => "• "
+      ).join("\n");
 
-  document
-    .getElementById("teacherTestPanel")
-    .style.display = "block";
+    document
+      .getElementById("teacherTestPanel")
+      .style.display = "block";
 
-  document
-    .getElementById("testLoLabel")
-    .innerHTML =
-      `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
+    document
+      .getElementById("testLoLabel")
+      .innerHTML =
+        `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
 
-  document
-    .getElementById("testAnswer")
-    .value = scaffold;
+    document
+      .getElementById("testAnswer")
+      .value = scaffold;
 
-  document
-    .getElementById("testReference")
-    .innerHTML = "";
+    document
+      .getElementById("testReference")
+      .innerHTML = "";
 
-  document
-    .getElementById("testOutput")
-    .innerHTML = "";
+    document
+      .getElementById("testOutput")
+      .innerHTML = "";
 
-  document
-    .getElementById("teacherTestPanel")
-    .scrollIntoView({behavior:"smooth"});
-
-  showSuccess("Teacher test preview loaded.");
+    document
+      .getElementById("teacherTestPanel")
+      .scrollIntoView({behavior:"smooth"});
+  }finally{
+    setButtonLoading(btn, false);
+  }
 }
+
 
 function renderTeacherTestReference(pkg){
   document
@@ -1172,7 +1185,6 @@ async function runTeacherTest(){
 
   const btn = document.getElementById("teacherTestBtn");
   setButtonLoading(btn, true, "Checking...");
-  showLoading("Checking test response...");
 
   const mode = val("testMode");
   const attemptNo = val("testAttemptNo") || "1";
@@ -1339,9 +1351,7 @@ function renderTeacherTestOutput(data){
 /************************************
  * EDIT / DELETE
  ************************************/
-async function editSelectedLO(){
-  clearStatus();
-  showLoading("Loading selected LO for editing...");
+async function editSelectedLO(btn){
   const selected = getSelectedLOs();
 
   if(selected.length !== 1){
@@ -1349,11 +1359,17 @@ async function editSelectedLO(){
     return;
   }
 
-  await loadLOIntoForm(selected[0]);
-  showSuccess("LO loaded for editing.");
+  setButtonLoading(btn, true, "Loading...");
+
+  try{
+    await loadLOIntoForm(selected[0]);
+  }finally{
+    setButtonLoading(btn, false);
+  }
 }
 
-async function deleteSelectedLO(){
+
+async function deleteSelectedLO(btn){
   const selected = getSelectedLOs();
 
   if(selected.length === 0){
@@ -1366,7 +1382,7 @@ async function deleteSelectedLO(){
 
   if(!confirmDelete) return;
 
-  showLoading("Sending delete request...");
+  setButtonLoading(btn, true, "Deleting...");
 
   submitPost(
     "deleteLOs",
@@ -1374,8 +1390,12 @@ async function deleteSelectedLO(){
     `Delete request sent for ${selected.length} LO(s).`
   );
 
-  setTimeout(loadExistingLOs, 2500);
+  setTimeout(() => {
+    loadExistingLOs();
+    setButtonLoading(btn, false);
+  }, 2500);
 }
+
 
 async function loadLOIntoForm(loId){
   currentEditingLO = loId;
@@ -1512,7 +1532,6 @@ function submitPost(action, payload, successMessage){
   }
 
   setButtonLoading(btn, true, "Saving...");
-  showLoading("Saving... Please wait.");
 
   try{
     const form = document.createElement("form");
@@ -1652,8 +1671,7 @@ function setStatus(msg,type){
 }
 
 function showLoading(msg){
-  document.getElementById("status").innerHTML =
-    `<div class="loading">${escapeHtml(msg)}</div>`;
+  // Loading feedback is shown below the clicked button instead of in the top status area.
 }
 
 function showSuccess(msg){
@@ -1670,21 +1688,38 @@ function setButtonLoading(btn, isLoading, buttonText){
   if(!btn) return;
 
   if(isLoading){
-    if(!btn.dataset.originalText){
-      btn.dataset.originalText = btn.innerText;
-    }
     btn.disabled = true;
-    btn.innerText = buttonText || "Loading...";
+
+    let loadingId = btn.dataset.loadingId;
+
+    if(!loadingId){
+      loadingId = "loading_" + Math.random().toString(36).slice(2);
+      btn.dataset.loadingId = loadingId;
+    }
+
+    let loadingBox = document.getElementById(loadingId);
+
+    if(!loadingBox){
+      loadingBox = document.createElement("div");
+      loadingBox.id = loadingId;
+      loadingBox.className = "loading-under-button";
+
+      const row = btn.closest(".button-row");
+      const insertAfter = row || btn;
+      insertAfter.insertAdjacentElement("afterend", loadingBox);
+    }
+
+    loadingBox.innerHTML = `⏳ ${escapeHtml(buttonText || "Loading...")}`;
     return;
   }
 
   btn.disabled = false;
-  btn.innerText =
-    buttonText ||
-    btn.dataset.originalText ||
-    "Submit";
 
-  btn.dataset.originalText = "";
+  if(btn.dataset.loadingId){
+    const loadingBox = document.getElementById(btn.dataset.loadingId);
+    if(loadingBox) loadingBox.remove();
+    delete btn.dataset.loadingId;
+  }
 }
 
 function val(id){
