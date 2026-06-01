@@ -1034,6 +1034,8 @@ function getSelectedLOs(){
  * VIEW DETAILS
  ************************************/
 async function viewLODetails(loId){
+  clearStatus();
+  showLoading("Loading LO details...");
   const res = await fetch(
     `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
   );
@@ -1096,12 +1098,15 @@ async function viewLODetails(loId){
   document.getElementById("detailsPanel").style.display = "block";
   document.getElementById("detailsOutput").innerHTML = html;
   document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
+  showSuccess("LO details loaded.");
 }
 
 /************************************
  * TEST THIS LO
  ************************************/
 async function testThisLO(loId){
+  clearStatus();
+  showLoading("Loading teacher test preview...");
 
   selectedTestLO = loId;
 
@@ -1149,6 +1154,8 @@ async function testThisLO(loId){
   document
     .getElementById("teacherTestPanel")
     .scrollIntoView({behavior:"smooth"});
+
+  showSuccess("Teacher test preview loaded.");
 }
 
 function renderTeacherTestReference(pkg){
@@ -1295,9 +1302,11 @@ function renderTeacherTestOutput(data){
 
         ${escapeHtml(h.conceptualHint || "")}
 
-        <div class="green-box">
-          ${escapeHtml(h.reconstruction || "")}
-        </div>
+        ${h.reconstruction ? `
+          <div class="green-box">
+            ${escapeHtml(h.reconstruction || "")}
+          </div>
+        ` : ``}
 
         <br>
       `;
@@ -1331,6 +1340,8 @@ function renderTeacherTestOutput(data){
  * EDIT / DELETE
  ************************************/
 async function editSelectedLO(){
+  clearStatus();
+  showLoading("Loading selected LO for editing...");
   const selected = getSelectedLOs();
 
   if(selected.length !== 1){
@@ -1339,6 +1350,7 @@ async function editSelectedLO(){
   }
 
   await loadLOIntoForm(selected[0]);
+  showSuccess("LO loaded for editing.");
 }
 
 async function deleteSelectedLO(){
@@ -1353,6 +1365,8 @@ async function deleteSelectedLO(){
     confirm(`Are you sure you want to delete ${selected.length} LO(s)? Students will no longer see them.`);
 
   if(!confirmDelete) return;
+
+  showLoading("Sending delete request...");
 
   submitPost(
     "deleteLOs",
@@ -1704,7 +1718,7 @@ function escapeHtml(text){
 
 function escapeRegExp(text){
   return String(text || "")
-    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    .replace(/[.*+?^${}()|[\]\]/g,"\$&");
 }
 
 function escapeJs(text){
