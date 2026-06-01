@@ -235,7 +235,7 @@
     <div class="button-row">
       <button onclick="showNewTopicForm()">+ Create New Topic</button>
       <button onclick="showEditTopicForm()">Edit Selected Topic</button>
-      <button onclick="deleteSelectedTopic(this)">Delete Selected Topic</button>
+      <button onclick="deleteSelectedTopic()">Delete Selected Topic</button>
       <button onclick="startNewLO()">+ Create New LO for This Topic</button>
     </div>
 
@@ -310,8 +310,8 @@
     <div id="existingLOsBox">Loading existing LOs...</div>
 
     <div class="button-row">
-      <button onclick="editSelectedLO(this)">Edit Existing LO</button>
-      <button onclick="deleteSelectedLO(this)">Delete LO</button>
+      <button onclick="editSelectedLO()">Edit Existing LO</button>
+      <button onclick="deleteSelectedLO()">Delete LO</button>
     </div>
   </div>
 
@@ -605,6 +605,7 @@ async function updateSelectedTopic(){
 
   const btn = document.getElementById("saveTopicChangesBtn");
   setButtonLoading(btn, true, "Saving changes...");
+  showLoading("Saving topic changes...");
 
   const currentTopicId = val("topicId");
   const currentTopicCode = val("topicCode");
@@ -724,7 +725,7 @@ async function updateSelectedTopic(){
   }
 }
 
-async function deleteSelectedTopic(btn){
+async function deleteSelectedTopic(){
   clearStatus();
 
   const topicId = val("topicId");
@@ -746,7 +747,7 @@ async function deleteSelectedTopic(btn){
     return;
   }
 
-  setButtonLoading(btn, true, "Checking...");
+  showLoading("Checking whether topic can be deleted...");
 
   try{
     const res = await fetch(BASE_URL, {
@@ -772,11 +773,8 @@ async function deleteSelectedTopic(btn){
   }catch(err){
     console.error(err);
     showError("Unable to delete topic. Please try again.");
-  }finally{
-    setButtonLoading(btn, false);
   }
 }
-
 
 async function updateTopicSummary(){
   const topicId = val("topicId");
@@ -824,6 +822,7 @@ async function createTopic(){
 
   const btn = document.getElementById("saveTopicBtn");
   setButtonLoading(btn, true, "Saving topic...");
+  showLoading("Saving new topic... Please wait.");
 
   const payload = {
     topicOrder: val("newTopicOrder"),
@@ -1009,11 +1008,11 @@ function renderExistingLOs(){
 
         <td>
           <div class="action-buttons">
-            <button class="small-button" onclick="viewLODetails('${escapeJs(lo.LO_ID)}', this)">
+            <button class="small-button" onclick="viewLODetails('${escapeJs(lo.LO_ID)}')">
               View LO Details
             </button>
 
-            <button class="small-button" onclick="testThisLO('${escapeJs(lo.LO_ID)}', this)">
+            <button class="small-button" onclick="testThisLO('${escapeJs(lo.LO_ID)}')">
               Test This LO
             </button>
           </div>
@@ -1034,136 +1033,130 @@ function getSelectedLOs(){
 /************************************
  * VIEW DETAILS
  ************************************/
-async function viewLODetails(loId, btn){
-  setButtonLoading(btn, true, "Loading...");
+async function viewLODetails(loId){
+  clearStatus();
+  showLoading("Loading LO details...");
+  const res = await fetch(
+    `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
+  );
 
-  try{
-    const res = await fetch(
-      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
-    );
+  const data = await res.json();
+  const lo = existingLOs.find(x => x.LO_ID === loId);
 
-    const data = await res.json();
-    const lo = existingLOs.find(x => x.LO_ID === loId);
+  let html = `
+    <div class="readonly-box">
+      <strong>LO Question</strong><br><br>
+      ${escapeHtml(lo?.LO_Question || loId)}
+    </div>
 
-    let html = `
-      <div class="readonly-box">
-        <strong>LO Question</strong><br><br>
-        ${escapeHtml(lo?.LO_Question || loId)}
-      </div>
+    <div class="readonly-box">
+      <strong>Answer Bullets</strong><br><br>
+  `;
 
-      <div class="readonly-box">
-        <strong>Answer Bullets</strong><br><br>
-    `;
+  (data.answerBullets || []).forEach(b => {
+    html += `• ${escapeHtml(b.Canonical_Answer)}<br>`;
+  });
 
-    (data.answerBullets || []).forEach(b => {
-      html += `• ${escapeHtml(b.Canonical_Answer)}<br>`;
-    });
+  html += `</div><div class="readonly-box"><strong>Hints</strong><br><br>`;
 
-    html += `</div><div class="readonly-box"><strong>Hints</strong><br><br>`;
+  (data.answerBullets || []).forEach(b => {
+    html += `• ${escapeHtml(b.Hint || "")}<br>`;
+  });
 
-    (data.answerBullets || []).forEach(b => {
-      html += `• ${escapeHtml(b.Hint || "")}<br>`;
-    });
+  html += `</div><div class="readonly-box"><strong>Keywords</strong><br><br>`;
 
-    html += `</div><div class="readonly-box"><strong>Keywords</strong><br><br>`;
+  (data.keywords || []).forEach(k => {
+    html += `• Bullet ${escapeHtml(k.Bullet_Order)} — ${escapeHtml(k.Keyword_or_Phrase)}<br>`;
+  });
 
-    (data.keywords || []).forEach(k => {
-      html += `• Bullet ${escapeHtml(k.Bullet_Order)} — ${escapeHtml(k.Keyword_or_Phrase)}<br>`;
-    });
+  html += `</div><div class="readonly-box"><strong>Accepted Variants</strong><br><br>`;
 
-    html += `</div><div class="readonly-box"><strong>Accepted Variants</strong><br><br>`;
+  (data.variants || []).forEach(v => {
+    html += `• ${escapeHtml(v.Keyword_ID)} — ${escapeHtml(v.Accepted_Variant)}<br>`;
+  });
 
-    (data.variants || []).forEach(v => {
-      html += `• ${escapeHtml(v.Keyword_ID)} — ${escapeHtml(v.Accepted_Variant)}<br>`;
-    });
+  html += `</div><div class="readonly-box"><strong>Unacceptable Answers</strong><br><br>`;
 
-    html += `</div><div class="readonly-box"><strong>Unacceptable Answers</strong><br><br>`;
+  (data.unacceptable || []).forEach(u => {
+    html += `• ${escapeHtml(u.Keyword_ID || "")} — ${escapeHtml(u.Phrase)}<br>`;
+  });
 
-    (data.unacceptable || []).forEach(u => {
-      html += `• ${escapeHtml(u.Keyword_ID || "")} — ${escapeHtml(u.Phrase)}<br>`;
-    });
+  html += `</div><div class="readonly-box"><strong>Blank Templates</strong><br><br>`;
 
-    html += `</div><div class="readonly-box"><strong>Blank Templates</strong><br><br>`;
+  (data.blankTemplates || []).forEach(b => {
+    html += `• Bullet ${escapeHtml(b.Bullet_Order)} — ${escapeHtml(b.Teacher_Final_Blank || "")}<br>`;
+  });
 
-    (data.blankTemplates || []).forEach(b => {
-      html += `• Bullet ${escapeHtml(b.Bullet_Order)} — ${escapeHtml(b.Teacher_Final_Blank || "")}<br>`;
-    });
+  html += `</div><div class="readonly-box"><strong>Common Questions</strong><br><br>`;
 
-    html += `</div><div class="readonly-box"><strong>Common Questions</strong><br><br>`;
+  (data.commonQuestions || []).forEach(q => {
+    html += `• ${escapeHtml(q.Common_Question)}<br>`;
+  });
 
-    (data.commonQuestions || []).forEach(q => {
-      html += `• ${escapeHtml(q.Common_Question)}<br>`;
-    });
+  html += `</div>`;
 
-    html += `</div>`;
-
-    document.getElementById("detailsPanel").style.display = "block";
-    document.getElementById("detailsOutput").innerHTML = html;
-    document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
-  }finally{
-    setButtonLoading(btn, false);
-  }
+  document.getElementById("detailsPanel").style.display = "block";
+  document.getElementById("detailsOutput").innerHTML = html;
+  document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
+  showSuccess("LO details loaded.");
 }
-
 
 /************************************
  * TEST THIS LO
  ************************************/
-async function testThisLO(loId, btn){
+async function testThisLO(loId){
+  clearStatus();
+  showLoading("Loading teacher test preview...");
 
-  setButtonLoading(btn, true, "Loading...");
   selectedTestLO = loId;
 
-  try{
-    const lo =
-      existingLOs.find(x => x.LO_ID === loId);
+  const lo =
+    existingLOs.find(x => x.LO_ID === loId);
 
-    const pkgRes =
-      await fetch(
-        `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
-      );
+  const pkgRes =
+    await fetch(
+      `${BASE_URL}?action=getLOPackage&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
+    );
 
-    const pkg =
-      await pkgRes.json();
+  const pkg =
+    await pkgRes.json();
 
-    const bulletCount =
-      (pkg.answerBullets || []).length;
+  const bulletCount =
+    (pkg.answerBullets || []).length;
 
-    const scaffold =
-      Array.from(
-        { length: bulletCount },
-        () => "• "
-      ).join("\n");
+  const scaffold =
+    Array.from(
+      { length: bulletCount },
+      () => "• "
+    ).join("\n");
 
-    document
-      .getElementById("teacherTestPanel")
-      .style.display = "block";
+  document
+    .getElementById("teacherTestPanel")
+    .style.display = "block";
 
-    document
-      .getElementById("testLoLabel")
-      .innerHTML =
-        `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
+  document
+    .getElementById("testLoLabel")
+    .innerHTML =
+      `<strong>Testing:</strong> LO${escapeHtml(String(loId).split("_LO")[1] || "")} — ${escapeHtml(lo?.LO_Question || "")}`;
 
-    document
-      .getElementById("testAnswer")
-      .value = scaffold;
+  document
+    .getElementById("testAnswer")
+    .value = scaffold;
 
-    document
-      .getElementById("testReference")
-      .innerHTML = "";
+  document
+    .getElementById("testReference")
+    .innerHTML = "";
 
-    document
-      .getElementById("testOutput")
-      .innerHTML = "";
+  document
+    .getElementById("testOutput")
+    .innerHTML = "";
 
-    document
-      .getElementById("teacherTestPanel")
-      .scrollIntoView({behavior:"smooth"});
-  }finally{
-    setButtonLoading(btn, false);
-  }
+  document
+    .getElementById("teacherTestPanel")
+    .scrollIntoView({behavior:"smooth"});
+
+  showSuccess("Teacher test preview loaded.");
 }
-
 
 function renderTeacherTestReference(pkg){
   document
@@ -1179,6 +1172,7 @@ async function runTeacherTest(){
 
   const btn = document.getElementById("teacherTestBtn");
   setButtonLoading(btn, true, "Checking...");
+  showLoading("Checking test response...");
 
   const mode = val("testMode");
   const attemptNo = val("testAttemptNo") || "1";
@@ -1306,7 +1300,7 @@ function renderTeacherTestOutput(data){
 
         <br>
 
-        ${escapeHtml(h.conceptualHint || "").replace(/\n/g,"<br>")}
+        ${escapeHtml(h.conceptualHint || "")}
 
         ${h.reconstruction ? `
           <div class="green-box">
@@ -1345,7 +1339,9 @@ function renderTeacherTestOutput(data){
 /************************************
  * EDIT / DELETE
  ************************************/
-async function editSelectedLO(btn){
+async function editSelectedLO(){
+  clearStatus();
+  showLoading("Loading selected LO for editing...");
   const selected = getSelectedLOs();
 
   if(selected.length !== 1){
@@ -1353,17 +1349,11 @@ async function editSelectedLO(btn){
     return;
   }
 
-  setButtonLoading(btn, true, "Loading...");
-
-  try{
-    await loadLOIntoForm(selected[0]);
-  }finally{
-    setButtonLoading(btn, false);
-  }
+  await loadLOIntoForm(selected[0]);
+  showSuccess("LO loaded for editing.");
 }
 
-
-async function deleteSelectedLO(btn){
+async function deleteSelectedLO(){
   const selected = getSelectedLOs();
 
   if(selected.length === 0){
@@ -1376,7 +1366,7 @@ async function deleteSelectedLO(btn){
 
   if(!confirmDelete) return;
 
-  setButtonLoading(btn, true, "Deleting...");
+  showLoading("Sending delete request...");
 
   submitPost(
     "deleteLOs",
@@ -1384,12 +1374,8 @@ async function deleteSelectedLO(btn){
     `Delete request sent for ${selected.length} LO(s).`
   );
 
-  setTimeout(() => {
-    loadExistingLOs();
-    setButtonLoading(btn, false);
-  }, 2500);
+  setTimeout(loadExistingLOs, 2500);
 }
-
 
 async function loadLOIntoForm(loId){
   currentEditingLO = loId;
@@ -1526,6 +1512,7 @@ function submitPost(action, payload, successMessage){
   }
 
   setButtonLoading(btn, true, "Saving...");
+  showLoading("Saving... Please wait.");
 
   try{
     const form = document.createElement("form");
@@ -1731,7 +1718,7 @@ function escapeHtml(text){
 
 function escapeRegExp(text){
   return String(text || "")
-    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    .replace(/[.*+?^${}()|[\]\]/g,"\$&");
 }
 
 function escapeJs(text){
