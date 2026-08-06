@@ -312,7 +312,13 @@
     <div class="button-row">
       <button onclick="editSelectedLO()">Edit Existing LO</button>
       <button onclick="deleteSelectedLO()">Delete LO</button>
+      <button id="validateTopicBtn" onclick="validateCurrentTopicLOs()">Validate All LOs in This Topic</button>
     </div>
+  </div>
+
+  <div id="validationPanel" class="card" style="display:none;">
+    <div class="section-title">LO Validation Results</div>
+    <div id="validationOutput"></div>
   </div>
 
   <div id="detailsPanel" class="card" style="display:none;">
@@ -1015,6 +1021,10 @@ function renderExistingLOs(){
             <button class="small-button" onclick="testThisLO('${escapeJs(lo.LO_ID)}')">
               Test This LO
             </button>
+
+            <button class="small-button" onclick="validateLOById('${escapeJs(lo.LO_ID)}')">
+              Validate LO
+            </button>
           </div>
         </td>
       </tr>
@@ -1100,6 +1110,115 @@ async function viewLODetails(loId){
   document.getElementById("detailsPanel").scrollIntoView({behavior:"smooth"});
   showSuccess("LO details loaded.");
 }
+
+
+async function validateLOById(loId){
+  clearStatus();
+  showLoading("Validating LO...");
+
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=validateLO&loId=${encodeURIComponent(loId)}&_=${Date.now()}`
+    );
+
+    const data = await res.json();
+
+    renderValidationResults([data], `Validation for ${loId}`);
+
+    if(data.status === "FAIL"){
+      showError("LO validation failed. Review the issues shown below.");
+    }else{
+      showSuccess("LO validation completed: " + data.status);
+    }
+
+  }catch(err){
+    console.error(err);
+    showError("Unable to validate LO.");
+  }
+}
+
+async function validateCurrentTopicLOs(){
+  const topicId = val("topicId");
+
+  if(!topicId){
+    showError("Please select a topic first.");
+    return;
+  }
+
+  const btn = document.getElementById("validateTopicBtn");
+  setButtonLoading(btn, true, "Validating...");
+  showLoading("Validating all LOs in this topic...");
+
+  try{
+    const res = await fetch(
+      `${BASE_URL}?action=validateTopicLOs&topicId=${encodeURIComponent(topicId)}&_=${Date.now()}`
+    );
+
+    const data = await res.json();
+
+    renderValidationResults(
+      data.results || [],
+      `Topic validation: ${data.passed || 0} passed, ${data.failed || 0} failed`
+    );
+
+    if((data.failed || 0) > 0){
+      showError("Topic validation completed with failed LOs.");
+    }else{
+      showSuccess("All LOs in this topic passed validation.");
+    }
+
+  }catch(err){
+    console.error(err);
+    showError("Unable to validate topic LOs.");
+  }finally{
+    setButtonLoading(btn, false, "Validate All LOs in This Topic");
+  }
+}
+
+function renderValidationResults(results, heading){
+  const panel = document.getElementById("validationPanel");
+  const output = document.getElementById("validationOutput");
+
+  let html = `
+    <div class="readonly-box">
+      <strong>${escapeHtml(heading || "Validation Results")}</strong>
+    </div>
+  `;
+
+  (results || []).forEach(result => {
+    const statusClass =
+      result.status === "FAIL"
+        ? "error"
+        : "success";
+
+    html += `
+      <div class="${statusClass}">
+        <strong>${escapeHtml(result.loId || "")}: ${escapeHtml(result.status || "")}</strong>
+      </div>
+    `;
+
+    if(result.issues && result.issues.length){
+      html += `<div class="readonly-box"><strong>Issues</strong><br><br>`;
+      result.issues.forEach(issue => {
+        html += `• ${escapeHtml(issue)}<br>`;
+      });
+      html += `</div>`;
+    }
+
+    if(result.warnings && result.warnings.length){
+      html += `<div class="readonly-box"><strong>Warnings</strong><br><br>`;
+      result.warnings.forEach(warning => {
+        html += `• ${escapeHtml(warning)}<br>`;
+      });
+      html += `</div>`;
+    }
+  });
+
+  panel.style.display = "block";
+  output.innerHTML = html;
+  panel.scrollIntoView({behavior:"smooth"});
+}
+
 
 /************************************
  * TEST THIS LO
@@ -1542,6 +1661,10 @@ function submitPost(action, payload, successMessage){
       loadExistingLOs();
       setButtonLoading(btn, false, originalText);
       showSuccess(successMessage + " If the item does not appear, wait a few seconds and refresh the topic.");
+
+      if(payload && payload.loId){
+        setTimeout(() => validateLOById(payload.loId), 700);
+      }
     }, 2500);
 
   }catch(err){
